@@ -5,6 +5,7 @@ Authors: Bojin Zheng, Jingwen Zheng
 -/
 
 import Mp.SubsetSumInNP
+import Mp.ATMBasic
 
 set_option linter.style.header false
 set_option linter.style.longLine false
@@ -32,8 +33,10 @@ set_option linter.style.whitespace false
 - §4 `subsetSumNTM2_correct_on_encodings`：NTM2 侧（subsetSumNTM2）在实例形输入上的判定正确性
   （经同构桥自 CBTM 像搬运；尾缀消去 = hrel2）。
 - §5 `subsetSumNTM2_rejects_aligned_nonencoding`：NTM2 侧对对齐非编码串的拒绝。
-- §6 `subsetSumNTM2_correct_aligned`：§4+§5 合并 = NTM2 侧对齐域全正确性
-  （→ NP 侧成员资格素材；全输入域 ∀x 的余项待裁）。
+- §6 `subsetSumNTM2_correct_aligned`：§4+§5 合并 = NTM2 侧对齐域全正确性。
+- §7 `NTM2.isPolynomialTimeAligned`/`subsetSumNTM2_polynomialTimeAligned`：NTM2 侧对齐域多项式界。
+- §8 `IsNP_sym0`/`NP_sym0`（NTM2 承载，对齐域；2026-09-14 用户裁决 N1）
+  + `subsetSum_in_NP_sym0` + **`P_sym0_neq_NP_sym0`**（符号层分离终段）。
 -/
 
 namespace Mp
@@ -187,5 +190,146 @@ theorem subsetSumNTM2_correct_aligned :
     · intro hL
       rcases hL with ⟨inst, gS, hw, _hne, _hpos, _htgt, _hholds⟩
       exact absurd ⟨inst, gS, hw⟩ hdec
+
+-- ============================================================================
+-- §7 NTM2 侧对齐域多项式界
+-- ============================================================================
+
+/-- NTM2 多项式时间（对齐域版：判定域内断言）。 -/
+def NTM2.isPolynomialTimeAligned (A : NTM2) : Prop :=
+  ∃ p : ℕ → ℕ, IsPolynomialBound p ∧
+    ∀ (x : List F4), IsSymbolAligned x →
+      ∀ (π : NTM2ComputationPath) (cfg : NTM2Config A x),
+        TapeReachablePathNTM2 A x π cfg → cfg.state ∈ A.acceptStates →
+        (∀ step ∈ π, step.fromState ∉ A.acceptStates) →
+        ntm2MoveCount π ≤ p x.length
+
+/-- 移动计数 ≤ 路径长度。 -/
+lemma ntm2MoveCount_le_length (π : NTM2ComputationPath) : ntm2MoveCount π ≤ π.length :=
+  List.length_filter_le _ _
+
+/-- subsetSumNTM2 对齐域多项式界（自 canonical 的路径长度界；
+    尾巴支与首达相矛。多项式界证法同 `toCBTM_polynomialTime`）。 -/
+theorem subsetSumNTM2_polynomialTimeAligned : NTM2.isPolynomialTimeAligned subsetSumNTM2 := by
+  rcases subsetSumNTM2_canonical with ⟨K, hK⟩
+  refine ⟨fun n => K * (n + 2) * (n + 1) * (n + 1), ?_, ?_⟩
+  · refine ⟨12 * K + 6, ?_⟩
+    intro n
+    by_cases hn : n ≤ 1
+    · have hn0 : n = 0 ∨ n = 1 := by omega
+      rcases hn0 with rfl | rfl
+      · have hp : 0 ^ (12 * K + 6) = 0 := Nat.zero_pow (by omega : 0 < 12 * K + 6)
+        rw [hp]
+        norm_num
+        nlinarith
+      · have hp : 1 ^ (12 * K + 6) = 1 := by simp
+        rw [hp]
+        norm_num
+        nlinarith
+    · have hn2 : 2 ≤ n := by omega
+      have hn2' : 2 ≤ n + 2 := by omega
+      have hKle : K ≤ (n + 2) ^ K := by
+        calc
+          K ≤ 2 ^ K := nat_le_two_pow K
+          _ ≤ (n + 2) ^ K := Nat.pow_le_pow_left hn2' K
+      have hnp2 : n + 2 ≤ n ^ 2 := by
+        have h2n : 2 * n ≤ n * n := Nat.mul_le_mul_right n hn2
+        nlinarith
+      calc
+        K * (n + 2) * (n + 1) * (n + 1) ≤ K * (n + 2) * (n + 2) * (n + 2) := by
+          gcongr <;> omega
+        _ ≤ (n + 2) ^ K * (n + 2) * (n + 2) * (n + 2) := by
+          gcongr
+        _ = (n + 2) ^ K * (n + 2) ^ 3 := by ring
+        _ = (n + 2) ^ (K + 3) := by
+          rw [pow_add]
+        _ ≤ (n ^ 2) ^ (K + 3) := by
+          exact Nat.pow_le_pow_left hnp2 (K + 3)
+        _ = n ^ (2 * (K + 3)) := by
+          rw [Nat.pow_mul]
+        _ = n ^ (2 * K + 6) := by ring_nf
+        _ ≤ n ^ (12 * K + 6) := by
+          exact Nat.pow_le_pow_right (by omega : 0 < n) (by omega : 2 * K + 6 ≤ 12 * K + 6)
+        _ ≤ n ^ (12 * K + 6) + (12 * K + 6) := by omega
+  · intro w hal π cfg hr hacc hnoTerm
+    by_cases h : ∃ inst : SubsetSumInstance, ∃ gS : List Sym,
+        inst.elements ≠ [] ∧ w = encodeInstanceF4 inst ++ flat4F4 gS
+    · rcases h with ⟨inst, gS, hne, hw⟩
+      have hwf : ∃ inst : SubsetSumInstance, ∃ gS : List Sym,
+          w = encodeInstanceF4 inst ++ flat4F4 gS := ⟨inst, gS, hw⟩
+      have hext : ∃ (π₂ : NTM2ComputationPath) (cfg₂ : NTM2Config subsetSumNTM2 w),
+          TapeReachablePathNTM2 subsetSumNTM2 w (π ++ π₂) cfg₂ ∧
+            cfg₂.state ∈ subsetSumNTM2.acceptStates :=
+        ⟨[], cfg, by simpa using hr, hacc⟩
+      have hb := hK w π cfg hwf hnoTerm hr hext
+      have hfork : (π.filter (fun step => F4.im step.readSym = true)).length ≤ w.length + 1 :=
+        forkCount_le_input_length subsetSumNTM2 w π cfg subsetSumNTM2_canonical hwf hnoTerm hr hext
+      have hbnd : π.length ≤ K * ((π.filter (fun step => F4.im step.readSym = true)).length + 1) *
+          (w.length + 1) * (w.length + 1) := by
+        rcases hb.2.2 with hbnd | htail
+        · exact hbnd
+        · exfalso
+          rcases htail with ⟨π₁, π₂, hsplit, hne₂, htail₂⟩
+          have hπne : π ≠ [] := by
+            intro hp'
+            rw [hp'] at hsplit
+            simp at hsplit
+            exact hne₂ hsplit.2
+          have hlast : List.getLast π hπne ∈ π₂ := by
+            have hlast' : List.getLast (π₁ ++ π₂) (by simpa [hsplit] using hπne) ∈ π₂ := by
+              rw [List.getLast_append_of_ne_nil]
+              exact List.getLast_mem hne₂
+            simpa [hsplit] using hlast'
+          have htailLast := htail₂ (List.getLast π hπne) hlast
+          have hend : cfg.state = (List.getLast π hπne).result.1 :=
+            ntm2_path_end_state subsetSumNTM2 w π cfg hr hπne
+          have hrejLast : cfg.state ∈ subsetSumNTM2.rejectStates := by
+            rw [hend]
+            exact htailLast.2.1
+          have hm := Finset.mem_inter.mpr ⟨hacc, hrejLast⟩
+          rw [subsetSumNTM2.h_accept_reject_disjoint] at hm
+          simp at hm
+      calc ntm2MoveCount π ≤ π.length := ntm2MoveCount_le_length π
+        _ ≤ K * ((π.filter (fun step => F4.im step.readSym = true)).length + 1) *
+            (w.length + 1) * (w.length + 1) := hbnd
+        _ ≤ K * (w.length + 2) * (w.length + 1) * (w.length + 1) := by
+            exact Nat.mul_le_mul_right _ (Nat.mul_le_mul_right _
+              (Nat.mul_le_mul_left K (by omega)))
+    · exfalso
+      rcases exists_CBTM_iso_NTM2 subsetSumNTM2 with ⟨M, hM, ⟨iso⟩⟩
+      subst M
+      have haccC : (NTM2.toCBTM subsetSumNTM2).tapeAccepts w :=
+        iso_accepts_forward subsetSumNTM2 (NTM2.toCBTM subsetSumNTM2) iso
+          subsetSumNTM2_canonical w ⟨π, cfg, hr, hacc⟩
+      rcases subsetSumNTM2_hrel (NTM2.toCBTM subsetSumNTM2) ⟨iso⟩ w hal haccC with
+        ⟨inst, gS, hw, hne, _hpos, _htgt⟩
+      exact h ⟨inst, gS, hne, hw⟩
+
+-- ============================================================================
+-- §8 符号层 NP 类（NTM2 承载，对齐域）与分离终段
+-- ============================================================================
+
+/-- 符号层 NP 类（NTM2 承载；对齐域；2026-09-14 用户裁决 N1）。 -/
+def IsNP_sym0 (L : Set (List F4)) : Prop :=
+  ∃ A : NTM2, NTM2.isPolynomialTimeAligned A ∧
+    (∀ w : List F4, IsSymbolAligned w → (NTM2.acceptsTape A w ↔ L w))
+
+/-- 符号层 NP 类（集合）。 -/
+def NP_sym0 : Set (Set (List F4)) := { L | IsNP_sym0 L }
+
+/-- 子集和 ∈ 符号层 NP 类（见证 = subsetSumNTM2；正确性 = §6；多项式 = §7）。 -/
+theorem subsetSum_in_NP_sym0 : IsNP_sym0 subsetSumLanguageF4Real :=
+  ⟨subsetSumNTM2, subsetSumNTM2_polynomialTimeAligned, subsetSumNTM2_correct_aligned⟩
+
+/-- **符号层分离终段：P_sym0 ≠ NP_sym0**
+    （P 侧 = CBTM0 承载；NP 侧 = NTM2 承载；对齐域）。
+    反证法：假设 P_sym0 = NP_sym0 则子集和 ∈ P_sym0，与 `subsetSum_not_in_P_sym0` 矛盾。 -/
+theorem P_sym0_neq_NP_sym0 : P_sym0 ≠ NP_sym0 := by
+  intro h_eq
+  have hNP : subsetSumLanguageF4Real ∈ NP_sym0 := subsetSum_in_NP_sym0
+  have hP : subsetSumLanguageF4Real ∈ P_sym0 := by
+    rw [← h_eq] at hNP
+    exact hNP
+  exact subsetSum_not_in_P_sym0 (by simpa [P_sym0] using hP)
 
 end Mp
