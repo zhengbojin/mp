@@ -6,6 +6,8 @@ Authors: Bojin Zheng, Jingwen Zheng
 
 import Mp.IVM
 import Mp.PrimeSqrtLinearIndep
+import Mp.A2Bridge
+import Mp.SubsetSumInNP
 
 set_option linter.style.header false
 set_option linter.style.longLine false
@@ -27,7 +29,7 @@ set_option linter.style.whitespace false
 - **T2（本文件）**：路径值 `pathValue`（**不分号模式版**）= Σ_{i ∈ 激活索引集} √p_i，
   素数族取 mathlib `Nat.nth Nat.Prime`；
   **分开定理**：两条路径的激活模式不同 ⇒ 值不同（由素数平方根 ℚ-线性独立）。
-- T1（位置桥）：`ntm2ForkCount π = branchCount π'`（iso 路径对应）+ 点态 vb ⟷ cellV1——后续落此文件。
+- T1（位置桥）：`iso_path_forward_forkCount`（路径计数对应：`ntm2ForkCount π = branchCount π'`）+ `iso_vbAt_iff_card_two`（点态：vb=1 ⟷ CBTM 读空白处卡恰 2）——已落本文件 §4/§5。
 - T3（装配预告）：`subsetSum_kappa_lower_bound` + T1 + T2 ⇒ 传统 P vs NP 推进。
 -/
 
@@ -152,5 +154,90 @@ theorem pathValue_separated (π₁ π₂ : ComputationPath)
       norm_num
     rw [hc] at hz
     exact (by norm_num : (-1 : ℚ) ≠ 0) hz
+
+-- ============================================================================
+-- §4 T1 位置桥（路径计数对应；用户裁决形状 2026-09-14）
+-- ============================================================================
+
+/-- NTM2 分叉计数的单步加法（对应 `branchCount_append`）。 -/
+lemma ntm2ForkCount_append_singleton (A : NTM2) (π : NTM2ComputationPath)
+    (step : NTM2TransitionStep) :
+    ntm2ForkCount A (π ++ [step]) =
+      ntm2ForkCount A π + (if F4.im step.readSym = true then 1 else 0) := by
+  dsimp [ntm2ForkCount]
+  rw [List.filter_append, List.length_append]
+  cases h : F4.im step.readSym <;> simp [h]
+
+/-- **T1 前向位置桥**：iso 路径对应下，NTM2 分叉计数 = CBTM 分支计数。
+    机制：读符号恒等翻译（iso_path_forward 中 `readSym := step.readSym`）
+    ⇒ 虚部标记一致 ⇒ 过滤计数一致。归纳加强（同 iso_path_forward + 计数合取）。 -/
+theorem iso_path_forward_forkCount (A : NTM2) (M : CBTM) (iso : StructIsoNTM2CBTM A M)
+    (x : List F4) (hcan : NTM2.Canonical A) :
+    ∀ π, ∀ cfg : NTM2Config A x, TapeReachablePathNTM2 A x π cfg →
+      ∃ π' : ComputationPath, ∃ cfg' : CBTMConfig M x,
+        TapeReachablePath M x π' cfg' ∧
+        cfg' = ntm2CfgToCBTM A M iso cfg ∧
+        ntm2ForkCount A π = branchCount π' := by
+  intro π cfg hr
+  induction hr with
+  | nil =>
+      refine ⟨[], initialConfig M x, TapeReachablePath.nil, ?_, ?_⟩
+      · exact (iso_initial_corresp A M iso x).symm
+      · dsimp [ntm2ForkCount, branchCount]
+  | cons π₀ step cfg₀ hrc hfrom hread hpos htrans ih =>
+      rcases ih with ⟨π', cfg', hrc', hcfg', hcnt⟩
+      have hs_in : step.readSym ∈ A.alphabet := by
+        by_contra hsnot
+        have hout := A.h_transition_outside cfg₀.state step.readSym cfg₀.headPos hsnot
+        rw [← hread] at htrans
+        rw [hout] at htrans
+        simpa using htrans
+      let step' : TransitionStep :=
+        { fromState := step.fromState,
+          readSym := step.readSym,
+          result := ntm2ResultToCBTM step.result }
+      refine ⟨π' ++ [step'], stepConfig cfg' step'.result,
+        TapeReachablePath.cons π' step' cfg' hrc' ?_ ?_ ?_, ?_, ?_⟩
+      · rw [hcfg']
+        dsimp [ntm2CfgToCBTM]
+        dsimp [step']
+        rw [← hfrom]
+      · rw [hcfg']
+        dsimp [ntm2CfgToCBTM, CBTMConfig.tapeAt]
+        dsimp [step']
+        rw [hread]
+      · rw [hcfg']
+        dsimp [ntm2CfgToCBTM, CBTMConfig.tapeAt]
+        dsimp [step']
+        rw [← hread, ← hpos] at htrans ⊢
+        have hstepfwd := iso_step_forward A M iso cfg₀.state step.readSym step.pos step.result hs_in htrans
+        rw [iso.h_φ_id step.readSym] at hstepfwd
+        exact hstepfwd
+      · rw [hcfg']
+        dsimp [ntm2CfgToCBTM]
+        dsimp [step']
+        exact (iso_step_config A M iso cfg₀ step.result).symm
+      · rw [ntm2ForkCount_append_singleton, branchCount_append, hcnt]
+
+-- ============================================================================
+-- §5 T1 点态桥：vb ↔ 卡恰 2（经 iso 搬运）
+-- ============================================================================
+
+/-- **T1 点态桥**：读空白处的分支声明经 iso 搬运到 CBTM 侧：
+    vb=1（A 侧转移卡=2）⟷ M 侧转移卡=2。 -/
+theorem iso_vbAt_iff_card_two (A : NTM2) (M : CBTM) (iso : StructIsoNTM2CBTM A M)
+    (i : ℤ) :
+    NTM2.vbAt A i = true ↔ (M.transition (M.startState, M.blankSym, i)).card = 2 := by
+  have hcard : (M.transition (M.startState, M.blankSym, i)).card =
+      (A.transition (A.startState, A.blankSym, i)).card := by
+    have hM : M.transition (M.startState, M.blankSym, i) =
+        (A.transition (A.startState, A.blankSym, i)).image ntm2ResultToCBTM := by
+      rw [iso.h_start, iso.h_blank]
+      have hthis := iso.h_transition A.startState A.blankSym i A.h_blank_in_alphabet
+      rwa [iso.h_φ_id A.blankSym] at hthis
+    rw [hM, Finset.card_image_of_injective _ ntm2ResultToCBTM_injective]
+  unfold NTM2.vbAt
+  rw [hcard]
+  simp
 
 end Mp
