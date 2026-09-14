@@ -226,4 +226,116 @@ theorem exists_CBTM0_iso_DTM (M : ClassicDTM)
       · simp [N, ClassicDTM.toCBTM]
   }⟩⟩
 
+-- ============================================================================
+-- §4 CBTM0 类与逆方向：受限 CBTM → DTM（移植自 PvsNP/CBTM.lean:180-191,286-378,420-470）
+-- ============================================================================
+
+/-- CBTM 结果 → DTM 结果（逆翻译）。 -/
+def cbtmResultToDTM (r : CBTMTransResult) : ClassicDTMTransitionResult :=
+  { nextState := r.nextState, writeSym := r.writeSym, move := r.moveDir }
+
+/-- 结果层往返：dtm → cbtm → dtm 为恒等。 -/
+@[simp] theorem cbtmResultToDTM_dtmResultToCBTM (r : ClassicDTMTransitionResult) :
+    cbtmResultToDTM (dtmResultToCBTM r) = r := rfl
+
+/-- 基数 1 的有限集等于其唯一元素（choose 所取）的单元素集。
+    （`card_eq_one_unique_mem` 已于 `Mp/CBTM.lean:159` 存在，直接复用。） -/
+lemma eq_singleton_choose_of_card_eq_one {α : Type*} (s : Finset α) (h : s.card = 1) :
+    s = {(card_eq_one_unique_mem s h).choose} := by
+  classical
+  rcases Finset.card_eq_one.mp h with ⟨a, ha⟩
+  subst ha
+  have hmem : a ∈ ({a} : Finset α) := by simp
+  have hchoose : (card_eq_one_unique_mem ({a} : Finset α) h).choose = a :=
+    (card_eq_one_unique_mem ({a} : Finset α) h).choose_spec.2 a hmem |>.symm
+  rw [hchoose]
+
+/-- CBTM0（受限形）：字母表 = {zero, one}，转移卡恒 1，且位置无关。 -/
+structure CBTM.IsCBTM0 (M : CBTM) : Prop where
+  alphabet_eq : M.alphabet = {F4.zero, F4.one}
+  card_one : ∀ q s i, s ∈ M.alphabet → (M.transition (q, s, i)).card = 1
+  pos_indep : ∀ q s i j, s ∈ M.alphabet → M.transition (q, s, i) = M.transition (q, s, j)
+
+/-- CBTM0 的转移投影回 DTM（位置无关，取唯一元素；
+    字母表外给固定占位，不影响 {zero, one} 层对应）。 -/
+noncomputable def CBTM.toClassicDTMTrans (N : CBTM) (h : CBTM.IsCBTM0 N) :
+    ℕ × F4 → ClassicDTMTransitionResult :=
+  fun (q, s) =>
+    if hs : s ∈ N.alphabet then
+      cbtmResultToDTM ((card_eq_one_unique_mem (N.transition (q, s, 0))
+        (h.card_one q s 0 hs)).choose)
+    else
+      { nextState := N.startState, writeSym := s, move := Dir.S }
+
+/-- CBTM0 → DTM（取 i=0 截面；pos_indep 保证对 \(i\) 一致）。 -/
+noncomputable def CBTM.toClassicDTM (N : CBTM) (h : CBTM.IsCBTM0 N) : ClassicDTM :=
+  { states := N.states
+    startState := N.startState
+    acceptStates := N.acceptStates
+    rejectStates := N.rejectStates
+    alphabet := {F4.zero, F4.one, F4.alpha, F4.beta}
+    transition := N.toClassicDTMTrans h
+    blankSym := N.blankSym
+    h_start_in_states := N.h_start_in_states
+    h_accept_subset := N.h_accept_subset
+    h_reject_subset := N.h_reject_subset
+    h_accept_reject_disjoint := N.h_accept_reject_disjoint
+    isValid := by
+      intro q s
+      by_cases hs : s ∈ N.alphabet
+      · have hspec := (card_eq_one_unique_mem (N.transition (q, s, 0))
+          (h.card_one q s 0 hs)).choose_spec
+        have hmem : (card_eq_one_unique_mem (N.transition (q, s, 0))
+            (h.card_one q s 0 hs)).choose ∈ N.transition (q, s, 0) := hspec.1
+        simpa [CBTM.toClassicDTMTrans, dif_pos hs, cbtmResultToDTM]
+          using N.isValid q s 0 hs _ hmem
+      · simpa [CBTM.toClassicDTMTrans, dif_neg hs] using N.h_start_in_states
+    h_alphabet_all := rfl }
+
+/-- 逆方向存在性：每个 CBTM0（+ 空白在字母表内）同构于某个 DTM。 -/
+theorem exists_ClassicDTM_iso_restrictedCBTM (N : CBTM) (h : CBTM.IsCBTM0 N)
+    (hblank : N.blankSym ∈ ({F4.zero, F4.one} : Finset F4)) :
+    ∃ (M : ClassicDTM), Nonempty (StructIsoClassicDTM M N) := by
+  have hmem {s : F4} (hs : s ∈ ({F4.zero, F4.one} : Finset F4)) :
+      s = F4.zero ∨ s = F4.one := by
+    simpa [Finset.mem_insert, Finset.mem_singleton] using hs
+  let M := N.toClassicDTM h
+  have hrest : CBTM.IsRestricted N := by
+    refine ⟨?_, ?_, ?_, ?_⟩
+    · intro s hs
+      rw [h.alphabet_eq] at hs
+      exact hs
+    · intro s hs
+      rw [h.alphabet_eq] at hs
+      rcases hmem hs with rfl | rfl <;> simp [F4.im, F4.zero, F4.one]
+    · intro q s i hs
+      exact h.card_one q s i hs
+    · simpa [h.alphabet_eq] using hblank
+  refine ⟨M, ⟨{
+    h_restricted := hrest
+    h_states_eq := rfl
+    h_start := rfl
+    h_accept := rfl
+    h_reject := rfl
+    h_transition := by
+      intro q s hs i
+      rcases hmem hs with rfl | rfl
+      · have hz : F4.zero ∈ N.alphabet := by
+          rw [h.alphabet_eq]; simp
+        have hcard := h.card_one q F4.zero 0 hz
+        have hM : M.transition (q, F4.zero) =
+            cbtmResultToDTM (card_eq_one_unique_mem (N.transition (q, F4.zero, 0)) hcard).choose := by
+          simp only [M, CBTM.toClassicDTM, CBTM.toClassicDTMTrans, dif_pos hz]
+        rw [h.pos_indep q F4.zero i 0 hz, eq_singleton_choose_of_card_eq_one _ hcard, hM]
+        congr 1
+      · have ho : F4.one ∈ N.alphabet := by
+          rw [h.alphabet_eq]; simp
+        have hcard := h.card_one q F4.one 0 ho
+        have hM : M.transition (q, F4.one) =
+            cbtmResultToDTM (card_eq_one_unique_mem (N.transition (q, F4.one, 0)) hcard).choose := by
+          simp only [M, CBTM.toClassicDTM, CBTM.toClassicDTMTrans, dif_pos ho]
+        rw [h.pos_indep q F4.one i 0 ho, eq_singleton_choose_of_card_eq_one _ hcard, hM]
+        congr 1
+  }⟩⟩
+
 end Mp
