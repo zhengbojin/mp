@@ -225,7 +225,7 @@
 ### 7.3 带外与空白语义
 
 - **经典 blank 双职问题**：blank 兼任「输入结束标记 + 带外填充」（语义混淆）——ATM 拆分：输入结束 = #，带外 = #（blank 转化为边界符，约定 23）。
-- **语义**：`Sym.blank = data0-false`——带外 
+- **语义**：`Sym.blank = data0-false`——带外是 `blank` 填充。
 - **组编码层为内部实现细节**：kindBits 取值不影响语义与语法（不裁决；以代码 `Sym.kindBits` 为准，boundary = (1,0,1,1) 即 (re₁,im₁,re₂,re₃)）。
 - **Lean 实现状态：迁移仍待**——当前 `Core:174` `def blank := data0 false`（全库多处引用依赖 data0-false）。
 
