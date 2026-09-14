@@ -265,7 +265,7 @@ structure NTM2 where
   h_accept_reject_disjoint : acceptStates ∩ rejectStates = ∅
   /-- 符号驱动分支：读标记符号（虚部 true）→ 恰好 2 个结果（分叉）；
       读数据符号（虚部 false）→ 恰好 1 个结果。与位置无关。 -/
-  h_branch_axiom : ∀ q s i, s ∈ alphabet →
+  h_branch_rule : ∀ q s i, s ∈ alphabet →
     if F4.im s then (transition (q, s, i)).card = 2 else (transition (q, s, i)).card = 1
   /-- 投影约束：读数据符号（虚部 false）→ 写回符号虚部也为 false（虚部不因读写而生）。 -/
   h_write_projection : ∀ q s i, s ∈ alphabet → F4.im s = false →
@@ -276,7 +276,7 @@ structure NTM2 where
   h_transition_outside : ∀ q s i, s ∉ alphabet → transition (q, s, i) = ∅
 
 /-- 派生虚拟虚部带（card 指示）：vb[i] = 位置 i 的分支声明（读空白符号的转移 card = 2）。
-    先有转移关系，再有 vb；符号驱动分支（h_branch_axiom）下，
+    先有转移关系，再有 vb；符号驱动分支（h_branch_rule）下，
     运行时读标记符号 ⟺ card = 2 ⟺ vbAt i = true（blankSym 与位置 i 的绑定由"标记格只读一次"给出）。 -/
 def NTM2.vbAt (A : NTM2) (i : ℤ) : Bool :=
   (A.transition (A.startState, A.blankSym, i)).card = 2
@@ -347,7 +347,7 @@ def NTM2StepConfig {A : NTM2} {input : List F4} (cfg : NTM2Config A input)
     headPos := cfg.headPos + r.2.2.toInt }
 
 /-- NTM2 磁带语义的可达路径：每步读 headPos 处的完整 F4 符号，写 r.2.1，移动 r.2.2。
-    分支是符号驱动的：读标记符号（虚部 true）→ h_branch_axiom 给 2 个结果。 -/
+    分支是符号驱动的：读标记符号（虚部 true）→ h_branch_rule 给 2 个结果。 -/
 inductive TapeReachablePathNTM2 (A : NTM2) (input : List F4) :
     NTM2ComputationPath → NTM2Config A input → Prop
   | nil : TapeReachablePathNTM2 A input [] (NTM2InitialConfig A input)

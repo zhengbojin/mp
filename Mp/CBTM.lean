@@ -78,7 +78,7 @@ structure CBTM : Type where
   h_reject_subset     : rejectStates ⊆ states
   h_accept_reject_disjoint : acceptStates ∩ rejectStates = ∅
   /-- 严格分支公理：虚部 false → 1 个结果；虚部 true → 恰好 2 个结果（与位置无关）。 -/
-  h_branch_axiom : ∀ q s i, s ∈ alphabet →
+  h_branch_rule : ∀ q s i, s ∈ alphabet →
     if F4.im s then (transition (q, s, i)).card = 2 else (transition (q, s, i)).card = 1
   /-- 投影约束：虚部 false 的读符号 → 写回符号虚部也为 false。 -/
   h_projection_constraint : ∀ q s i, s ∈ alphabet → F4.im s = false →
@@ -200,7 +200,7 @@ lemma toCBTMTrans_eq (A : NTM2) (q : ℕ) (s : F4) (i : ℤ) (hs : s ∈ A.alpha
   simp [NTM2.toCBTMTrans, hs]
 
 /-- NTM2 → CBTM：结构恒等（一一映射：状态/起止/字母表/空白符/转移全部对应；
-    符号驱动分支由 h_branch_axiom 直接继承）。 -/
+    符号驱动分支由 h_branch_rule 直接继承）。 -/
 def NTM2.toCBTM (A : NTM2) : CBTM :=
 {
   states      := A.states
@@ -217,7 +217,7 @@ def NTM2.toCBTM (A : NTM2) : CBTM :=
   h_accept_subset     := A.h_accept_subset
   h_reject_subset     := A.h_reject_subset
   h_accept_reject_disjoint := A.h_accept_reject_disjoint
-  h_branch_axiom := by
+  h_branch_rule := by
     intro q s i hs
     unfold NTM2.toCBTMTrans
     have hc : s ∈ A.alphabet := by
@@ -225,7 +225,7 @@ def NTM2.toCBTM (A : NTM2) : CBTM :=
       exact hs
     simp [hc]
     rw [Finset.card_image_of_injective (A.transition (q, s, i)) ntm2ResultToCBTM_injective]
-    have hb := A.h_branch_axiom q s i hc
+    have hb := A.h_branch_rule q s i hc
     by_cases him : F4.im s <;> simp [him] at hb ⊢
     · exact hb
     · exact hb
@@ -238,7 +238,7 @@ def NTM2.toCBTM (A : NTM2) : CBTM :=
     · unfold NTM2.toCBTMTrans
       simp [hc]
       rw [Finset.card_image_of_injective (A.transition (q, s, i)) ntm2ResultToCBTM_injective]
-      have hb := A.h_branch_axiom q s i hc
+      have hb := A.h_branch_rule q s i hc
       simp [him] at hb
       exact hb
     · intro r hr
