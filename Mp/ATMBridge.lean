@@ -28,6 +28,7 @@ set_option linter.style.whitespace false
   为 DTM≅CBTM0 桥与 κ 传递备料（接口见 design 纸面件 §6；带外写 alpha、blank=alpha 已裁）。
 - **DTM 侧 F4 口径（用户裁决）**：F4 按 `Bool × Bool` 理解——机器只读一对 bit，不带虚部语义。
 - **CBTM 侧口径（用户裁决）**：F4 = bool（数据）＋虚部；就输入数据而言只占 1 个 bit。
+- **DTM≅CBTM0 同构条件（用户裁决）**：取实部（数据）+虚部全 0 —— 同构在「虚部=0 层」上。
 - 时间计量 = 格子移动数（`dtmMoveCount`/`ntm2MoveCount`，见 ATMBasic）。
 -/
 
