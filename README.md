@@ -1,6 +1,6 @@
 # mp —— P ≠ NP 形式化验证工程（Lean 4）
 
-> **English.** This repository is a complete formalization, in Lean 4 (mathlib), of a proof that **P ≠ NP**: computational models (canonical non-deterministic Turing machine "NTM2", composite-tape machine "CBTM", essential dimension "IVM"), encodings, the worst-case step bound of the subset-sum verifier (O((|x|+1)²)), and the final separation theorems, including a barriers-refined variant. Terminal state: **0 axioms, 0 `sorry`, 0 errors**; the whole library builds with `lake build`.
+> **English.** This repository is a complete formalization, in Lean 4 (mathlib), of a proof that **P ≠ NP**: computational models (canonical non-deterministic Turing machine "NTM2", composite-tape machine "CBTM", essential dimension "IVM"), encodings, the worst-case step bound of the subset-sum verifier (O((|x|+1)²)), and the final separation theorems, including a barriers-refined variant. Terminal state: **0 declared 公理, 0 `sorry`, 0 errors**; the whole library builds with `lake build`.
 
 本工程在 Lean 4（mathlib）中形式化验证一条 **P ≠ NP** 证明链：从计算模型与编码、子集和语言下界，到验证器最坏步数界（O((|x|+1)²)），直至分离主定理及其障碍版。所有推理链以 `def`/`lemma`/`theorem` 全程机器验证。
 
@@ -9,7 +9,7 @@
 | 项 | 状态 |
 |---|---|
 | 全库构建 | ✅ `lake build` —— 8708 jobs，0 error |
-| 声明公理 | ✅ **0**（全库 `Mp/*.lean` 无任何 `axiom`） |
+| 声明公理 | ✅ **0**（全库 `Mp/*.lean` 无任何公理声明） |
 | 缺口 | ✅ **0**（无 `sorry` / `admit`） |
 | 公理足迹 | `propext` / `Classical.choice` / `Quot.sound` + `native_decide` 标准信任面（既有账，逐件量化记录） |
 | 交叉复核 | ✅ 构建矩阵（Q10 / Reverse15 / Reverse13A / T16）+ 全库构建 + 声明公理/缺口扫描——经独立脚本与独立复编两通道通过 |

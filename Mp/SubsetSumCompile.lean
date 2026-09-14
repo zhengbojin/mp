@@ -391,7 +391,7 @@ def subsetSumNTM2 : NTM2 := {
   h_accept_subset := subsetSumCBTM.h_accept_subset
   h_reject_subset := subsetSumCBTM.h_reject_subset
   h_accept_reject_disjoint := subsetSumCBTM.h_accept_reject_disjoint
-  h_branch_axiom := by
+  h_branch_rule := by
     intro q s i hs
     change if F4.im s then
         ((subsetSumCBTM.transition (q, s, 0)).image cbtmResultToTriple).card = 2 else
@@ -399,7 +399,7 @@ def subsetSumNTM2 : NTM2 := {
     have hcard : ((subsetSumCBTM.transition (q, s, 0)).image cbtmResultToTriple).card =
         (subsetSumCBTM.transition (q, s, 0)).card := by
       rw [Finset.card_image_of_injective (subsetSumCBTM.transition (q, s, 0)) cbtmResultToTriple_injective]
-    have hb := subsetSumCBTM.h_branch_axiom q s 0 hs
+    have hb := subsetSumCBTM.h_branch_rule q s 0 hs
     by_cases him : F4.im s
     · rw [if_pos him, hcard]
       exact (by simpa [him] using hb)

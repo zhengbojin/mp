@@ -456,7 +456,7 @@ def subsetSumCBTM : CBTM := {
         simpa [regBound] using (Finset.mem_range.mp hrr)
       omega
     · simpa using hq
-  h_branch_axiom := by
+  h_branch_rule := by
     intro q s i hs
     have h4 : s = F4.zero ∨ s = F4.one ∨ s = F4.alpha ∨ s = F4.beta := by
       simpa [F4.zero, F4.one, F4.alpha, F4.beta] using hs

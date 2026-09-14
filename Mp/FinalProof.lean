@@ -60,7 +60,7 @@ set_option linter.style.whitespace false
   `NTM2.toCBTM` 是结构同构——保持状态/转移表/字母表与**语言外延**
   （`StructIso_preserves_accepts`），但两模型语义不同：CBTM 中虚部是符号的内建
   语义位，分支经生成元激活在代数上必然不同（√p_k ∉ ℚ，不可公度性）；NTM2 无虚部
-  语义（vb 是位置的函数），`h_branch_axiom` 只保证结果集基数为 2，不排除两条分支
+  语义（vb 是位置的函数），`h_branch_rule` 只保证结果集基数为 2，不排除两条分支
   语义相同/汇合。κ、激活生成元、本质维度定义在 CBTM 路径的读符号虚部上，
   **不随结构同构传递**；同构桥只传语言外延。（NTM2 悖论及其 CBTM/IVM 双层消解
   详见 routine.md §2.4。）

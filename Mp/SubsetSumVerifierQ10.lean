@@ -382,7 +382,7 @@ theorem subsetSumNTM2_clauseC_wiring
           ring
   exact_mod_cast hZ
 
-/-- [C2 · T-P5.4] A3 欠条定理化（axiom → 同名定理，消费点零改动）：
+/-- [C2 · T-P5.4] A3 欠条定理化（公理 → 同名定理，消费点零改动）：
     `hsup` 槽以真实供给实例化 = `wf_of_accept`（④ ⟹ hne/hpos/htarget）+ `hconf_of_accept`（② ⟹ hconf）
     + `sym_run_le_1632_fold`（运行形 hseg，`a269fd8`）。 -/
 theorem subsetSumNTM2_canonical_clauseC :

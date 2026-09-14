@@ -1787,7 +1787,7 @@ theorem selfLoop_moveDir_ne_S (k : SymKind) (b : Bool) :
 --   · turnPhi_next_lt : 非陷阱步后继 < 102
 --   · symTurnCount_snoc : 追加单元素转向数精确公式
 --   · turn_budget_core: turns ≤ 5·#(5步) + 8·#(4步) + φ(末态,末方向)
---   （源探针 _probe_turnphi.lean 235 行全绿；axioms 打印移至复查探针。）
+--   （源探针 _probe_turnphi.lean 235 行全绿；公理足迹打印移至复查探针。）
 
 set_option maxRecDepth 200000
 set_option maxHeartbeats 20000000

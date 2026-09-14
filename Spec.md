@@ -18,7 +18,7 @@
 | 项 | 状态 |
 |---|---|
 | 全库构建 | 绿（`lake build`：8708 jobs 成功；0 错误 / 0 缺口） |
-| 声明公理 | **0**（全库 `grep ^axiom` 空） |
+| 声明公理 | **0**（全库检索：无公理声明） |
 | 缺口面 | sorry / admit = 0 |
 | 公理足迹 | {`propext`, `Classical.choice`, `Quot.sound`} + 既有 `native_decide` 继承足迹（标准面） |
 | ③线 C3 步数界 | v5 语义链全链落库：`phase_decomp` / `main_le_quad`（≤ 16·(E+1)²）/ `main_sym`、`main_f4`（`∃K, ≤ K·(m+1)·(|x|+1)²`）——`Mp/SubsetSumVerifierReverse15.lean` |
@@ -138,9 +138,9 @@
 23. **ATM（算法 TM）：可变输入内建**：在 DTM 基础上定义算法 TM（ATM），把输入格式从外部约定转为内建语法：
     - **动机**：经典 DTM 的「输入结束」是证明层的外部语义承诺（输入写在 [0,|w|)、其余 blank、假设不越界读），不是机器能力——固定长度或无边界标记的形式化下，机器无法区分「输入结束」与「带外」，连只读输入/遍历元素向量都做不到（「有些 DTM 根本不能作为算法考虑」的精确含义 = 无可变输入处理能力的内建基础）。ATM 使输入格式成为机器可读、可验证的语法——「语义内建（数计一体）」原则在输入层的应用。
     - **定义方向**：字母表恰含四类符号 {0, 1, sep, #}（2 数据 + 1 分隔 + 1 边界 = 处理列表输入的最小完备集，见约定 20）；输入 = 元素向量（非无结构位串），规范形式 `# e₁ sep e₂ ⋯ sep e_m #`（# 包裹起止）；元素 = 值 ≥ 1 的位串（无前导 0，合法性内建）。
-    - **空白符语义拆分**：经典 blank 兼任「输入结束标记 + 带外填充」两职（语义混淆）——ATM 明确为：输入结束 = #，带外 = #（blank 转化为边界符）。
+    - **空白符语义拆分**：经典 blank 兼任「输入结束标记 + 带外填充」两职（语义混淆）——ATM 明确为：输入结束 = #。
     - **与验证器的一致性（已实现结构 = ATM 实例）**：三边界符 #ₗ@0/#₀/#₁@L-1 标记输入骨架；元素头 α = 分隔符（+ 虚部点）；格式检查段（24→29→26→27→38→28）即 ATM 的**输入骨架验证器**；`format_check_precise`/`symAccepts_implies_encodeInstanceSym` = ATM 骨架定理（接受 ⟹ 输入具 ATM 骨架——条款 4 的实质）。
-    - **带外符号约定（Sym.blank = boundary-false）**：带外符号定为 `Sym.blank = Sym.boundary`（mark = false，与输入内边界符同值——ATM 语义下「输入结束」与「带外」本就是同一符号 #，无需区分）。**F4 换算同步：带外全部 = boundary 的 4F4 像**（约定 20 位对 (1,1)=boundary）。**Lean 实现状态：迁移仍待**——当前 `Core:174` `def blank := data0 false`（全库多处引用：q12 IsOutside 类、P9 boundary 位置分类、F4 带外 zero 换算等依赖 data0-false）；迁移须改 Core（共享上游，红线）并经用户确认范围后单列任务执行；**迁移前一律以代码现状（data0-false）为准**。外部记录：`D:\CoNP\framework.C.0.8.md` §8。
+     —当前 `Core:174` `def blank := data0 false`（全库多处引用：q12 IsOutside 类、P9 boundary 位置分类、F4 带外 zero 换算等依赖 data0-false）。
 24. **任务执行透明性（禁止子 Agent 分派）**：不得使用子 Agent（subagent/delegate）方式分派任务——任务执行过程不透明、不可控；一切工作由主会话直接执行，用户可见每一步。
 25. **输入符号串与计算符号串的对应与计数**：
     - **带结构**：输入纸带 = **单条 F4 带**（1 符号 1 格，F4 = Bool×Bool = 2bit/符号）；计算纸带 = **4 条 F4 带**；**4F4 = 4 带同位置的 4 个 F4 组合 = 计算符号**——"4F4 相当于是 4 带机"。输入 F4 与计算 4F4 之间是一一对应的关系（CBTM 符号版 = 使用 4 条 F4 带子）。
@@ -225,9 +225,9 @@
 ### 7.3 带外与空白语义
 
 - **经典 blank 双职问题**：blank 兼任「输入结束标记 + 带外填充」（语义混淆）——ATM 拆分：输入结束 = #，带外 = #（blank 转化为边界符，约定 23）。
-- **语义**：`Sym.blank = boundary-false`——带外 = 边界符且 **m 不取 true**（与输入内边界符同值：ATM 语义下「输入结束」与「带外」本就是同一符号 #，无需 mark 区分）。F4 层带外 = boundary 的 4F4 像（字母表层位对 (1,1)）。
+- **语义**：`Sym.blank = data0-false`——带外 
 - **组编码层为内部实现细节**：kindBits 取值不影响语义与语法（不裁决；以代码 `Sym.kindBits` 为准，boundary = (1,0,1,1) 即 (re₁,im₁,re₂,re₃)）。
-- **Lean 实现状态：迁移仍待**——当前 `Core:174` `def blank := data0 false`（全库多处引用依赖 data0-false）；迁移须改 Core（共享上游，红线）——排期单列任务，经用户确认范围后执行；**迁移前引理一律以代码现状（data0-false）为准**。
+- **Lean 实现状态：迁移仍待**——当前 `Core:174` `def blank := data0 false`（全库多处引用依赖 data0-false）。
 
 ### 7.4 语义内建原则（数计一体）在自动机层的落点
 
@@ -237,7 +237,7 @@
 
 ### 7.5 机器-概念对应锚点（规范引用）
 
-- 带外符号实体：`Sym.blank`（约定 boundary-false；迁移前代码 = data0-false）——Reverse7L3 P6l/P6r/P9 系、q12 IsOutside 系、tape/getD 默认值均引用此实体。
+- 带外符号实体：`Sym.blank`（= data0-false）——Reverse7L3 P6l/P6r/P9 系、q12 IsOutside 系、tape/getD 默认值均引用此实体。
 - 分叉事件 = 激活（IVM）；见证对应：CBTM 路径标记 Π ∈ {α,β}^m ↔ IVM 激活向量 a ∈ {0,1}^m，Φ : α↦1, β↦0 双射。
 - 骨架验证 = 格式检查 = ATM 语义的机器内建（接受路径自动验证输入合法）。
 - 可变输入能力：机器族定义（NTM2/CBTM 的 input : List）由 List 类型内建（长度可变）；ATM 骨架谓词承担者 = format_check_precise 系。
