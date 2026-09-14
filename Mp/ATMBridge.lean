@@ -95,4 +95,135 @@ theorem dtmTransitionSet_card_one (M : ClassicDTM) (q : ℕ) (s : F4) :
 def dtmStepToCBTM (st : DTMTransitionStep) : TransitionStep :=
   { fromState := st.fromState, readSym := st.readSym, result := dtmResultToCBTM st.result }
 
+-- ============================================================================
+-- §3 DTM ≅ CBTM0 语法同构（移植自旧工程 PvsNP/CBTM.lean:209-420，适配 mp 形状）
+-- ============================================================================
+
+/-- DTM 转移函数的 CBTM0 投影：在 {zero, one} 上单元素像，其余为空
+（分支规则相容：像字母表 = {zero, one}）。 -/
+def ClassicDTM.toCBTMTrans (M : ClassicDTM) : ℕ × F4 × ℤ → Finset CBTMTransResult :=
+  fun (q, s, _) =>
+    if s ∈ ({F4.zero, F4.one} : Finset F4) then
+      {dtmResultToCBTM (M.transition (q, s))}
+    else
+      ∅
+
+@[simp] theorem ClassicDTM.toCBTMTrans_zero (M : ClassicDTM) (q : ℕ) (i : ℤ) :
+    M.toCBTMTrans (q, F4.zero, i) = {dtmResultToCBTM (M.transition (q, F4.zero))} := by
+  simp only [ClassicDTM.toCBTMTrans]
+  rw [if_pos (by simp)]
+
+@[simp] theorem ClassicDTM.toCBTMTrans_one (M : ClassicDTM) (q : ℕ) (i : ℤ) :
+    M.toCBTMTrans (q, F4.one, i) = {dtmResultToCBTM (M.transition (q, F4.one))} := by
+  simp only [ClassicDTM.toCBTMTrans]
+  rw [if_pos (by simp)]
+
+/-- DTM → CBTM0。 数据闭合前提（写符号虚部恒 false）供投影约束用；
+    空白取 F4.zero（像侧字母表 = {zero, one}，虚部＝0 层）。 -/
+def ClassicDTM.toCBTM (M : ClassicDTM)
+    (hwrite : ∀ q s, F4.im (M.transition (q, s)).writeSym = false) : CBTM :=
+  { states := M.states
+    startState := M.startState
+    acceptStates := M.acceptStates
+    rejectStates := M.rejectStates
+    alphabet := {F4.zero, F4.one}
+    transition := M.toCBTMTrans
+    blankSym := F4.zero
+    h_blank_in_alphabet := by simp
+    h_start_in_states := M.h_start_in_states
+    h_accept_subset := M.h_accept_subset
+    h_reject_subset := M.h_reject_subset
+    h_accept_reject_disjoint := M.h_accept_reject_disjoint
+    h_branch_rule := by
+      intro q s i hs
+      have hcases : s = F4.zero ∨ s = F4.one := by
+        simpa [Finset.mem_insert, Finset.mem_singleton] using hs
+      rcases hcases with rfl | rfl <;>
+        · simp [ClassicDTM.toCBTMTrans, F4.im, F4.zero, F4.one]
+    h_projection_constraint := by
+      intro q s i hs him
+      have hcases : s = F4.zero ∨ s = F4.one := by
+        simpa [Finset.mem_insert, Finset.mem_singleton] using hs
+      rcases hcases with rfl | rfl
+      · constructor
+        · rw [ClassicDTM.toCBTMTrans_zero]
+          exact Finset.card_singleton _
+        · intro r hr
+          rw [ClassicDTM.toCBTMTrans_zero] at hr
+          rw [Finset.mem_singleton] at hr
+          subst hr
+          simpa [dtmResultToCBTM] using hwrite q F4.zero
+      · constructor
+        · rw [ClassicDTM.toCBTMTrans_one]
+          exact Finset.card_singleton _
+        · intro r hr
+          rw [ClassicDTM.toCBTMTrans_one] at hr
+          rw [Finset.mem_singleton] at hr
+          subst hr
+          simpa [dtmResultToCBTM] using hwrite q F4.one
+    isValid := by
+      intro q s i hs r hr
+      have hcases : s = F4.zero ∨ s = F4.one := by
+        simpa [Finset.mem_insert, Finset.mem_singleton] using hs
+      rcases hcases with rfl | rfl
+      · rw [ClassicDTM.toCBTMTrans_zero] at hr
+        rw [Finset.mem_singleton] at hr
+        subst hr
+        simpa [dtmResultToCBTM] using M.isValid q F4.zero
+      · rw [ClassicDTM.toCBTMTrans_one] at hr
+        rw [Finset.mem_singleton] at hr
+        subst hr
+        simpa [dtmResultToCBTM] using M.isValid q F4.one
+    h_transition_outside := by
+      intro q s i hs
+      simp only [ClassicDTM.toCBTMTrans]
+      exact if_neg hs }
+
+/-- 语法结构同构（DTM ↔ CBTM0）：状态集一致、转移在 {zero, one} 层逐点单元素对应。 -/
+structure StructIsoClassicDTM (M : ClassicDTM) (N : CBTM) : Type where
+  h_restricted : CBTM.IsRestricted N
+  h_states_eq : M.states = N.states
+  h_start : M.startState = N.startState
+  h_accept : N.acceptStates = M.acceptStates
+  h_reject : N.rejectStates = M.rejectStates
+  h_transition : ∀ (q : ℕ) (s : F4), s ∈ ({F4.zero, F4.one} : Finset F4) → ∀ i : ℤ,
+    N.transition (q, s, i) = {dtmResultToCBTM (M.transition (q, s))}
+
+/-- 存在性：每个数据闭合 DTM 都同构于某个受限 CBTM。 -/
+theorem exists_CBTM0_iso_DTM (M : ClassicDTM)
+    (hwrite : ∀ q s, F4.im (M.transition (q, s)).writeSym = false) :
+    ∃ (N : CBTM), Nonempty (StructIsoClassicDTM M N) := by
+  let N := M.toCBTM hwrite
+  have hmem {s : F4} (hs : s ∈ ({F4.zero, F4.one} : Finset F4)) :
+      s = F4.zero ∨ s = F4.one := by
+    simpa [Finset.mem_insert, Finset.mem_singleton] using hs
+  have hcard : ∀ q s i, s ∈ N.alphabet → (N.transition (q, s, i)).card = 1 := by
+    intro q s i hs
+    rcases hmem (by simpa [N, ClassicDTM.toCBTM] using hs) with rfl | rfl
+    · rw [show N.transition (q, F4.zero, i) = {dtmResultToCBTM (M.transition (q, F4.zero))} from by
+          simp [N, ClassicDTM.toCBTM]]
+      exact Finset.card_singleton _
+    · rw [show N.transition (q, F4.one, i) = {dtmResultToCBTM (M.transition (q, F4.one))} from by
+          simp [N, ClassicDTM.toCBTM]]
+      exact Finset.card_singleton _
+  have hrest : CBTM.IsRestricted N := by
+    refine ⟨?_, ?_, hcard, ?_⟩
+    · intro s hs
+      rcases hmem (by simpa [N, ClassicDTM.toCBTM] using hs) with rfl | rfl <;> simp
+    · intro s hs
+      rcases hmem (by simpa [N, ClassicDTM.toCBTM] using hs) with rfl | rfl <;> simp [F4.im, F4.zero, F4.one]
+    · simp [N, ClassicDTM.toCBTM]
+  exact ⟨N, ⟨{
+    h_restricted := hrest
+    h_states_eq := rfl
+    h_start := rfl
+    h_accept := rfl
+    h_reject := rfl
+    h_transition := by
+      intro q s hs i
+      rcases hmem hs with rfl | rfl
+      · simp [N, ClassicDTM.toCBTM]
+      · simp [N, ClassicDTM.toCBTM]
+  }⟩⟩
+
 end Mp
