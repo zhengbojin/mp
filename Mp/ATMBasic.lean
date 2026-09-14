@@ -213,6 +213,11 @@ theorem indTape_length (x : List F4) : (indTape x).length = x.length := by simp 
 @[simp] theorem im_beta : F4.im F4.beta = true := rfl
 
 -- （二）CBTM：2F4 编码（两带各一个 F4 = 位＋虚部）
+--
+-- 对应链（用户裁决 2026-09-14）：NTM2 = DTM 增加分支语法；分支语法 ↔ vb = 1；
+--   **vb 的值 ↔ 2F4 虚部是否有 1（一一映射）**。
+--   意义：vb=1 的位置 = 虚部=1 的位置（IVM 激活生成元所在）——「假分支」在此双射下被排除。
+--   形式目标（待落）：vbAt A i = true ↔ (2F4 格 i).1.2 = true。
 
 /-- CBTM 的 2F4 格（多带版）：((t₁,v₁),(t₂,v₂))——
     两条带各一格 F4 = 位＋虚部维度。 -/
