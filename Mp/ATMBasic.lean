@@ -33,6 +33,8 @@ set_option linter.style.whitespace false
   **就输入（数据）而言只占 1 个 bit**——虚部不承载输入数据（虚部＝分支语义）。
 - **DTM≅CBTM0 同构条件（用户裁决）**：**取 2F4 的实部（数据分量）、且虚部全为 0**，才恰好与 DTM 同构——
   同构发生在「虚部 = 0 层」上（数据子层）；虚部非零处对应分支语义，不在同构域内。
+- **多带版（用户裁决 2026-09-14：ATM 与 CBTM 均改多带版描述）**：DTM = 两带（第 1 输入带：数据，sep→0、#→1；第 2 指示带：数据0、分隔与分界1）；
+  CBTM = **2F4 编码**（两带各一个 F4 = 位＋虚部；讨论位 = 第 1 带虚部标志）。见 §7。
 - **规范输入形**：`# e₁ sep ⋯ sep e_m #`（`IsInputWord`）——参数以 sep 分隔、# 包裹起止，输入自终结。
 - **blankSym = F4.alpha**（= sep）；带外亦可写 alpha（无第 5 符号）。
 - **时间计量 = 格子移动数**（S 步不计；与 R13 位移口径一致）；输入长度 = 符号数（bit 长 = ×2）。
@@ -178,5 +180,65 @@ def P_sym : Set (Set (List F4)) := { L | IsP_sym L }
 
 /-- 符号输入上的 NP 类（语言集合）。 -/
 def NP_sym : Set (Set (List F4)) := { L | IsNP_sym L }
+
+-- ============================================================================
+-- §7 多带版视图（用户裁决 2026-09-14：ATM 与 CBTM 均改多带版描述）
+-- ============================================================================
+
+-- （一）DTM（ATM）两带：输入带 + 指示带（2bit 表输入）
+
+/-- 带 1（输入带）投影：第 1 分量。
+    数据位 0/1；结构位置 sep 记 0、分界（#）记 1。 -/
+def inpTape (x : List F4) : List Bool := x.map F4.re
+
+/-- 带 2（指示带）投影：第 2 分量。
+    数据位置 0 = 数据；1 = 分隔与分界。 -/
+def indTape (x : List F4) : List Bool := x.map F4.im
+
+@[simp] theorem inpTape_nil : inpTape ([] : List F4) = [] := rfl
+@[simp] theorem indTape_nil : indTape ([] : List F4) = [] := rfl
+@[simp] theorem inpTape_cons (s : F4) (t : List F4) : inpTape (s :: t) = F4.re s :: inpTape t := rfl
+@[simp] theorem indTape_cons (s : F4) (t : List F4) : indTape (s :: t) = F4.im s :: indTape t := rfl
+theorem inpTape_length (x : List F4) : (inpTape x).length = x.length := by simp [inpTape]
+theorem indTape_length (x : List F4) : (indTape x).length = x.length := by simp [indTape]
+
+-- 四个输入符号的两带逐值表（约定 20）
+@[simp] theorem re_zero : F4.re F4.zero = false := rfl
+@[simp] theorem im_zero : F4.im F4.zero = false := rfl
+@[simp] theorem re_one : F4.re F4.one = true := rfl
+@[simp] theorem im_one : F4.im F4.one = false := rfl
+@[simp] theorem re_alpha : F4.re F4.alpha = false := rfl
+@[simp] theorem im_alpha : F4.im F4.alpha = true := rfl
+@[simp] theorem re_beta : F4.re F4.beta = true := rfl
+@[simp] theorem im_beta : F4.im F4.beta = true := rfl
+
+-- （二）CBTM：2F4 编码（两带各一个 F4 = 位＋虚部）
+
+/-- CBTM 的 2F4 格（多带版）：((t₁,v₁),(t₂,v₂))——
+    两条带各一格 F4 = 位＋虚部维度。 -/
+abbrev CBTMCell2 := F4 × F4
+
+/-- 第 1 带虚部标志（讨论位）。 -/
+def cellV1 (c : CBTMCell2) : Bool := c.1.2
+
+/-- 第 2 带虚部标志。 -/
+def cellV2 (c : CBTMCell2) : Bool := c.2.2
+
+/-- 虚部全 0 层：与 DTM 同构的域（DTM≅CBTM0）。 -/
+def cellZeroVirt (c : CBTMCell2) : Prop := c.1.2 = false ∧ c.2.2 = false
+
+/-- 数据读出（实部层）：(t₁,t₂) = Bool×Bool——DTM 的输入位对。 -/
+def cellData (c : CBTMCell2) : F4 := (c.1.1, c.2.1)
+
+/-- 输入位对（Bool×Bool）的 2F4 提升：虚部全 0。 -/
+def liftInput (s : F4) : CBTMCell2 := ((F4.re s, false), (F4.im s, false))
+
+@[simp] theorem cellData_liftInput (s : F4) : cellData (liftInput s) = s := by
+  cases s with
+  | mk a b => rfl
+
+@[simp] theorem cellV1_liftInput (s : F4) : cellV1 (liftInput s) = false := rfl
+@[simp] theorem cellV2_liftInput (s : F4) : cellV2 (liftInput s) = false := rfl
+theorem cellZeroVirt_liftInput (s : F4) : cellZeroVirt (liftInput s) := ⟨rfl, rfl⟩
 
 end Mp
