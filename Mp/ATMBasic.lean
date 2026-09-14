@@ -29,6 +29,8 @@ set_option linter.style.whitespace false
   输入字母表恰为这 4 值（`ClassicDTM.alphabet` 已就位）。
 - **DTM 侧口径（用户裁决）**：`ClassicDTM.transition : ℕ × F4 → …` 中的 **F4 按 `Bool × Bool` 理解**——
   机器只读一对 bit，**不带虚部语义**（与 CBTM 側的内建虚部语义分层）。
+- **CBTM 侧口径（用户裁决）**：`ℕ × F4 × ℤ → Finset CBTMTransResult` 中的 F4 = **bool（数据）＋虚部**；
+  **就输入（数据）而言只占 1 个 bit**——虚部不承载输入数据（虚部＝分支语义）。
 - **规范输入形**：`# e₁ sep ⋯ sep e_m #`（`IsInputWord`）——参数以 sep 分隔、# 包裹起止，输入自终结。
 - **blankSym = F4.alpha**（= sep）；带外亦可写 alpha（无第 5 符号）。
 - **时间计量 = 格子移动数**（S 步不计；与 R13 位移口径一致）；输入长度 = 符号数（bit 长 = ×2）。
