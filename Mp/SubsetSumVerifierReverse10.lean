@@ -9,6 +9,10 @@ import Mp.A2Bridge
 import Mp.SubsetSumCompile
 import Mp.SubsetSumVerifierReverse6
 
+set_option linter.unusedTactic false
+set_option linter.unreachableTactic false
+set_option linter.unnecessarySimpa false
+
 /-!
 # Reverse10:q10 主证明(1/2)— 无 Canonical 前提的路径桥
 

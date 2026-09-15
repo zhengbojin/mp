@@ -6,6 +6,8 @@ Authors: Bojin Zheng, Jingwen Zheng
 
 import Mp.SubsetSumCompile
 
+set_option linter.auxLemma false
+
 set_option linter.style.header false
 set_option linter.style.longLine false
 set_option linter.unusedSimpArgs false

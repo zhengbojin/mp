@@ -6,6 +6,10 @@ import Mp.A1StepBoundBridge
 import Mp.SubsetSumCompile
 import Mp.SubsetSumVerifierReverse15
 
+set_option linter.unusedTactic false
+set_option linter.unreachableTactic false
+set_option linter.unnecessarySimpa false
+
 /-!
 # q10 装配：`NTM2.Canonical subsetSumNTM2`（S1 里程碑）
 

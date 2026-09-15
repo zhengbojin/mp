@@ -7,6 +7,8 @@ Authors: Bojin Zheng, Jingwen Zheng
 
 import Mp.SubsetSumVerifierCBTM
 
+set_option linter.auxLemma false
+
 
 set_option linter.style.header false
 set_option linter.style.longLine false
