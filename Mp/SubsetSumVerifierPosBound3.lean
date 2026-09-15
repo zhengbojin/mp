@@ -575,7 +575,7 @@ lemma a2p_tape_last_wS (inst : SubsetSumInstance) (gS : List Sym) :
     (symInitialConfig (encodeInstanceSym inst ++ gS)).tape
       (((encodeInstanceSym inst).length - 1 : ℕ) : ℤ) = Sym.boundary := by
   rw [a2p_tape_at_getD (encodeInstanceSym inst ++ gS) (by
-    exact Int.ofNat_nonneg _) (by
+    exact Int.natCast_nonneg _) (by
     simp
     have hL := a2p_enc_pos inst
     omega)]
@@ -1415,19 +1415,19 @@ lemma a2p_fmt_head_domain (inst : SubsetSumInstance)
     have hT2 := a2p_s2_head inst hm ht gS h hno101 h2
     rw [r7_enc_len] at hT2 ⊢
     constructor
-    · exact le_trans (Int.ofNat_nonneg _) hT2.1
+    · exact le_trans (Int.natCast_nonneg _) hT2.1
     · omega
   · -- 3:T3
     have hT3 := a2p_s3_head inst hm ht gS h hno101 h3
     rw [r7_enc_len] at hT3 ⊢
     constructor
-    · exact le_trans (Int.ofNat_nonneg _) hT3.1
+    · exact le_trans (Int.natCast_nonneg _) hT3.1
     · omega
   · -- 24:T4
     have hT4 := a2p_s24_head inst hm ht gS h hno101 h24
     rw [r7_enc_len] at hT4 ⊢
     constructor
-    · exact le_trans (Int.ofNat_nonneg _) hT4.1
+    · exact le_trans (Int.natCast_nonneg _) hT4.1
     · omega
   · -- 29:T56
     have hT56 := a2p_s56_head inst hm ht gS h hno101 (Or.inl h29)

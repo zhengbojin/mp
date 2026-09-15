@@ -42,7 +42,7 @@ def encodeInstBits (inst : SubsetSumInstance) : List F4 :=
   encodeInstanceF4 inst
 
 /-- NTM2 路径的分叉计数：路径中读标记符号（虚部 = true，即 α/β）的步数。 -/
-def ntm2ForkCount (A : NTM2) (π : NTM2ComputationPath) : ℕ :=
+def ntm2ForkCount (_A : NTM2) (π : NTM2ComputationPath) : ℕ :=
   (π.filter (fun step => F4.im step.readSym = true)).length
 
 /-- 条款 2（语言桥）定理化：ntm2InputToCBTM = 恒等 + encodeInstBits = encodeInstanceF4
@@ -251,7 +251,7 @@ lemma ntm2_path_end_state (A : NTM2) (x : List F4) (π : NTM2ComputationPath)
     2026-09-09 用户裁决：输入 = 4F4 计算符号串（flat4F4 像）——机器性质只在
     输入域内断言（isPolynomialTimeAligned），域外 F4 串不是输入（无半符号）。 -/
 theorem toCBTM_polynomialTime (A : NTM2) (hcan : NTM2.Canonical A)
-    (hbridge : ∀ inst : SubsetSumInstance, inst.elements ≠ [] →
+    (_hbridge : ∀ inst : SubsetSumInstance, inst.elements ≠ [] →
       ntm2InputToCBTM A (encodeInstBits inst) = encodeInstanceF4 inst)
     (hreject : ∀ w : List F4, IsSymbolAligned w →
       (∀ inst : SubsetSumInstance, inst.elements ≠ [] →

@@ -3194,7 +3194,7 @@ lemma judge_zero_region (tape : ℤ → Sym) (p_e W Llast : ℤ)
       exact hflag j hj1 hj2
     · rw [hcast]
       exact hc
-  · push_neg at hc
+  · push Not at hc
     exact hzone i (by omega) hi2
 
 /-- [T-P1.8 · ③④合流] fold（③）+ 判扫（④）总装：出口整带零经 `judge_zero_region` 转换 ⇒ 100。

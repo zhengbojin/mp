@@ -2126,7 +2126,7 @@ theorem five_table_write_consumed :
 
 /-- 步级：5-步（非陷阱）读符号为 data0/data1。 -/
 lemma fiveStep_read_data {step : SymStep}
-    (hq : step.fromState ∈ VerifierSym.legalStates)
+    (_hq : step.fromState ∈ VerifierSym.legalStates)
     (h : step.result ∈ VerifierSym.transition (step.fromState, step.readSym))
     (h101 : step.result.nextState ≠ 101) (hf : step.fromState = 5) :
     step.readSym.1 = SymKind.data0 ∨ step.readSym.1 = SymKind.data1 := by
@@ -2139,7 +2139,7 @@ lemma fiveStep_read_data {step : SymStep}
 
 /-- 步级：5-步（非陷阱）写符号为 consumed。 -/
 lemma fiveStep_write_consumed {step : SymStep}
-    (hq : step.fromState ∈ VerifierSym.legalStates)
+    (_hq : step.fromState ∈ VerifierSym.legalStates)
     (h : step.result ∈ VerifierSym.transition (step.fromState, step.readSym))
     (h101 : step.result.nextState ≠ 101) (hf : step.fromState = 5) :
     step.result.writeSym.1 = SymKind.consumed := by
@@ -2940,7 +2940,7 @@ theorem state21_write_not_consumed (k : SymKind) (m : Bool) :
 lemma SymBlk.step_21_clear {cfg₁ cfg₂ : SymConfig} {st : SymStep} {α p : ℤ}
     (hst : SymSteps VerifierSym.transition cfg₁ [st] cfg₂)
     (hleg : cfg₁.state ∈ VerifierSym.legalStates)
-    (hno101 : st.result.nextState ≠ 101)
+    (_hno101 : st.result.nextState ≠ 101)
     (hfrom : st.fromState = 21)
     (hread : st.readSym.1 = SymKind.consumed)
     (hC1 : SymBlk cfg₁ α p)
@@ -2979,7 +2979,7 @@ lemma SymBlk.step_21_clear {cfg₁ cfg₂ : SymConfig} {st : SymStep} {α p : �
 lemma SymBlk.step_21_keep {cfg₁ cfg₂ : SymConfig} {st : SymStep} {α p : ℤ}
     (hst : SymSteps VerifierSym.transition cfg₁ [st] cfg₂)
     (hleg : cfg₁.state ∈ VerifierSym.legalStates)
-    (hno101 : st.result.nextState ≠ 101)
+    (_hno101 : st.result.nextState ≠ 101)
     (hfrom : st.fromState = 21)
     (hread : st.readSym.1 ≠ SymKind.consumed)
     (hC1 : SymBlk cfg₁ α p) :
@@ -3019,7 +3019,7 @@ theorem state5_readData_writeConsumed (k : SymKind) (m : Bool) :
 /-- 块内无标记：块区间无 α-位置 + 账本 ⇒ 块内无标记格（停格与火位的公共砖）。 -/
 lemma SymBlk.not_marked_of_no_alphaPos {inst : SubsetSumInstance} {cfg : SymConfig}
     {q₄ α p : ℤ}
-    (hC1 : SymBlk cfg α p) (hC4 : SymLedger inst cfg q₄)
+    (_hC1 : SymBlk cfg α p) (hC4 : SymLedger inst cfg q₄)
     (hnα : ∀ z : ℤ, α ≤ z → z ≤ p → ¬ SymAlphaPos inst z) :
     ∀ z : ℤ, α ≤ z → z ≤ p → ¬ SymMarked cfg z := by
   intro z h1 h2 hM
@@ -3029,7 +3029,7 @@ lemma SymBlk.not_marked_of_no_alphaPos {inst : SubsetSumInstance} {cfg : SymConf
 lemma SymBlk.step_21_stop_not_in_block {inst : SubsetSumInstance} {cfg₁ cfg₂ : SymConfig}
     {st : SymStep} {q₄ α p : ℤ}
     (hst : SymSteps VerifierSym.transition cfg₁ [st] cfg₂)
-    (hfrom : st.fromState = 21)
+    (_hfrom : st.fromState = 21)
     (hread : st.readSym.1 = SymKind.sel ∨ st.readSym.1 = SymKind.nosel)
     (hlo : α ≤ cfg₁.headPos)
     (hC1 : SymBlk cfg₁ α p) (hC4 : SymLedger inst cfg₁ q₄)
@@ -3084,7 +3084,7 @@ lemma SymGapNoAlpha.step_21_continue {inst : SubsetSumInstance} {cfg₁ cfg₂ :
     {st : SymStep} {q₄ : ℤ}
     (hst : SymSteps VerifierSym.transition cfg₁ [st] cfg₂)
     (hleg : cfg₁.state ∈ VerifierSym.legalStates)
-    (hno101 : st.result.nextState ≠ 101)
+    (_hno101 : st.result.nextState ≠ 101)
     (hfrom : st.fromState = 21)
     (hcont : st.result.nextState = 21)
     (hGap : SymGapNoAlpha inst q₄ cfg₁)
@@ -3281,7 +3281,7 @@ def SymClearedNotMarked (cfg : SymConfig) (α₀ α : ℤ) : Prop :=
 lemma SymClearedNotMarked.step_21_clear {cfg₁ cfg₂ : SymConfig} {st : SymStep} {α₀ α p : ℤ}
     (hst : SymSteps VerifierSym.transition cfg₁ [st] cfg₂)
     (hleg : cfg₁.state ∈ VerifierSym.legalStates)
-    (hno101 : st.result.nextState ≠ 101)
+    (_hno101 : st.result.nextState ≠ 101)
     (hfrom : st.fromState = 21)
     (hread : st.readSym.1 = SymKind.consumed)
     (hC1 : SymBlk cfg₁ α p)
@@ -3317,8 +3317,8 @@ lemma SymClearedNotMarked.step_21_clear {cfg₁ cfg₂ : SymConfig} {st : SymSte
 lemma SymBlk.stop_gt_p_v2 {inst : SubsetSumInstance} {cfg₁ cfg₂ : SymConfig}
     {st : SymStep} {q₄ α₀ α p : ℤ}
     (hst : SymSteps VerifierSym.transition cfg₁ [st] cfg₂)
-    (hleg : cfg₁.state ∈ VerifierSym.legalStates)
-    (hfrom : st.fromState = 21)
+    (_hleg : cfg₁.state ∈ VerifierSym.legalStates)
+    (_hfrom : st.fromState = 21)
     (hread : st.readSym.1 = SymKind.sel ∨ st.readSym.1 = SymKind.nosel)
     (hC1 : SymBlk cfg₁ α p) (hC4 : SymLedger inst cfg₁ q₄)
     (hα₀ : α₀ ≤ q₄ + 1)
@@ -3370,7 +3370,7 @@ lemma SymScanMarked.step_2_cont {inst : SubsetSumInstance} {cfg₀ cfg₁ cfg₂
     {st : SymStep} {s : ℤ}
     (hst : SymSteps VerifierSym.transition cfg₁ [st] cfg₂)
     (hleg : cfg₁.state ∈ VerifierSym.legalStates)
-    (hno101 : st.result.nextState ≠ 101)
+    (_hno101 : st.result.nextState ≠ 101)
     (hfrom : st.fromState = 2)
     (hcont : st.result.nextState = 2)
     (hSM : SymScanMarked inst cfg₁ s)
@@ -3517,7 +3517,7 @@ theorem state2_exit (k : SymKind) (m : Bool) :
 lemma SymBlk.head_gt_p_of_readMarked {inst : SubsetSumInstance} {cfg₁ cfg₂ : SymConfig}
     {st : SymStep} {q₄ α₀ α p : ℤ}
     (hst : SymSteps VerifierSym.transition cfg₁ [st] cfg₂)
-    (hleg : cfg₁.state ∈ VerifierSym.legalStates)
+    (_hleg : cfg₁.state ∈ VerifierSym.legalStates)
     (hread : st.readSym.1 = SymKind.sel ∨ st.readSym.1 = SymKind.nosel)
     (hC1 : SymBlk cfg₁ α p) (hC4 : SymLedger inst cfg₁ q₄)
     (hα₀ : α₀ ≤ q₄ + 1)
@@ -3610,7 +3610,7 @@ lemma SymWalkConsumed.step_13_data {cfg₁ cfg₂ : SymConfig} {st : SymStep} {s
 /-- gap 收缩件：新头 ≤ 旧头 ⇒ gap 保持（任意步——范围收缩）。 -/
 lemma SymGapNoAlpha.step_shrink {inst : SubsetSumInstance} {cfg₁ cfg₂ : SymConfig}
     {st : SymStep} {q₄ : ℤ}
-    (hst : SymSteps VerifierSym.transition cfg₁ [st] cfg₂)
+    (_hst : SymSteps VerifierSym.transition cfg₁ [st] cfg₂)
     (hhead : cfg₂.headPos ≤ cfg₁.headPos)
     (hGap : SymGapNoAlpha inst q₄ cfg₁) :
     SymGapNoAlpha inst q₄ cfg₂ := by
@@ -3621,7 +3621,7 @@ lemma SymGapNoAlpha.step_shrink {inst : SubsetSumInstance} {cfg₁ cfg₂ : SymC
 lemma SymGapNoAlpha.step_of_notMarked_read_R {inst : SubsetSumInstance}
     {cfg₁ cfg₂ : SymConfig} {st : SymStep} {q₄ : ℤ}
     (hst : SymSteps VerifierSym.transition cfg₁ [st] cfg₂)
-    (hleg : cfg₁.state ∈ VerifierSym.legalStates)
+    (_hleg : cfg₁.state ∈ VerifierSym.legalStates)
     (hread : ¬(st.readSym.1 = SymKind.sel ∨ st.readSym.1 = SymKind.nosel))
     (hmove : st.result.moveDir = Dir.R)
     (hGap : SymGapNoAlpha inst q₄ cfg₁)
@@ -3805,7 +3805,7 @@ lemma fireA_of_walk {cfg₁ cfg₂ : SymConfig} {st : SymStep} {α p s : ℤ}
     (hno101 : st.result.nextState ≠ 101)
     (hfrom : st.fromState = 5)
     (hC1 : SymBlk cfg₁ α p)
-    (hW : SymWalkConsumed cfg₁ s) (hslt : s < cfg₁.headPos) (hαs : α ≤ s) :
+    (_hW : SymWalkConsumed cfg₁ s) (hslt : s < cfg₁.headPos) (hαs : α ≤ s) :
     p < cfg₁.headPos := by
   obtain ⟨hs_from, hs_read, hs_mem, hs_cfg⟩ := symSteps_singleton_facts hst
   have hlt : st.fromState < 102 := legalStates_lt_102 st.fromState (by rw [hs_from]; exact hleg)
@@ -4055,7 +4055,7 @@ theorem no_8487_entry (k : SymKind) (m : Bool) :
 lemma hbnd_step {cfg₁ cfg₂ : SymConfig} {st : SymStep} {q₄ p : ℤ}
     (hst : SymSteps VerifierSym.transition cfg₁ [st] cfg₂)
     (hleg : cfg₁.state ∈ VerifierSym.legalStates)
-    (hno101 : st.result.nextState ≠ 101)
+    (_hno101 : st.result.nextState ≠ 101)
     (hne51 : st.fromState ≠ 51) (hne3 : st.fromState ≠ 3) (hne20 : st.fromState ≠ 20)
     (hbnd : ∀ z : ℤ, (cfg₁.tape z).1 = SymKind.boundary → z = 0 ∨ z = q₄ - 1 ∨ p ≤ z) :
     ∀ z : ℤ, (cfg₂.tape z).1 = SymKind.boundary → z = 0 ∨ z = q₄ - 1 ∨ p ≤ z := by
@@ -4085,7 +4085,7 @@ lemma hbnd_step {cfg₁ cfg₂ : SymConfig} {st : SymStep} {q₄ p : ℤ}
 lemma hbnd_frame {inst : SubsetSumInstance} {cfg₁ cfg₂ : SymConfig} {st : SymStep} {q₄ : ℤ}
     (hst : SymSteps VerifierSym.transition cfg₁ [st] cfg₂)
     (hleg : cfg₁.state ∈ VerifierSym.legalStates)
-    (hno101 : st.result.nextState ≠ 101)
+    (_hno101 : st.result.nextState ≠ 101)
     (hne51 : st.fromState ≠ 51) (hne3 : st.fromState ≠ 3) (hne20 : st.fromState ≠ 20)
     (hnot4 : cfg₁.state ≠ 4)
     (hbnd : ∀ z : ℤ, (cfg₁.tape z).1 = SymKind.boundary →
@@ -4118,7 +4118,7 @@ lemma hbnd_frame {inst : SubsetSumInstance} {cfg₁ cfg₂ : SymConfig} {st : Sy
 lemma hpnb_step {cfg₁ cfg₂ : SymConfig} {st : SymStep} {p : ℤ}
     (hst : SymSteps VerifierSym.transition cfg₁ [st] cfg₂)
     (hleg : cfg₁.state ∈ VerifierSym.legalStates)
-    (hno101 : st.result.nextState ≠ 101)
+    (_hno101 : st.result.nextState ≠ 101)
     (hne51 : st.fromState ≠ 51) (hne3 : st.fromState ≠ 3) (hne20 : st.fromState ≠ 20)
     (hpnb : (cfg₁.tape p).1 ≠ SymKind.boundary) :
     (cfg₂.tape p).1 ≠ SymKind.boundary := by

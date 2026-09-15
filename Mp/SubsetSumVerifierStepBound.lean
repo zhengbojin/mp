@@ -4848,7 +4848,7 @@ theorem symRun_S_le (h₀ : ℤ) (q₀ : ℕ) (run : List SymStep) (lo hi : ℤ)
     (run.length : ℤ) ≤ ((hi - lo).toNat : ℤ) + 102 := by
   have h2 : run.length ≤ 2 := symS_run_le_two q₀ run hsok
   have h3 : (run.length : ℤ) ≤ 2 := by exact_mod_cast h2
-  have h0 : (0 : ℤ) ≤ ((hi - lo).toNat : ℤ) := Int.ofNat_nonneg _
+  have h0 : (0 : ℤ) ≤ ((hi - lo).toNat : ℤ) := Int.natCast_nonneg _
   omega
 
 -- ===== δ-5④b END =====

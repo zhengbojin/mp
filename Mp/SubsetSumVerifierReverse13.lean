@@ -4409,7 +4409,7 @@ lemma segSrFold (bs : List ℕ) (p_e : ℤ) (tape : ℤ → Sym)
               hk2 hfl2' hex₂
             have hcast2 := Int.toNat_of_nonneg (show (0 : ℤ) ≤ p_e + (b : ℤ) + 1 - 2 by omega)
             exact hall0 i (by omega) (by rw [hcast2]; omega)
-          · push_neg at hc
+          · push Not at hc
             have hTb : ((famRest (b :: c :: rest)).length : ℤ) =
                 (b : ℤ) + 1 + ((famRest (c :: rest)).length : ℤ) := by
               rw [famRest_length_cons_cons]
@@ -4445,7 +4445,7 @@ lemma judge_pre_of_fold (bs : List ℕ) (p_e : ℤ) (cfg' : SymConfig) (T : ℤ)
         intro j hj1 hj2
         rw [hcast] at hj2
         exact hfl j hj1 hj2) hreg0 i (by omega) (by rw [hcast]; exact hc)
-    · push_neg at hc
+    · push Not at hc
       exact hz i (by omega) hi2
   · rw [show (0 : ℤ) + (p_e + T) + 1 = p_e + 1 + T from by ring]
     exact hmark

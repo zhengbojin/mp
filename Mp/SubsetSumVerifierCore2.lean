@@ -57,7 +57,7 @@ lemma bitsOf_length_le_of_value_le (v : ℕ) (tbits : List Bool) (hv : 0 < v) (h
     (bitsOf v).length ≤ tbits.length := by
   have hvlt : v < 2 ^ tbits.length := lt_of_le_of_lt hle (bitsValue_lt_two_pow_length tbits)
   have hlog : Nat.log 2 v < tbits.length := Nat.log_lt_of_lt_pow (by omega : v ≠ 0) hvlt
-  have hdigits : (Nat.digits 2 v).length = Nat.log 2 v + 1 := Nat.digits_len 2 v (by norm_num : 1 < 2) (by omega : v ≠ 0)
+  have hdigits : (Nat.digits 2 v).length = Nat.log 2 v + 1 := Nat.length_digits 2 v (by norm_num : 1 < 2) (by omega : v ≠ 0)
   rw [bitsOf_length]
   rw [hdigits]
   omega

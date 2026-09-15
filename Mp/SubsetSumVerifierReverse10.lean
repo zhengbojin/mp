@@ -327,7 +327,7 @@ lemma trans4_phase_lt3_dir_R_of_nontrap (st : ℕ) (s : F4)
   unfold transition4 at hr
   dsimp at hr
   split_ifs at hr <;> simp_all []
-    <;> try (exfalso; exact (hnt (trap_mem_nextState_decode _ _ _ hr (by omega))).elim)
+    ; try (exfalso; exact (hnt (trap_mem_nextState_decode _ _ _ hr (by omega))).elim)
 
 lemma trans4_phase4_dir_L_of_nontrap (st : ℕ) (s : F4)
     (r : CBTMTransResult) (hr : r ∈ transition4 st s) :
@@ -336,7 +336,7 @@ lemma trans4_phase4_dir_L_of_nontrap (st : ℕ) (s : F4)
   unfold transition4 at hr
   dsimp at hr
   split_ifs at hr <;> simp_all []
-    <;> try (exfalso; exact (hnt (trap_mem_nextState_decode _ _ _ hr (by omega))).elim)
+    ; try (exfalso; exact (hnt (trap_mem_nextState_decode _ _ _ hr (by omega))).elim)
 
 lemma trans4_phase5_dir_L_of_nontrap (st : ℕ) (s : F4)
     (r : CBTMTransResult) (hr : r ∈ transition4 st s) :
@@ -345,7 +345,7 @@ lemma trans4_phase5_dir_L_of_nontrap (st : ℕ) (s : F4)
   unfold transition4 at hr
   dsimp at hr
   split_ifs at hr <;> simp_all []
-    <;> try (exfalso; exact (hnt (trap_mem_nextState_decode _ _ _ hr (by omega))).elim)
+    ; try (exfalso; exact (hnt (trap_mem_nextState_decode _ _ _ hr (by omega))).elim)
 
 lemma trans4_phase6_dir_S_of_nontrap (st : ℕ) (s : F4)
     (r : CBTMTransResult) (hr : r ∈ transition4 st s) :
@@ -354,7 +354,7 @@ lemma trans4_phase6_dir_S_of_nontrap (st : ℕ) (s : F4)
   unfold transition4 at hr
   dsimp at hr
   split_ifs at hr <;> simp_all []
-    <;> try (exfalso; exact (hnt (trap_mem_nextState_decode _ _ _ hr (by omega))).elim)
+    ; try (exfalso; exact (hnt (trap_mem_nextState_decode _ _ _ hr (by omega))).elim)
 
 lemma trans4_phase7_dir_S_of_nontrap (st : ℕ) (s : F4)
     (r : CBTMTransResult) (hr : r ∈ transition4 st s) :
@@ -363,10 +363,10 @@ lemma trans4_phase7_dir_S_of_nontrap (st : ℕ) (s : F4)
   unfold transition4 at hr
   dsimp at hr
   split_ifs at hr <;> simp_all []
-    <;> try (exfalso; exact (hnt (trap_mem_nextState_decode _ _ _ hr (by omega))).elim)
+    ; try (exfalso; exact (hnt (trap_mem_nextState_decode _ _ _ hr (by omega))).elim)
 
 lemma trans4_phase_ge8_dir_bounded_of_nontrap (st : ℕ) (s : F4)
-    (r : CBTMTransResult) (hr : r ∈ transition4 st s) :
+    (r : CBTMTransResult) (_hr : r ∈ transition4 st s) :
     8 ≤ (decodeState st).2.1 → (decodeState st).2.1 < 12 → (decodeState r.nextState).1 ≠ 101 →
     (decodeState st).1 ≠ 101 →
     r.moveDir.toInt = 1 ∨ r.moveDir.toInt = 0 ∨ r.moveDir.toInt = -1 := by
@@ -398,7 +398,7 @@ namespace SymToF4
 lemma tapeSteps_prefix_end {M : CBTM} {input : List F4} {cfg₀ : CBTMConfig M input}
     {π : ComputationPath} {cfg : CBTMConfig M input}
     (h : TapeSteps M input cfg₀ π cfg) :
-    ∀ m (hm : m ≤ π.length),
+    ∀ m (_hm : m ≤ π.length),
       ∃ cfgm : CBTMConfig M input,
         TapeSteps M input cfg₀ (π.take m) cfgm := by
   induction h with
@@ -435,7 +435,7 @@ lemma tapeSteps_prefix_headPos_drift {M : CBTM} {input : List F4}
     (hbounds : ∀ step ∈ π, step.result.moveDir.toInt = -1 ∨ step.result.moveDir.toInt = 0 ∨
         step.result.moveDir.toInt = 1)
     (hfirst : cfg₀.headPos ∈ Set.Icc lo hi) :
-    (∀ m (hm : m ≤ π.length),
+    (∀ m (_hm : m ≤ π.length),
       ∃ cfgm : CBTMConfig M input,
         TapeSteps M input cfg₀ (π.take m) cfgm ∧
         cfgm.headPos ∈ Set.Icc (lo - (m : ℤ)) (hi + (m : ℤ))) ∧
@@ -897,7 +897,7 @@ lemma tapeSteps12_headPos_inside {w : List F4} {cfgc0 cfgc' : CBTMConfig subsetS
     (hq0 : cfgc0.state = encodeState q 0 0)
     (hp0 : cfgc0.headPos = 4 * p)
     (htrap : ∀ k (hk : k < πb.length), (decodeState (πb.get ⟨k, hk⟩).result.nextState).1 ≠ 101) :
-    (∀ m (hm : m < πb.length),
+    (∀ m (_hm : m < πb.length),
       ∃ cfgm : CBTMConfig subsetSumCBTM w,
         TapeSteps subsetSumCBTM w cfgc0 (πb.take m) cfgm ∧
         cfgm.headPos ∈ Set.Icc (4 * p - 4) (4 * p + 4)) ∧

@@ -55,7 +55,7 @@ lemma symTransition_q_mem_of_ne101 {q : ℕ} {s : Sym} {r : SymTransResult}
     (hr : r ∈ VerifierSym.transition (q, s)) (hne : r.nextState ≠ 101) :
     q ≤ 101 := by
   by_contra hq
-  push_neg at hq
+  push Not at hq
   unfold VerifierSym.transition at hr
   dsimp at hr
   have hqnot : q ∉ VerifierSym.legalStates := by

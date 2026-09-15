@@ -2260,7 +2260,7 @@ lemma decode_read_cells_of_no_trap {w : List F4} {cfgc0 cfgc' : CBTMConfig subse
       rw [stepConfig_tapeAt_eq_of_ne cfgc0 step0.result (4 * p + 3) (by rw [hp]; omega)]] at ht3'
     simpa [subsetSumCBTM] using ht3'
   by_contra hnone
-  push_neg at hnone
+  push Not at hnone
   have hso4 : symOf4F4 (cfgc0.tapeAt (4 * p)) (cfgc0.tapeAt (4 * p + 1))
       (cfgc0.tapeAt (4 * p + 2)) (cfgc0.tapeAt (4 * p + 3)) = none ∨
       ∃ s : Sym, symOf4F4 (cfgc0.tapeAt (4 * p)) (cfgc0.tapeAt (4 * p + 1))

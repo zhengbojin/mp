@@ -940,7 +940,7 @@ lemma bitWidth_valSum_le_sum (bs : List ℕ) :
       rw [Nat.length_digits 2 t (by norm_num) (by omega)]
       have hlog : Nat.log 2 t < bs.sum := by
         by_contra hcon
-        push_neg at hcon
+        push Not at hcon
         have hle := (Nat.le_log_iff_pow_le (by norm_num) (by omega : t ≠ 0)).mp hcon
         omega
       omega
