@@ -99,7 +99,7 @@ noncomputable def subsetSumIso : StructIsoNTM2CBTM subsetSumNTM2 subsetSumCBTM w
     exact iso_transition_core q s i
 
 /-- ①线 A-1 镜像件需要的实例(经 iso_path_forward_noCan / iso_path_backward 使用)。 -/
-noncomputable def subsetSumIsoNonempty : Nonempty (StructIsoNTM2CBTM subsetSumNTM2 subsetSumCBTM) :=
+theorem subsetSumIsoNonempty : Nonempty (StructIsoNTM2CBTM subsetSumNTM2 subsetSumCBTM) :=
   ⟨subsetSumIso⟩
 
 

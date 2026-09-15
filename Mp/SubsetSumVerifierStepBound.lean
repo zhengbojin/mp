@@ -4737,7 +4737,6 @@ theorem symSteps_length_le_of_turnCount (lo hi : ℤ) (π : List SymStep) (h : �
 -- ===== δ-4（H_triple 三元组路线）已肃清（2026-09-13，用户令：作废方案残余不留存；原块见 git 史）=====
 -- ===== δ-5② BEGIN =====
 open Mp
-namespace Mp
 
 set_option maxRecDepth 100000
 set_option maxHeartbeats 0
@@ -4769,7 +4768,6 @@ theorem symS_no_three {a b c d : ℕ} {k1 k2 k3 : Sym} (ha : a < 102) (hne : a �
   have h1 : d ∉ symS2Paths := by rw [symS2Paths_eq_empty]; simp
   exact h1 h0
 
-end Mp
 
 -- ===== δ-5② END =====
 -- ===== δ-5④ BEGIN =====
@@ -4786,16 +4784,16 @@ theorem symS_no_three_tab {a : ℕ} (ha : a < 102) (hne : a ≠ 100) {k1 k2 k3 :
     (h3 : r3 ∈ VerifierSym.transition (r2.nextState, k3)) (hd3 : r3.moveDir = Dir.S)
     (hn3 : r3.nextState ≠ 101) :
     False := by
-  have m1 : r1.nextState ∈ Mp.Mp.symSOut a k1 := by
-    simp only [Mp.Mp.symSOut, Finset.mem_image, Finset.mem_filter]
+  have m1 : r1.nextState ∈ Mp.symSOut a k1 := by
+    simp only [Mp.symSOut, Finset.mem_image, Finset.mem_filter]
     exact ⟨r1, ⟨h1, hd1, hn1⟩, rfl⟩
-  have m2 : r2.nextState ∈ Mp.Mp.symSOut r1.nextState k2 := by
-    simp only [Mp.Mp.symSOut, Finset.mem_image, Finset.mem_filter]
+  have m2 : r2.nextState ∈ Mp.symSOut r1.nextState k2 := by
+    simp only [Mp.symSOut, Finset.mem_image, Finset.mem_filter]
     exact ⟨r2, ⟨h2, hd2, hn2⟩, rfl⟩
-  have m3 : r3.nextState ∈ Mp.Mp.symSOut r2.nextState k3 := by
-    simp only [Mp.Mp.symSOut, Finset.mem_image, Finset.mem_filter]
+  have m3 : r3.nextState ∈ Mp.symSOut r2.nextState k3 := by
+    simp only [Mp.symSOut, Finset.mem_image, Finset.mem_filter]
     exact ⟨r3, ⟨h3, hd3, hn3⟩, rfl⟩
-  exact Mp.Mp.symS_no_three ha hne m1 m2 m3
+  exact Mp.symS_no_three ha hne m1 m2 m3
 
 /-- [δ-5④-2] 合法 S 步列:预态条件 + 逐位相接 + 转移表成员(装配变体用)。 -/
 def SymSOk : ℕ → List SymStep → Prop

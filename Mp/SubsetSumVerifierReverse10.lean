@@ -640,11 +640,6 @@ lemma trans4_phase3_dir_L_of_nontrap (st : ℕ) (s : F4)
           exact decodeState_encodeState_q_eq 101 4 0 (by norm_num [stepsPerSym, regBound]))
       | (rcases hr with rfl | rfl <;> exfalso <;> apply hnt <;>
           exact decodeState_encodeState_q_eq 101 4 0 (by norm_num [stepsPerSym, regBound]))
-      | (rcases hr with rfl; exfalso; apply hnt;
-          exact decodeState_encodeState_q_eq 101 4 0 (by norm_num [stepsPerSym, regBound]))
-      | (exfalso; apply hnt; rw [hr];
-          exact decodeState_encodeState_q_eq 101 4 0 (by norm_num [stepsPerSym, regBound]))
-      | (rw [hr]; rfl)
   · have hso' : ∃ sym : Sym, symOf4F4 (f4ofBuf (decodeState st).2.2).1
           (f4ofBuf (decodeState st).2.2).2.1 (f4ofBuf (decodeState st).2.2).2.2 s = some sym := by
       cases h : symOf4F4 (f4ofBuf (decodeState st).2.2).1 (f4ofBuf (decodeState st).2.2).2.1
