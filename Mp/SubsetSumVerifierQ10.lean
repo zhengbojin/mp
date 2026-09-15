@@ -77,7 +77,7 @@ lemma ntm2_reachable_take_end {A : NTM2} {x : List F4} {π : NTM2ComputationPath
         have ht : (π₀ ++ [step]).take (π₀.length + 1) = π₀ ++ [step] := by
           induction π₀ with
           | nil => simp
-          | cons a t ih => simp [ih]
+          | cons a t ih => simp []
         simpa [ht] using (TapeReachablePathNTM2.cons π₀ step cfg₀ hrc hfrom hread hpos htrans)
 
 /-- 左拼接的 get：前缀内取元等于前缀自身取元。 -/
@@ -143,12 +143,12 @@ lemma ntm2_reachable_take_succ_cons {A : NTM2} {x : List F4} {π : NTM2Computati
         · have ht : (π₀ ++ [step]).take π₀.length = π₀ := by
             induction π₀ with
             | nil => simp
-            | cons a t ih => simp [ih]
+            | cons a t ih => simp []
           simpa [ht] using hrc
         · have ht₁ : (π₀ ++ [step]).take (π₀.length + 1) = π₀ ++ [step] := by
             induction π₀ with
             | nil => simp
-            | cons a t ih => simp [ih]
+            | cons a t ih => simp []
           simpa [ht₁] using (TapeReachablePathNTM2.cons π₀ step cfg₀ hrc hfrom hread hpos htrans)
 
 /-- 条款 (a) 位置界的逐步本体：对 π 的每一步（= π[i]，i < |π|）证明

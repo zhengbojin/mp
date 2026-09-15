@@ -1923,8 +1923,8 @@ theorem lastTurnD_map (π : List SymStep) (d : Dir) :
   unfold lastTurnD
   rw [List.getLast?_map]
   cases h : π.getLast? with
-  | none => simp [h]
-  | some st => simp [h]
+  | none => simp []
+  | some st => simp []
 
 /-- [C-2] lastTurnD ≤ 单步转向指示（空路径时为 0）。 -/
 theorem lastTurnD_le (π : List SymStep) (d : Dir) :
@@ -1978,8 +1978,8 @@ theorem turn_budget_core {cfg₀ cfg : SymConfig} {π : List SymStep}
         have h1 : ([step].filter (fun st => st.fromState = m)).length
             = (if cfg'.state = m then 1 else 0) := by
           by_cases hm : cfg'.state = m
-          · simp [List.filter_cons, List.filter_nil, List.length_cons, List.length_nil, hfrom, hm]
-          · simp [List.filter_cons, List.filter_nil, List.length_cons, List.length_nil, hfrom, hm]
+          · simp [List.filter_nil, List.length_cons, List.length_nil, hfrom, hm]
+          · simp [List.filter_nil, List.length_nil, hfrom, hm]
         rw [h1]
       have hT : symTurnCount ((π' ++ [step]).map (fun st => st.result.moveDir))
           = symTurnCount (π'.map (fun st => st.result.moveDir))

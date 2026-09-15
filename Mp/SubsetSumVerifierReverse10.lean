@@ -127,9 +127,9 @@ lemma symSteps_absorb101_locked {π : List SymStep} {cfg₀ cfg : SymConfig}
       · simp [symStepConfig, ihp, hd, Dir.toInt]
       · funext i
         by_cases hi : i = cfg₁.headPos
-        · simp [hi, symStepConfig, hw, hread, iht, ihp]
+        · simp [hi, symStepConfig, hw, iht, ihp]
         · simp [hi, symStepConfig, iht]
-      · simp [symStepConfig, hn, ihs]
+      · simp [symStepConfig, hn]
 
 -- ==============================================================================
 -- q10 ① Sym 层表级支持:越界态集 Y(读带外格可 R 的态)
@@ -223,7 +223,7 @@ lemma symInitial_tape_mid_boundary (inst : SubsetSumInstance) :
       (((encodeBitsSym inst.target).length : ℤ) + 1) = Sym.boundary := by
   have hmid : 1 + (encodeBitsSym inst.target).length < (encodeInstanceSym inst).length := by
     unfold encodeInstanceSym
-    simp [encodeElementsSym]
+    simp []
     omega
   rw [show ((encodeBitsSym inst.target).length : ℤ) + 1 =
       ((1 + (encodeBitsSym inst.target).length : ℕ) : ℤ) by omega]
@@ -326,7 +326,7 @@ lemma trans4_phase_lt3_dir_R_of_nontrap (st : ℕ) (s : F4)
   intro hph hnt
   unfold transition4 at hr
   dsimp at hr
-  split_ifs at hr <;> simp_all [hph]
+  split_ifs at hr <;> simp_all []
     <;> try (exfalso; exact (hnt (trap_mem_nextState_decode _ _ _ hr (by omega))).elim)
 
 lemma trans4_phase4_dir_L_of_nontrap (st : ℕ) (s : F4)
@@ -335,7 +335,7 @@ lemma trans4_phase4_dir_L_of_nontrap (st : ℕ) (s : F4)
   intro hph hnt
   unfold transition4 at hr
   dsimp at hr
-  split_ifs at hr <;> simp_all [hph]
+  split_ifs at hr <;> simp_all []
     <;> try (exfalso; exact (hnt (trap_mem_nextState_decode _ _ _ hr (by omega))).elim)
 
 lemma trans4_phase5_dir_L_of_nontrap (st : ℕ) (s : F4)
@@ -344,7 +344,7 @@ lemma trans4_phase5_dir_L_of_nontrap (st : ℕ) (s : F4)
   intro hph hnt
   unfold transition4 at hr
   dsimp at hr
-  split_ifs at hr <;> simp_all [hph]
+  split_ifs at hr <;> simp_all []
     <;> try (exfalso; exact (hnt (trap_mem_nextState_decode _ _ _ hr (by omega))).elim)
 
 lemma trans4_phase6_dir_S_of_nontrap (st : ℕ) (s : F4)
@@ -353,7 +353,7 @@ lemma trans4_phase6_dir_S_of_nontrap (st : ℕ) (s : F4)
   intro hph hnt
   unfold transition4 at hr
   dsimp at hr
-  split_ifs at hr <;> simp_all [hph]
+  split_ifs at hr <;> simp_all []
     <;> try (exfalso; exact (hnt (trap_mem_nextState_decode _ _ _ hr (by omega))).elim)
 
 lemma trans4_phase7_dir_S_of_nontrap (st : ℕ) (s : F4)
@@ -362,7 +362,7 @@ lemma trans4_phase7_dir_S_of_nontrap (st : ℕ) (s : F4)
   intro hph hnt
   unfold transition4 at hr
   dsimp at hr
-  split_ifs at hr <;> simp_all [hph]
+  split_ifs at hr <;> simp_all []
     <;> try (exfalso; exact (hnt (trap_mem_nextState_decode _ _ _ hr (by omega))).elim)
 
 lemma trans4_phase_ge8_dir_bounded_of_nontrap (st : ℕ) (s : F4)
@@ -559,7 +559,7 @@ lemma tapeSteps_phase_at {w : List F4} {cfgc0 cfg : CBTMConfig subsetSumCBTM w}
             dsimp [stepsPerSym] at hlt3
             omega
           rcases step.readSym with ⟨rs, is⟩
-          cases rs <;> cases is <;> simp [F4.zero, F4.one, F4.alpha, F4.beta]
+          cases rs <;> cases is <;> simp [F4.zero, F4.one, F4.alpha]
           all_goals first | done | nlinarith [hpow]
         dsimp [regBound, stepsPerSym] at h64 hpow hbuf ⊢
         omega
@@ -633,7 +633,7 @@ lemma trans4_phase3_dir_L_of_nontrap (st : ℕ) (s : F4)
       (f4ofBuf (decodeState st).2.2).2.2 s = none
   · rw [hso] at hr
     -- none 支:if F4.im s then trap 双 else trap1
-    split_ifs at hr <;> simp_all [hph]
+    split_ifs at hr <;> simp_all []
     all_goals
       first
       | (exfalso; apply hnt;
@@ -655,7 +655,7 @@ lemma trans4_phase3_dir_L_of_nontrap (st : ℕ) (s : F4)
     rcases hso' with ⟨sym, hsym⟩
     rw [hsym] at hr
     -- some 支:if F4.im s then (if qs=2∧… then sel/nosel else trap) else image
-    split_ifs at hr <;> simp_all [hph]
+    split_ifs at hr <;> simp_all []
     all_goals
       first
       | (exfalso; apply hnt;
@@ -766,7 +766,7 @@ lemma tapeSteps12_len_pos {w : List F4} {cfgc0 cfg : CBTMConfig subsetSumCBTM w}
   | nil =>
       constructor
       · intro hm
-        simp [hp0, delta8, hm]
+        simp [hp0, delta8]
       · intro hm
         simp at hm
   | cons π₀ step cfg₁ hprev hfrom hread htrans ih =>
@@ -830,7 +830,7 @@ lemma tapeSteps12_len_pos {w : List F4} {cfgc0 cfg : CBTMConfig subsetSumCBTM w}
               (by intro hm3 hm5; exfalso; omega)
               (by intro hm6; exfalso; omega)
             rw [← hstep]
-            simp [hpos₁', add_assoc]
+            simp [add_assoc]
           · intro hm1
             exfalso
             omega
@@ -847,7 +847,7 @@ lemma tapeSteps12_len_pos {w : List F4} {cfgc0 cfg : CBTMConfig subsetSumCBTM w}
                 (by intro hm3 hm5; rfl)
                 (by intro hm6; exfalso; omega)
               rw [← hstep]
-              simp [hpos₁', add_assoc]
+              simp [add_assoc]
             · intro hm1
               exfalso
               omega
@@ -863,13 +863,13 @@ lemma tapeSteps12_len_pos {w : List F4} {cfgc0 cfg : CBTMConfig subsetSumCBTM w}
                 (by intro hm3 hm5; exfalso; omega)
                 (by intro; rfl)
               rw [← hstep]
-              simp [hpos₁']
+              simp []
             · intro hm1
               have hm7 : π₀.length = 7 := by omega
               have hx7 : 4 * p + delta8 π₀.length = 4 * p := by
                 simp [delta8, hm7]
               rw [hx7]
-              simp [Set.Icc, hm7, add_tsub_cancel_right]
+              simp [Set.Icc, hm7]
       · -- 漂移段:8 ≤ π₀.length;位置区间;±1 扩张
         have h8' : 8 ≤ π₀.length := by omega
         have h8b : 8 ≤ π₀.length := h8'
