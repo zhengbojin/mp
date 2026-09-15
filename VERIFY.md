@@ -25,6 +25,13 @@
 ```bash
 lake build
 # 预期：Build completed successfully (8712 jobs)，0 error
+# 警告状态：5 条（2026-09-15 警告修理后由 498 → 5；均不影响正确性）
+#   · 风格类 9 项（longLine/header/show/emptyLine/setOption/maxHeartbeats/whitespace/openClassical/missingEnd）
+#     已全局豁免 —— 见 lakefile.toml [leanOptions]；
+#   · 战术类与自动生成声明类（unusedTactic/unreachableTactic/unnecessarySimpa/auxLemma）
+#     已按文件豁免 —— 见 Reverse10/Q10/CBTM2/CBTM3/CBTM6/Reverse5/L3a 文件头 set_option；
+#   · 残留 5 条信号保留：3 条 `Try this: intro …`（intro 链写法建议）+ 1 条 Fintype 参数未用
+#     （PrimeSqrtLinearIndep）+ 1 条变量未引用（Reverse11）。
 
 # 声明公理扫描（预期：无输出 = 0 条）
 grep -rnE '^[[:space:]]*(private |protected )*axiom ' Mp/
