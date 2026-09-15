@@ -130,7 +130,7 @@ theorem pathValue_separated (π₁ π₂ : ComputationPath)
       - (if i.1 ∈ S₂ then (1 : ℚ) else 0)) hg
   have hne : ∃ i, (i ∈ S₁ ∧ i ∉ S₂) ∨ (i ∈ S₂ ∧ i ∉ S₁) := by
     by_contra h3
-    push_neg at h3
+    push Not at h3
     apply h
     ext i
     rcases h3 i with ⟨h1, h2⟩

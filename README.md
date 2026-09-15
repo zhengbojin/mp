@@ -1,8 +1,8 @@
 # mp —— P ≠ NP 形式化验证工程（Lean 4）
 
-> **English.** This repository is a complete formalization, in Lean 4 (mathlib), of a proof that **P ≠ NP**: computational models (canonical non-deterministic Turing machine "NTM2", composite-tape machine "CBTM", essential dimension "IVM"), encodings, the worst-case step bound of the subset-sum verifier (O((|x|+1)²)), and the final separation theorems, including a barriers-refined variant. It additionally formalizes the **symbol-layer (ATM/NTM2) extension**: the classes `P_sym0` / `NP_sym0` with the **set-theoretic separation `P_sym0 ≠ NP_sym0`** (aligned domain; P carried by CBTM0 via the DTM≅CBTM0 isomorphism, NP by NTM2). Terminal state: **0 declared 公理, 0 `sorry`, 0 errors**; the whole library builds with `lake build`.
+> **English.** This repository is a complete formalization, in Lean 4 (mathlib), of a proof of **P ≠ NP within the CBTM/IVM framework** (a custom machine model — the separation is framework-internal; see the honest-boundary note below): computational models (canonical non-deterministic Turing machine "NTM2", composite-tape machine "CBTM", essential dimension "IVM"), encodings, the worst-case step bound of the subset-sum verifier (O((|x|+1)²)), and the final separation theorems, including a barriers-refined variant. It additionally formalizes the **symbol-layer (ATM/NTM2) extension**: the classes `P_sym0` / `NP_sym0` with the **set-theoretic separation `P_sym0 ≠ NP_sym0`** (aligned domain; P carried by CBTM0 via the DTM≅CBTM0 isomorphism, NP by NTM2). Terminal state: **0 declared 公理, 0 `sorry`, 0 errors**; the whole library builds with `lake build`.
 
-本工程在 Lean 4（mathlib）中形式化验证一条 **P ≠ NP** 证明链：从计算模型与编码、子集和语言下界，到验证器最坏步数界（O((|x|+1)²)），直至分离主定理及其障碍版。所有推理链以 `def`/`lemma`/`theorem` 全程机器验证。
+本工程在 Lean 4（mathlib）中形式化验证一条 **P ≠ NP** 证明链（**框架内**：CBTM/IVM 自定义机器模型下的分离——诚实边界见下文「符号层」一节）：从计算模型与编码、子集和语言下界，到验证器最坏步数界（O((|x|+1)²)），直至分离主定理及其障碍版。所有推理链以 `def`/`lemma`/`theorem` 全程机器验证。
 
 ## 终态快照（2026-09-14）
 
@@ -44,6 +44,8 @@
 5. 组装：子集和 ∈ NP 类 且 ∉ P 类 ⇒ **`P_sym0_neq_NP_sym0`**（`Mp/ATMAssembly.lean`）。
 
 **诚实边界**：结论的语义基础是 CBTM/IVM 框架的内建语义（虚部 = 分支；不可公度性 √p_i ∉ ℚ 保证两条路径在 IVM 中完全分开）。**脱离框架、仅在经典框架下无法证明**：NTM2 的分支可能是假分支（形式两分支、语义一分支）——语义超越语法，假分支不可排除。这正是本结论必须经由框架的原因。（与 Spec 约定 22、§7.7 一致。）
+
+**与经典 P≠NP 的距离**：本结论**弱于**经典 P ≠ NP——受限机类 ⊆ 一般确定性机类（`P_sym0` ⊆ 经典 P 类）；且经典 P 类定义中的机器**只读符号串，sep/# 与数据不可区分**（结构身份为外部命名；区分结构需表示能力，|Σ| ≥ 4——信息论，Spec 约定 20），故与经典层的对比须经编码桥。另注：**一般确定性机可在指数时间内解出子集和**——对一般确定性机，「解不了」只在多项式时间约束下成立；该口径下的分离不在本工程已证范围。
 
 **与 F 层的关系**：本结论与 F 层 `P_F ≠ NP_F` 是**同一定理的两种表述**（`isP_sym0_iff_isP_F` 为定义级相等，`subsetSum_not_in_P_sym0` 即 `subsetSum_not_in_P_F`）——同一分离的两种命名（符号层 / F 层）；定位细则见 Spec 约定 29、§7.7。
 

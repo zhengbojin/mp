@@ -51,16 +51,6 @@ def selectedSum (elements : List ℕ) (sel : List Bool) : ℕ :=
 def subsetSumHolds (inst : SubsetSumInstance) : Prop :=
   ∃ sel : List Bool, sel.length = inst.elements.length ∧ selectedSum inst.elements sel = inst.target
 
-def natToBinaryF4 (_n : ℕ) : List F4 := []  -- 占位
-
-/-- 每个元素用一个 F4.alpha 标记分支，后接目标值的二进制。 -/
-def encodeSubsetSumF4 (inst : SubsetSumInstance) : List F4 :=
-  List.flatMap (fun _ => [F4.alpha]) inst.elements ++ natToBinaryF4 inst.target
-
-def subsetSumLanguageF4 : Language := fun bs =>
-  ∃ inst, bs = encodeSubsetSumF4 inst ∧
-    ∃ T, (∀ a ∈ T, a ∈ inst.elements) ∧ List.sum T = inst.target
-
 -- ============================================================================
 -- ============================================================================
 -- 子集和属于 NP
