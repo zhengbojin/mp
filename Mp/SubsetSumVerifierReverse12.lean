@@ -547,7 +547,7 @@ lemma scanRight1_bits_len (bits : List Sym) (p : ℤ) (tape : ℤ → Sym)
   let step : SymStep := { fromState := 1, readSym := Sym.boundary, result := r }
   have htrans : step.result ∈ VerifierSym.transition (1, tape (p + (bits.length : ℤ))) := by
     rw [hbound]
-    native_decide
+    decide
   have hstep : SymSteps VerifierSym.transition cfg₁ [step]
       (symStepConfig cfg₁ step.result) := by
     refine SymSteps.cons [] step cfg₁ SymSteps.nil ?_ ?_ ?_
@@ -632,13 +632,13 @@ lemma segS2_chosen (elems : List ℕ) (sel : List Bool) (p : ℤ) (tape : ℤ �
     have hbound0 : tape p = Sym.boundary := by simpa using hbound
     have htrans : step.result ∈ VerifierSym.transition (2, tape p) := by
       rw [hbound0]
-      native_decide
+      decide
     refine ⟨[step], symStepConfig (SymConfig.mk 2 tape p) step.result, ?_, rfl, ?_, ?_, ?_, ?_, ?_, ?_⟩
     · refine SymSteps.cons [] step (SymConfig.mk 2 tape p) SymSteps.nil ?_ ?_ ?_
       · rfl
       · simp [SymConfig.mk, step, hbound0]
       · simp [step, r, hbound0]
-        native_decide
+        decide
     · simp [symStepConfig, SymConfig.mk, step, r, Dir.toInt]
     · intro i hi
       change i < (encodeElementsSymWithSel [] []).length at hi
@@ -712,7 +712,7 @@ lemma segS2_chosen (elems : List ℕ) (sel : List Bool) (p : ℤ) (tape : ℤ �
               have hcfg2_eq : cfg2 = SymConfig.mk 2 tape1 (p + 1 + ((encodeBitsSymNative v).length : ℤ)) := by
                 rw [← hs2, ← htape2, ← hhead2]
               have htrans3 : step3.result ∈ VerifierSym.transition (2, tape1 (p + 1 + ((encodeBitsSymNative v).length : ℤ))) := by
-                rw [hbound']; native_decide
+                rw [hbound']; decide
               have hstep3 : SymSteps VerifierSym.transition cfg2 [step3]
                   (symStepConfig cfg2 step3.result) := by
                 refine SymSteps.cons [] step3 cfg2 SymSteps.nil ?_ ?_ ?_
@@ -723,7 +723,7 @@ lemma segS2_chosen (elems : List ℕ) (sel : List Bool) (p : ℤ) (tape : ℤ �
                 · change step3.result ∈ VerifierSym.transition (cfg2.state, cfg2.tape cfg2.headPos)
                   rw [hcfg2_eq]
                   simp [SymConfig.mk, hbound']
-                  native_decide
+                  decide
               let cfg3 : SymConfig := symStepConfig cfg2 step3.result
               have htotal : SymSteps VerifierSym.transition (SymConfig.mk 2 tape p) ([step1] ++ π2 ++ [step3]) cfg3 := by
                 have h12 : SymSteps VerifierSym.transition (SymConfig.mk 2 tape p) ([step1] ++ π2) cfg2 :=
@@ -2449,7 +2449,7 @@ lemma clear_element_correct_len (ebits : List Bool) (p_e : ℤ) (tape : ℤ → 
       rw [hsel]
     · change step1.result ∈ VerifierSym.transition (4, tape p_e)
       rw [hsel]
-      native_decide
+      decide
   let tape1 : ℤ → Sym := fun i => if i = p_e then Sym.data0 else tape i
   have hcfg1 : symStepConfig (SymConfig.mk 4 tape p_e) step1.result =
       SymConfig.mk 20 tape1 (p_e - 1) := by
@@ -2469,7 +2469,7 @@ lemma clear_element_correct_len (ebits : List Bool) (p_e : ℤ) (tape : ℤ → 
       have hne : p_e - 1 ≠ p_e := by omega
       simp [tape1, hne]
       rw [hbound₀]
-      native_decide
+      decide
   let tape2 : ℤ → Sym := fun i => if i = p_e - 1 then Sym.data0 else tape1 i
   have hcfg2 : symStepConfig (SymConfig.mk 20 tape1 (p_e - 1)) step2.result =
       SymConfig.mk 21 tape2 p_e := by
@@ -2678,7 +2678,7 @@ lemma segSrNosel (ebits : List Bool) (p_e : ℤ) (tape : ℤ → Sym)
         exact hcell.symm
       · change step51.result ∈ VerifierSym.transition (51, cfg₀.tape cfg₀.headPos)
         rw [hhead51, hcell]
-        native_decide
+        decide
     let tape51 : ℤ → Sym := fun i =>
       if i = p_e + (ebits.length : ℤ) then Sym.boundary else cfg₀.tape i
     have hc51 : SymConfig.mk 51 cfg₀.tape cfg₀.headPos = cfg₀ := by
@@ -2762,7 +2762,7 @@ lemma segS3 (n : ℕ) (q : ℤ) (tape : ℤ → Sym)
       exact hmark.symm
     · change step22.result ∈ VerifierSym.transition (22, tape (q + (n : ℤ) + 1))
       rw [hmark]
-      native_decide
+      decide
   have htape22 : (fun i => if i = q + (n : ℤ) + 1 then Sym.mk SymKind.boundary true else tape i) = tape := by
     funext i
     by_cases h : i = q + (n : ℤ) + 1
@@ -2779,8 +2779,8 @@ lemma segS3 (n : ℕ) (q : ℤ) (tape : ℤ → Sym)
       (fun i hi => by
         have hlt : q < i := by omega
         rw [hzero i hlt hi.2]
-        native_decide)
-      (by native_decide)
+        decide)
+      (by decide)
       (by rw [show q + (n : ℤ) - (n : ℤ) = q from by ring]; exact hbnd)
     with ⟨πs, cfgs, hπs, hss, hhs, hts, hlens⟩
   have h0 : SymSteps VerifierSym.transition (SymConfig.mk 22 tape (q + (n : ℤ) + 1)) [step22]

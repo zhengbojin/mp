@@ -64,7 +64,7 @@ lemma clearMark86_len (k : ℕ) (p : ℤ) (tape : ℤ → Sym)
         subst ms
         have hks : ks = SymKind.data0 ∨ ks = SymKind.data1 ∨ ks = SymKind.boundary := by
           simpa [Sym.mk, htp] using hdata_stop
-        rcases hks with hk | hk | hk <;> subst ks <;> native_decide
+        rcases hks with hk | hk | hk <;> subst ks <;> decide
       refine ⟨[step], symStepConfig (SymConfig.mk 86 tape p) step.result, ?_, rfl, ?_, ?_, ?_, ?_, ?_, ?_⟩
       · refine SymSteps.cons [] step (SymConfig.mk 86 tape p) SymSteps.nil ?_ ?_ ?_
         · rfl
@@ -94,7 +94,7 @@ lemma clearMark86_len (k : ℕ) (p : ℤ) (tape : ℤ → Sym)
         subst ms
         have hks : ks = SymKind.data0 ∨ ks = SymKind.data1 := by
           simpa [Sym.mk, htp] using hdata p (by constructor; rfl; omega)
-        rcases hks with hk | hk <;> subst ks <;> native_decide
+        rcases hks with hk | hk <;> subst ks <;> decide
       have hstep : SymSteps VerifierSym.transition (SymConfig.mk 86 tape p) [step]
           (symStepConfig (SymConfig.mk 86 tape p) step.result) := by
         refine SymSteps.cons [] step (SymConfig.mk 86 tape p) SymSteps.nil ?_ ?_ ?_
@@ -188,7 +188,7 @@ lemma scanRight87_len (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
       have hbound' : tape p = Sym.boundary := by simpa using hbound
       have htrans : step.result ∈ VerifierSym.transition (87, tape p) := by
         simp only [step, r, hbound']
-        native_decide
+        decide
       refine ⟨[step], symStepConfig (SymConfig.mk 87 tape p) step.result, ?_, rfl, ?_, ?_, ?_⟩
       · refine SymSteps.cons [] step (SymConfig.mk 87 tape p) SymSteps.nil ?_ ?_ ?_
         · rfl
@@ -209,7 +209,7 @@ lemma scanRight87_len (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
         rw [htp]
         have hks : ks = SymKind.data0 ∨ ks = SymKind.data1 := by
           simpa [Sym.mk, htp] using hd
-        rcases hks with hk | hk <;> subst ks <;> cases ms <;> native_decide
+        rcases hks with hk | hk <;> subst ks <;> cases ms <;> decide
       have hstep₁ : SymSteps VerifierSym.transition (SymConfig.mk 87 tape p) [step₁]
           (symStepConfig (SymConfig.mk 87 tape p) step₁.result) := by
         refine SymSteps.cons [] step₁ (SymConfig.mk 87 tape p) SymSteps.nil ?_ ?_ ?_
@@ -250,7 +250,7 @@ lemma rewind84 (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
       have hbound' : tape p = Sym.boundary := by simpa using hbound
       have htrans : step.result ∈ VerifierSym.transition (84, tape p) := by
         simp only [step, r, hbound']
-        native_decide
+        decide
       refine ⟨[step], symStepConfig (SymConfig.mk 84 tape p) step.result, ?_, rfl, ?_, ?_, ?_⟩
       · refine SymSteps.cons [] step (SymConfig.mk 84 tape p) SymSteps.nil ?_ ?_ ?_
         · rfl
@@ -272,7 +272,7 @@ lemma rewind84 (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
         rw [htp]
         have hks : ks = SymKind.consumed ∨ ks = SymKind.data0 ∨ ks = SymKind.data1 := by
           simpa [Sym.mk, htp] using hkp
-        rcases hks with hk | hk | hk <;> subst ks <;> cases ms <;> native_decide
+        rcases hks with hk | hk | hk <;> subst ks <;> cases ms <;> decide
       have hstep₁ : SymSteps VerifierSym.transition (SymConfig.mk 84 tape p) [step₁]
           (symStepConfig (SymConfig.mk 84 tape p) step₁.result) := by
         refine SymSteps.cons [] step₁ (SymConfig.mk 84 tape p) SymSteps.nil ?_ ?_ ?_
@@ -313,7 +313,7 @@ lemma rewind85 (n : ℕ) (tape : ℤ → Sym)
       let step : SymStep := { fromState := 85, readSym := tape 0, result := r }
       have htrans : step.result ∈ VerifierSym.transition (85, tape 0) := by
         simp only [step, r, hbound]
-        native_decide
+        decide
       refine ⟨[step], symStepConfig (SymConfig.mk 85 tape 0) step.result, ?_, rfl, ?_, ?_, ?_⟩
       · refine SymSteps.cons [] step (SymConfig.mk 85 tape 0) SymSteps.nil ?_ ?_ ?_
         · rfl
@@ -334,7 +334,7 @@ lemma rewind85 (n : ℕ) (tape : ℤ → Sym)
         rw [htp]
         have hks : ks = SymKind.data0 ∨ ks = SymKind.data1 := by
           simpa [Sym.mk, htp] using hdp
-        rcases hks with hk | hk <;> subst ks <;> cases ms <;> native_decide
+        rcases hks with hk | hk <;> subst ks <;> cases ms <;> decide
       have hstep₁ : SymSteps VerifierSym.transition (SymConfig.mk 85 tape (n + 1)) [step₁]
           (symStepConfig (SymConfig.mk 85 tape (n + 1)) step₁.result) := by
         refine SymSteps.cons [] step₁ (SymConfig.mk 85 tape (n + 1)) SymSteps.nil ?_ ?_ ?_
@@ -494,7 +494,7 @@ lemma fire_west76 (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
       have hbound' : tape p = Sym.boundary := by simpa using hbound
       have htrans : step.result ∈ VerifierSym.transition (76, tape p) := by
         simp only [step, r, hbound']
-        native_decide
+        decide
       refine ⟨[step], symStepConfig (SymConfig.mk 76 tape p) step.result, ?_, rfl, ?_, ?_, ?_⟩
       · refine SymSteps.cons [] step (SymConfig.mk 76 tape p) SymSteps.nil ?_ ?_ ?_
         · rfl
@@ -516,7 +516,7 @@ lemma fire_west76 (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
         rw [htp]
         have hks : ks = SymKind.consumed ∨ ks = SymKind.data0 ∨ ks = SymKind.data1 := by
           simpa [Sym.mk, htp] using hkp
-        rcases hks with hk | hk | hk <;> subst ks <;> cases ms <;> native_decide
+        rcases hks with hk | hk | hk <;> subst ks <;> cases ms <;> decide
       have hstep₁ : SymSteps VerifierSym.transition (SymConfig.mk 76 tape p) [step₁]
           (symStepConfig (SymConfig.mk 76 tape p) step₁.result) := by
         refine SymSteps.cons [] step₁ (SymConfig.mk 76 tape p) SymSteps.nil ?_ ?_ ?_
@@ -558,7 +558,7 @@ lemma fire_west8 (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
       have hbound' : tape p = Sym.boundary := by simpa using hbound
       have htrans : step.result ∈ VerifierSym.transition (8, tape p) := by
         simp only [step, r, hbound']
-        native_decide
+        decide
       refine ⟨[step], symStepConfig (SymConfig.mk 8 tape p) step.result, ?_, rfl, ?_, ?_, ?_⟩
       · refine SymSteps.cons [] step (SymConfig.mk 8 tape p) SymSteps.nil ?_ ?_ ?_
         · rfl
@@ -580,7 +580,7 @@ lemma fire_west8 (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
         rw [htp]
         have hks : ks = SymKind.consumed ∨ ks = SymKind.data0 ∨ ks = SymKind.data1 := by
           simpa [Sym.mk, htp] using hkp
-        rcases hks with hk | hk | hk <;> subst ks <;> cases ms <;> native_decide
+        rcases hks with hk | hk | hk <;> subst ks <;> cases ms <;> decide
       have hstep₁ : SymSteps VerifierSym.transition (SymConfig.mk 8 tape p) [step₁]
           (symStepConfig (SymConfig.mk 8 tape p) step₁.result) := by
         refine SymSteps.cons [] step₁ (SymConfig.mk 8 tape p) SymSteps.nil ?_ ?_ ?_
@@ -621,7 +621,7 @@ lemma fire_west77 (n : ℕ) (tape : ℤ → Sym)
       let step : SymStep := { fromState := 77, readSym := tape 0, result := r }
       have htrans : step.result ∈ VerifierSym.transition (77, tape 0) := by
         simp only [step, r, hbound]
-        native_decide
+        decide
       refine ⟨[step], symStepConfig (SymConfig.mk 77 tape 0) step.result, ?_, rfl, ?_, ?_, ?_⟩
       · refine SymSteps.cons [] step (SymConfig.mk 77 tape 0) SymSteps.nil ?_ ?_ ?_
         · rfl
@@ -642,7 +642,7 @@ lemma fire_west77 (n : ℕ) (tape : ℤ → Sym)
         rw [htp]
         have hks : ks = SymKind.data0 ∨ ks = SymKind.data1 := by
           simpa [Sym.mk, htp] using hdp
-        rcases hks with hk | hk <;> subst ks <;> cases ms <;> native_decide
+        rcases hks with hk | hk <;> subst ks <;> cases ms <;> decide
       have hstep₁ : SymSteps VerifierSym.transition (SymConfig.mk 77 tape (n + 1)) [step₁]
           (symStepConfig (SymConfig.mk 77 tape (n + 1)) step₁.result) := by
         refine SymSteps.cons [] step₁ (SymConfig.mk 77 tape (n + 1)) SymSteps.nil ?_ ?_ ?_
@@ -677,7 +677,7 @@ lemma fire_west9 (n : ℕ) (tape : ℤ → Sym)
       let step : SymStep := { fromState := 9, readSym := tape 0, result := r }
       have htrans : step.result ∈ VerifierSym.transition (9, tape 0) := by
         simp only [step, r, hbound]
-        native_decide
+        decide
       refine ⟨[step], symStepConfig (SymConfig.mk 9 tape 0) step.result, ?_, rfl, ?_, ?_, ?_⟩
       · refine SymSteps.cons [] step (SymConfig.mk 9 tape 0) SymSteps.nil ?_ ?_ ?_
         · rfl
@@ -698,7 +698,7 @@ lemma fire_west9 (n : ℕ) (tape : ℤ → Sym)
         rw [htp]
         have hks : ks = SymKind.data0 ∨ ks = SymKind.data1 := by
           simpa [Sym.mk, htp] using hdp
-        rcases hks with hk | hk <;> subst ks <;> cases ms <;> native_decide
+        rcases hks with hk | hk <;> subst ks <;> cases ms <;> decide
       have hstep₁ : SymSteps VerifierSym.transition (SymConfig.mk 9 tape (n + 1)) [step₁]
           (symStepConfig (SymConfig.mk 9 tape (n + 1)) step₁.result) := by
         refine SymSteps.cons [] step₁ (SymConfig.mk 9 tape (n + 1)) SymSteps.nil ?_ ?_ ?_
@@ -743,7 +743,7 @@ lemma counter12 (k : ℕ) (p : ℤ) (tape : ℤ → Sym)
         subst ms
         have hks : ks = SymKind.data0 ∨ ks = SymKind.data1 := by
           simpa [Sym.mk, htp] using hstop.2
-        rcases hks with hk | hk <;> subst ks <;> native_decide
+        rcases hks with hk | hk <;> subst ks <;> decide
       refine ⟨[step], symStepConfig (SymConfig.mk 12 tape p) step.result, ?_, rfl, ?_, ?_, ?_, ?_, ?_⟩
       · refine SymSteps.cons [] step (SymConfig.mk 12 tape p) SymSteps.nil ?_ ?_ ?_
         · rfl
@@ -769,7 +769,7 @@ lemma counter12 (k : ℕ) (p : ℤ) (tape : ℤ → Sym)
         subst ms
         have hks : ks = SymKind.data0 ∨ ks = SymKind.data1 := by
           simpa [Sym.mk, htp] using (hmarked 0 (by omega)).2
-        rcases hks with hk | hk <;> subst ks <;> native_decide
+        rcases hks with hk | hk <;> subst ks <;> decide
       have hstep₁ : SymSteps VerifierSym.transition (SymConfig.mk 12 tape p) [step₁]
           (symStepConfig (SymConfig.mk 12 tape p) step₁.result) := by
         refine SymSteps.cons [] step₁ (SymConfig.mk 12 tape p) SymSteps.nil ?_ ?_ ?_
@@ -838,7 +838,7 @@ lemma borrow14 (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
         rw [htp]
         have hks : ks = SymKind.data1 := by simpa [Sym.mk, htp] using hone
         subst ks
-        cases ms <;> native_decide
+        cases ms <;> decide
       refine ⟨[step], symStepConfig (SymConfig.mk 14 tape p) step.result, ?_, rfl, ?_, ?_, ?_, ?_, ?_⟩
       · refine SymSteps.cons [] step (SymConfig.mk 14 tape p) SymSteps.nil ?_ ?_ ?_
         · rfl
@@ -863,7 +863,7 @@ lemma borrow14 (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
         rw [htp]
         have hks : ks = SymKind.data0 := by simpa [Sym.mk, htp] using hz0
         subst ks
-        cases ms <;> native_decide
+        cases ms <;> decide
       have hstep₁ : SymSteps VerifierSym.transition (SymConfig.mk 14 tape p) [step₁]
           (symStepConfig (SymConfig.mk 14 tape p) step₁.result) := by
         refine SymSteps.cons [] step₁ (SymConfig.mk 14 tape p) SymSteps.nil ?_ ?_ ?_
@@ -948,7 +948,7 @@ lemma return81 (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
       let r : SymTransResult := { nextState := 13, writeSym := Sym.consumed, moveDir := Dir.R }
       let step : SymStep := { fromState := 81, readSym := Sym.consumed, result := r }
       have htrans : step.result ∈ VerifierSym.transition (81, Sym.consumed) := by
-        native_decide
+        decide
       refine ⟨[step], symStepConfig (SymConfig.mk 81 tape p) step.result, ?_, rfl, ?_, ?_, ?_⟩
       · refine SymSteps.cons [] step (SymConfig.mk 81 tape p) SymSteps.nil ?_ ?_ ?_
         · rfl
@@ -973,7 +973,7 @@ lemma return81 (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
         rw [htp]
         have hks : ks = SymKind.data0 ∨ ks = SymKind.data1 ∨ ks = SymKind.boundary := by
           simpa [Sym.mk, htp] using hdp
-        rcases hks with hk | hk | hk <;> subst ks <;> cases ms <;> native_decide
+        rcases hks with hk | hk | hk <;> subst ks <;> cases ms <;> decide
       have hstep₁ : SymSteps VerifierSym.transition (SymConfig.mk 81 tape p) [step₁]
           (symStepConfig (SymConfig.mk 81 tape p) step₁.result) := by
         refine SymSteps.cons [] step₁ (SymConfig.mk 81 tape p) SymSteps.nil ?_ ?_ ?_
@@ -1028,7 +1028,7 @@ lemma corridor13 (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
           rw [htp]
           have hks : ks = SymKind.data0 ∨ ks = SymKind.data1 := by
             simpa [Sym.mk, htp] using hd
-          rcases hks with hk | hk <;> subst ks <;> cases ms <;> native_decide
+          rcases hks with hk | hk <;> subst ks <;> cases ms <;> decide
         refine ⟨[step], symStepConfig (SymConfig.mk 13 tape p) step.result, ?_, ?_, ?_, ?_, ?_⟩
         · refine SymSteps.cons [] step (SymConfig.mk 13 tape p) SymSteps.nil ?_ ?_ ?_
           · rfl
@@ -1070,13 +1070,13 @@ lemma corridor13 (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
           rcases hsep with hk | hk | hk
           · have hks : ks = SymKind.sel := by simpa [Sym.mk, htp] using hk
             subst ks
-            cases ms <;> native_decide
+            cases ms <;> decide
           · have hks : ks = SymKind.nosel := by simpa [Sym.mk, htp] using hk
             subst ks
-            cases ms <;> native_decide
+            cases ms <;> decide
           · have hks : ks = SymKind.boundary := by simpa [Sym.mk, htp] using hk
             subst ks
-            cases ms <;> native_decide
+            cases ms <;> decide
         refine ⟨[step], symStepConfig (SymConfig.mk 13 tape p) step.result, ?_, ?_, ?_, ?_, ?_⟩
         · refine SymSteps.cons [] step (SymConfig.mk 13 tape p) SymSteps.nil ?_ ?_ ?_
           · rfl
@@ -1103,7 +1103,7 @@ lemma corridor13 (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
       let r₁ : SymTransResult := { nextState := 13, writeSym := Sym.consumed, moveDir := Dir.R }
       let step₁ : SymStep := { fromState := 13, readSym := Sym.consumed, result := r₁ }
       have htrans₁ : step₁.result ∈ VerifierSym.transition (13, Sym.consumed) := by
-        native_decide
+        decide
       have hstep₁ : SymSteps VerifierSym.transition (SymConfig.mk 13 tape p) [step₁]
           (symStepConfig (SymConfig.mk 13 tape p) step₁.result) := by
         refine SymSteps.cons [] step₁ (SymConfig.mk 13 tape p) SymSteps.nil ?_ ?_ ?_
@@ -1244,7 +1244,7 @@ lemma corridor13_stop (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
       let r₁ : SymTransResult := { nextState := 13, writeSym := Sym.consumed, moveDir := Dir.R }
       let step₁ : SymStep := { fromState := 13, readSym := Sym.consumed, result := r₁ }
       have htrans₁ : step₁.result ∈ VerifierSym.transition (13, Sym.consumed) := by
-        native_decide
+        decide
       have hstep₁ : SymSteps VerifierSym.transition (SymConfig.mk 13 tape p) [step₁]
           (symStepConfig (SymConfig.mk 13 tape p) step₁.result) := by
         refine SymSteps.cons [] step₁ (SymConfig.mk 13 tape p) SymSteps.nil ?_ ?_ ?_

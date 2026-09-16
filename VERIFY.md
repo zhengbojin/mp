@@ -67,20 +67,25 @@ lake env lean verify_check.lean > verify_out.txt
 # ① 非 native 项（预期恰为三行：propext / Classical.choice / Quot.sound）
 grep -oE "'(propext|Classical\.choice|Quot\.sound)'" verify_out.txt | sort -u
 
-# ② native_decide 机制项计数
-#    预期合计 16753 行（11 个受检定理分项：
-#      主定理三件 各 2399；subsetSumNTM2_canonical 2359；subsetSum_in_NP_F 2399；
-#      P_sym0_neq_NP_sym0 2399；subsetSum_in_NP_sym0 2399；
-#      subsetSum_kappa_lower_bound / subsetSum_not_in_P_F / subsetSum_not_in_P_sym0 / P_sym0_eq_P_F 各 0）
-grep -c 'native_decide\.ax' verify_out.txt
+# ② native_decide 处数计数（登记口径 = 处数，可直接核验）
+#    预期合计 789 处（全库逐文件 `grep -c` 之和；2026-09-15 优化前为 1471 处）
+grep -c "native_decide" Mp/*.lean | awk -F: '{s+=$2} END {print s}'
 ```
 
-**关于 `native_decide`（透明披露）**：本工程在有限状态表类证明中大量使用
-`native_decide`（编译期求值验证）。其证明在核验级依赖逐调用证书常数
-`Mp.<引理>._native.native_decide.ax_*`（本冻结版：主定理 2399 项、来自 179 条引理；
-Q10 装配件 2359 项）。这是 Lean 生态的常规机制（与 `decide` 同为构造性求值证明，
-区别仅在求值引擎）；本工程将其**显式量化披露**、不作隐藏——除此之外，
-主定理的核验级依赖**恰为标准三件公理**。
+**关于 `native_decide`（透明披露 · 2026-09-15 更新）**：本工程在有限状态表类证明中
+使用 `native_decide`（编译期求值验证；核验级依赖逐调用证书常数
+`Mp.<引理>._native.native_decide.ax_*`，属标准三件之外的机制信任）。
+本次优化把其中的**「单点查询」类 682 处**改为内核 `decide`（`of_decide_eq_true rfl`，
+**不引入额外信任**），全库处数 **1471 → 789（-46.4%）**（另有 22 处试替换后因内核
+求值超时/爆栈回退：`CBTM6` 1、`Reverse7L3` 19、`PosBound4` 1、注释 1）；保留的 789 处全部是
+**「全称 / 大表枚举」类**（形如 `∀ q : Fin 102, ∀ s : Sym, … := by native_decide`），
+此类查询要求内核展开整张转移表——实测改用 `decide` 会触发
+`maximum recursion depth has been reached`（调大 `maxRecDepth` 只是把爆栈换成超时），
+故保留本机求值。
+
+**登记口径说明**：本版起采用**处数口径**（`grep -c` 可独立复核）；
+原「项数」口径（16753 项 = 11 个受检定理的证书分项之和，随重构变动）自本版起不再作为登记口径。
+除上述机制信任外，主定理的核验级依赖**恰为标准三件公理**。
 
 ## 4. 步骤三（可选）：结构导览
 

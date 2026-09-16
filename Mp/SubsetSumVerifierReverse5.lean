@@ -494,7 +494,7 @@ lemma twelve_steps_good_block_upto {w : List F4} {cfgc cfgc' : CBTMConfig subset
       sym.1 = SymKind.consumed ∨ sym.1 = SymKind.boundary ∨ sym.1 = SymKind.sel ∨
       sym.1 = SymKind.nosel ∨ sym.1 = SymKind.beta := by
     intro _
-    cases sym.1 <;> native_decide
+    cases sym.1 <;> decide
   -- 第 3 步的结果包：r、hres3、hr、hqmem、hbranch、hmk
   have hpack : ∃ r : SymTransResult,
       step3.result = CBTMTransResult.mk (encodeState r.nextState 4 (encodeResult r))

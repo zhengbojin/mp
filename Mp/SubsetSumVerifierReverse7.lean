@@ -834,37 +834,37 @@ theorem r7_into_A_class (q : ℕ) (hq : q < 102) (s : Sym) (r : SymTransResult)
     · rw [show q = 0 from hq0]; native_decide
     · rw [show q = 1 from hq1]; native_decide
   · rcases hbb9 ⟨q, hq⟩ s r hr h9 with hq8 | hq9
-    · rw [show q = 8 from hq8]; native_decide
-    · rw [show q = 9 from hq9]; native_decide
+    · rw [show q = 8 from hq8]; decide
+    · rw [show q = 9 from hq9]; decide
   · rcases hbb10 ⟨q, hq⟩ s r hr h10 with hq77 | hq10
-    · rw [show q = 77 from hq77]; native_decide
-    · rw [show q = 10 from hq10]; native_decide
-  · rw [show q = 10 from hbb11 ⟨q, hq⟩ s r hr h11]; native_decide
+    · rw [show q = 77 from hq77]; decide
+    · rw [show q = 10 from hq10]; decide
+  · rw [show q = 10 from hbb11 ⟨q, hq⟩ s r hr h11]; decide
   · rcases hbb12 ⟨q, hq⟩ s r hr h12 with hq9 | hq12
-    · rw [show q = 9 from hq9]; native_decide
-    · rw [show q = 12 from hq12]; native_decide
+    · rw [show q = 9 from hq9]; decide
+    · rw [show q = 12 from hq12]; decide
   · rcases hbb14 ⟨q, hq⟩ s r hr h14 with hq11 | hq14
-    · rw [show q = 11 from hq11]; native_decide
-    · rw [show q = 14 from hq14]; native_decide
-  · rw [show q = 26 from hbb27 ⟨q, hq⟩ s r hr h27]; native_decide
+    · rw [show q = 11 from hq11]; decide
+    · rw [show q = 14 from hq14]; decide
+  · rw [show q = 26 from hbb27 ⟨q, hq⟩ s r hr h27]; decide
   · rcases hbb28 ⟨q, hq⟩ s r hr h28 with hq38 | hq28
-    · rw [show q = 38 from hq38]; native_decide
-    · rw [show q = 28 from hq28]; native_decide
+    · rw [show q = 38 from hq38]; decide
+    · rw [show q = 28 from hq28]; decide
   · rcases hbb38 ⟨q, hq⟩ s r hr h38 with hq27 | hq38
-    · rw [show q = 27 from hq27]; native_decide
-    · rw [show q = 38 from hq38]; native_decide
+    · rw [show q = 27 from hq27]; decide
+    · rw [show q = 38 from hq38]; decide
   · rcases hbb77 ⟨q, hq⟩ s r hr h77 with hq76 | hq77
-    · rw [show q = 76 from hq76]; native_decide
-    · rw [show q = 77 from hq77]; native_decide
+    · rw [show q = 76 from hq76]; decide
+    · rw [show q = 77 from hq77]; decide
   · rcases hbb85 ⟨q, hq⟩ s r hr h85 with hq84 | hq85
-    · rw [show q = 84 from hq84]; native_decide
-    · rw [show q = 85 from hq85]; native_decide
+    · rw [show q = 84 from hq84]; decide
+    · rw [show q = 85 from hq85]; decide
   · rcases hbb86 ⟨q, hq⟩ s r hr h86 with hq85 | hq86
-    · rw [show q = 85 from hq85]; native_decide
-    · rw [show q = 86 from hq86]; native_decide
+    · rw [show q = 85 from hq85]; decide
+    · rw [show q = 86 from hq86]; decide
   · rcases hbb87 ⟨q, hq⟩ s r hr h87 with hq86 | hq87
-    · rw [show q = 86 from hq86]; native_decide
-    · rw [show q = 87 from hq87]; native_decide
+    · rw [show q = 86 from hq86]; decide
+    · rw [show q = 87 from hq87]; decide
 
 -- ---------------------------------------------------------------------
 -- L3'' 块 3c:主体(联合归纳 P0'/P2/P5/P6/P9)——位置链核心

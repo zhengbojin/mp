@@ -102,14 +102,14 @@ lemma sym_absorb_101 (s : Sym) (r : SymTransResult)
     (hr : r ∈ VerifierSym.transition (101, s)) :
     r.nextState = 101 ∧ r.writeSym = s ∧ r.moveDir = Dir.S := by
   revert s r hr
-  native_decide
+  decide
 
 /-- 100 吸收(同上;100 出发步被 hnoTerm 排除,此处备用)。 -/
 lemma sym_absorb_100 (s : Sym) (r : SymTransResult)
     (hr : r ∈ VerifierSym.transition (100, s)) :
     r.nextState = 100 ∧ r.writeSym = s ∧ r.moveDir = Dir.S := by
   revert s r hr
-  native_decide
+  decide
 
 -- ==============================================================================
 -- q10 ① NTM2 层(S1-B 续:101 段锁定 — SymSteps 级)
@@ -278,10 +278,10 @@ lemma sym_domain_state1 (inst : SubsetSumInstance) {π : List SymStep} {cfg : Sy
           rcases hd with hd0 | hd1
           · have hbad : SymKind.boundary = SymKind.data0 := by
               simpa [Sym.boundary, hsym] using hd0
-            exact (by native_decide : SymKind.boundary ≠ SymKind.data0) hbad
+            exact (by decide : SymKind.boundary ≠ SymKind.data0) hbad
           · have hbad : SymKind.boundary = SymKind.data1 := by
               simpa [Sym.boundary, hsym] using hd1
-            exact (by native_decide : SymKind.boundary ≠ SymKind.data1) hbad
+            exact (by decide : SymKind.boundary ≠ SymKind.data1) hbad
         constructor
         · -- 步后带头 = cfg₁.headPos + 1 ≤ bits+1(带头 ≤ bits 因 ≠ bits+1)
           rw [symStepConfig, hR]

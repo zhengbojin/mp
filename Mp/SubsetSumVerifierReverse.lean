@@ -53,7 +53,7 @@ lemma borrow_scan14 (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
           rw [hbound']
         · change step.result ∈ VerifierSym.transition (14, tape p)
           rw [hbound']
-          native_decide
+          decide
       refine ⟨[step], symStepConfig (SymConfig.mk 14 tape p) step.result, hstep, ?_⟩
       rfl
   | succ n ih =>
@@ -77,7 +77,7 @@ lemma borrow_scan14 (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
               simp [Sym.mk]
             · change step.result ∈ VerifierSym.transition (14, tape p)
               rw [hsym]
-              rcases mk' with h | h <;> native_decide
+              rcases mk' with h | h <;> decide
           have hcfg : symStepConfig (SymConfig.mk 14 tape p) step.result = SymConfig.mk 14 tape₁ (p + 1) := by
             simp [symStepConfig, SymConfig.mk, step, r, tape₁, Dir.toInt]
           have hdata₁ : ∀ i : ℕ, i < n → (tape₁ (p + 1 + (i : ℤ))).1 = SymKind.data0 := by
@@ -125,7 +125,7 @@ lemma process_one_bit_borrow (k j : ℕ) (tbits ebits : List Bool)
   let step5 : SymStep := { fromState := 5, readSym := Sym.data1, result := r5 }
   have htrans5 : step5.result ∈ VerifierSym.transition (5, tape (p_e + 1 + (j : ℤ))) := by
     rw [hvj']
-    native_decide
+    decide
   let tape1 : ℤ → Sym := fun i => if i = p_e + 1 + (j : ℤ) then Sym.consumed else tape i
   have hstep5 : SymSteps VerifierSym.transition (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) [step5]
       (symStepConfig (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) step5.result) := by
@@ -135,7 +135,7 @@ lemma process_one_bit_borrow (k j : ℕ) (tbits ebits : List Bool)
       rw [hvj']
     · change step5.result ∈ VerifierSym.transition (5, tape (p_e + 1 + (j : ℤ)))
       rw [hvj']
-      native_decide
+      decide
   have hcfg5 : symStepConfig (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) step5.result =
       SymConfig.mk 76 tape1 (p_e + (j : ℤ)) := by
     simp [symStepConfig, SymConfig.mk, step5, r5, tape1, Dir.toInt]
@@ -176,7 +176,7 @@ lemma process_one_bit_borrow (k j : ℕ) (tbits ebits : List Bool)
     rw [hpos]
     rw [show tape1 (p_e - 1) = tape (p_e - 1) from by simp [tape1]; intro h; omega]
     exact hbound
-  have hend6 : { nextState := 77, writeSym := Sym.boundary, moveDir := Dir.L } ∈ VerifierSym.transition (76, Sym.boundary) := by native_decide
+  have hend6 : { nextState := 77, writeSym := Sym.boundary, moveDir := Dir.L } ∈ VerifierSym.transition (76, Sym.boundary) := by decide
   rcases scanLeftKeepPos 76 77 Sym.boundary Dir.L (j + 1) (p_e + (j : ℤ)) tape1 hkeep76 hend6 hbound6
     with ⟨π6, cfg6, hπ6, hs6, hhead6, htape6⟩
   -- 3. 状态 77 左移 (p_e - p_t - 1) 格到 #ₗ
@@ -222,7 +222,7 @@ lemma process_one_bit_borrow (k j : ℕ) (tbits ebits : List Bool)
     rw [hpos]
     rw [show tape1 (p_t - 1) = tape (p_t - 1) from by simp [tape1]; intro h; omega]
     exact hhashL
-  have hend7 : { nextState := 10, writeSym := Sym.boundary, moveDir := Dir.R } ∈ VerifierSym.transition (77, Sym.boundary) := by native_decide
+  have hend7 : { nextState := 10, writeSym := Sym.boundary, moveDir := Dir.R } ∈ VerifierSym.transition (77, Sym.boundary) := by decide
   rcases scanLeftKeepPos 77 10 Sym.boundary Dir.R n7 (p_e - 2) tape1 hkeep77 hend7 hbound7
     with ⟨π7, cfg7, hπ7, hs7, hhead7, htape7⟩
   -- 4. 状态 10 右移 j 格（4F4.4 前缀）
@@ -680,7 +680,7 @@ lemma subtract_element_borrow_reject (tbits ebits : List Bool) (p_t p_e : ℤ) (
       rw [hsel]
     · change step4.result ∈ VerifierSym.transition (4, tape p_e)
       rw [hsel]
-      native_decide
+      decide
   let tape4 : ℤ → Sym := fun i => if i = p_e then Sym.data0 else tape i
   have hcfg4 : symStepConfig (SymConfig.mk 4 tape p_e) step4.result = SymConfig.mk 5 tape4 (p_e + 1) := by
     simp [symStepConfig, SymConfig.mk, step4, r4, tape4, Dir.toInt]

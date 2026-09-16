@@ -331,7 +331,7 @@ lemma l3a_symTo4F4_getD3_im (s : Sym) :
     1. GoodBlock 拆 12 层(project_block 同款 tapeSteps_split_last 模式,CBTM3:451+)
        拿 step0-3/cfg0-3。
     2. 相位 0-2 步移动 R(表级 l3a_phase_lt3_step:transition4 定义直证(CBTM:215-218,
-       相位<3 且读 im=false → 写回原符号 R),无需 native_decide)→ cfg3.headPos = 4p+3。
+       相位<3 且读 im=false → 写回原符号 R),无需 decide)→ cfg3.headPos = 4p+3。
     3. 前 3 步写位 = 自己的头(stepConfig 写位=步前头)→ cfg3.tapeAt(4p+3) 未被写
        = cfgc.tapeAt(4p+3)。
     4. blockCorrespond → (symTo4F4 sym).getD 3 → l3a_symTo4F4_getD3_im(S4a)
@@ -896,13 +896,13 @@ lemma l3a_initial_alpha_in_elem_zone (inst : SubsetSumInstance)
           (List.getD_eq_getElem (encodeInstanceSym inst) Sym.blank hj).symm
         rw [hconv, hz]
         rw [r7_enc_getD_0 inst]
-        native_decide
+        decide
       · by_cases hm1 : j = (encodeBitsSym inst.target).length + 1
         · have hconv : (encodeInstanceSym inst)[j] = (encodeInstanceSym inst).getD j Sym.blank :=
             (List.getD_eq_getElem (encodeInstanceSym inst) Sym.blank hj).symm
           rw [hconv, hm1]
           rw [r7_enc_getD_mid inst]
-          native_decide
+          decide
         · have hj1 : j - 1 < (encodeBitsSym inst.target).length := by
             rw [r7_enc_len] at hj
             omega
@@ -964,7 +964,7 @@ lemma l3a_initial_alpha_in_elem_zone (inst : SubsetSumInstance)
           omega
         rw [hjL1]
         rw [r7_enc_getD_last inst]
-        native_decide
+        decide
       exact hval hα
 
 
@@ -1037,7 +1037,7 @@ lemma l3a_no_alpha_ge3 (inst : SubsetSumInstance)
                 have hc : (Sym.blank).1 = SymKind.alpha := by
                   simpa [hblank] using hinit
                 have hnb : (Sym.blank).1 ≠ SymKind.alpha := by
-                  native_decide
+                  decide
                 exact hnb hc
             · exfalso
               have hblank : (symInitialConfig (encodeInstanceSym inst)).tape p = Sym.blank := by
@@ -1049,7 +1049,7 @@ lemma l3a_no_alpha_ge3 (inst : SubsetSumInstance)
               have hc : (Sym.blank).1 = SymKind.alpha := by
                 simpa [hblank] using hinit
               have hnb : (Sym.blank).1 ≠ SymKind.alpha := by
-                native_decide
+                decide
               exact hnb hc
           have hinit' : ((encodeInstanceSym inst)[p.toNat]).1 = SymKind.alpha := by
             have hget : (symInitialConfig (encodeInstanceSym inst)).tape p =
@@ -1084,7 +1084,7 @@ lemma l3a_no_alpha_ge3 (inst : SubsetSumInstance)
           simp [hres]
           intro hα
           have hnb : SymKind.boundary ≠ SymKind.alpha := by
-            native_decide
+            decide
           exact hnb (by simpa [hbndr] using hα)
         · rw [if_neg hpeq]
           exact hnoα₁ p
@@ -3551,7 +3551,7 @@ lemma l3a_fork_eq_elements (inst : SubsetSumInstance) (hne : inst.elements ≠ [
         · by_cases h3 : (i : ℤ) = 1 + (encodeBitsSym inst.target).length
           · rw [h3]
             rw [hb1]
-            native_decide
+            decide
           · by_cases h4 : (i : ℤ) < 2 + (encodeBitsSym inst.target).length +
                 (encodeElementsSymWithSel inst.elements sel).length
             · have hge : (2 : ℤ) + (encodeBitsSym inst.target).length ≤ (i : ℤ) := by omega
@@ -3587,7 +3587,7 @@ lemma l3a_fork_eq_elements (inst : SubsetSumInstance) (hne : inst.elements ≠ [
                 omega
               rw [h5]
               rw [hhash]
-              native_decide
+              decide
     have hflt : (List.range (encodeInstanceSym inst).length).filter
         (fun i : ℕ => Sym.isBranch (cfg₄.tape (i : ℤ))) = [] := by
       apply List.eq_nil_iff_forall_not_mem.mpr

@@ -317,38 +317,38 @@ lemma a2_outside_closed_from (input : List Sym) (B : ℕ) {π : List SymStep} {c
                 rw [← hsel']
                 rw [hread]
                 exact hd0
-              have hne : SymKind.sel ≠ SymKind.data0 := by native_decide
+              have hne : SymKind.sel ≠ SymKind.data0 := by decide
               exact hne hbad
             · have hbad : SymKind.sel = SymKind.data1 := by
                 rw [← hsel']
                 rw [hread]
                 exact hd1
-              have hne : SymKind.sel ≠ SymKind.data1 := by native_decide
+              have hne : SymKind.sel ≠ SymKind.data1 := by decide
               exact hne hbad
             · have hbad : SymKind.sel = SymKind.consumed := by
                 rw [← hsel']
                 rw [hread]
                 exact hc0
-              have hne : SymKind.sel ≠ SymKind.consumed := by native_decide
+              have hne : SymKind.sel ≠ SymKind.consumed := by decide
               exact hne hbad
           · rcases hcell with hd0 | hd1 | hc0
             · have hbad : SymKind.nosel = SymKind.data0 := by
                 rw [← hnosel']
                 rw [hread]
                 exact hd0
-              have hne : SymKind.nosel ≠ SymKind.data0 := by native_decide
+              have hne : SymKind.nosel ≠ SymKind.data0 := by decide
               exact hne hbad
             · have hbad : SymKind.nosel = SymKind.data1 := by
                 rw [← hnosel']
                 rw [hread]
                 exact hd1
-              have hne : SymKind.nosel ≠ SymKind.data1 := by native_decide
+              have hne : SymKind.nosel ≠ SymKind.data1 := by decide
               exact hne hbad
             · have hbad : SymKind.nosel = SymKind.consumed := by
                 rw [← hnosel']
                 rw [hread]
                 exact hc0
-              have hne : SymKind.nosel ≠ SymKind.consumed := by native_decide
+              have hne : SymKind.nosel ≠ SymKind.consumed := by decide
               exact hne hbad
         change cfg'.headPos + step.result.moveDir.toInt ≤ (B : ℤ) - 1
         rw [hL, Dir.toInt]
@@ -441,17 +441,17 @@ lemma a2_sym100_head_from (input : List Sym) (B : ℕ) {π : List SymStep} {cfg 
           · have hbad : SymKind.boundary = SymKind.data0 := by
               rw [← hbnd]
               exact hd0
-            have hne : SymKind.boundary ≠ SymKind.data0 := by native_decide
+            have hne : SymKind.boundary ≠ SymKind.data0 := by decide
             exact hne hbad
           · have hbad : SymKind.boundary = SymKind.data1 := by
               rw [← hbnd]
               exact hd1
-            have hne : SymKind.boundary ≠ SymKind.data1 := by native_decide
+            have hne : SymKind.boundary ≠ SymKind.data1 := by decide
             exact hne hbad
           · have hbad : SymKind.boundary = SymKind.consumed := by
               rw [← hbnd]
               exact hc0
-            have hne : SymKind.boundary ≠ SymKind.consumed := by native_decide
+            have hne : SymKind.boundary ≠ SymKind.consumed := by decide
             exact hne hbad
         simp [symStepConfig, hdR, Dir.toInt]
         omega

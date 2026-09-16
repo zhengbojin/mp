@@ -456,11 +456,11 @@ lemma transition4_phase_succ (st : ℕ) (s : F4) (r : CBTMTransResult)
           · simp [hq2] at hr
             rcases hr with h | h <;> rw [h]
             · rw [decodeState_encodeState 2 4 (encodeResult (SymTransResult.mk 2 Sym.sel Dir.R))
-                (by norm_num) (by native_decide)]
+                (by norm_num) (by decide)]
               dsimp [decodeState, stepsPerSym, regBound] at h33 ⊢
               rw [h33]
             · rw [decodeState_encodeState 2 4 (encodeResult (SymTransResult.mk 2 Sym.nosel Dir.R))
-                (by norm_num) (by native_decide)]
+                (by norm_num) (by decide)]
               dsimp [decodeState, stepsPerSym, regBound] at h33 ⊢
               rw [h33]
           · simp [hq2] at hr

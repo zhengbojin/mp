@@ -704,7 +704,7 @@ lemma a2p_s1_head (inst : SubsetSumInstance) (ht : 0 < inst.target) (gS : List S
           intro hc
           have hf₁ : cfg₁.state ∈ a2p_fmtSet := by
             rw [hq1]
-            native_decide
+            decide
           have hkind := a2p_fmt_kind_stable inst gS hprev hf₁ cfg₁.headPos
           rw [hread] at hdata
           rw [hc] at hdata hkind
@@ -770,7 +770,7 @@ lemma a2p_s2_head (inst : SubsetSumInstance) (hm : 0 < (encodeElementsSym inst.e
             omega
           have hf₁ : cfg₁.state ∈ a2p_fmtSet := by
             rw [hq1]
-            native_decide
+            decide
           have hkind := a2p_fmt_kind_stable inst gS hprev hf₁ cfg₁.headPos
           rw [hread] at hb
           rcases hkind with hk | hs
@@ -808,7 +808,7 @@ lemma a2p_s2_head (inst : SubsetSumInstance) (hm : 0 < (encodeElementsSym inst.e
           intro hc
           have hf₁ : cfg₁.state ∈ a2p_fmtSet := by
             rw [hq2]
-            native_decide
+            decide
           have hkind := a2p_fmt_kind_stable inst gS hprev hf₁ cfg₁.headPos
           rw [hread] at hd
           rw [hc] at hd hkind
@@ -1095,7 +1095,7 @@ lemma a2p_s56_head (inst : SubsetSumInstance)
               have hz' : cfg₁.headPos = 0 := by omega
               have hf₁ : cfg₁.state ∈ a2p_fmtSet := by
                 rw [h29e]
-                native_decide
+                decide
               have hkind := a2p_fmt_kind_stable inst gS hprev hf₁ cfg₁.headPos
               rw [hz'] at hkind
               have htr : step.result ∈ VerifierSym.transition (29, cfg₁.tape cfg₁.headPos) := by
@@ -1159,7 +1159,7 @@ lemma a2p_s56_head (inst : SubsetSumInstance)
           exact hbb (cfg₁.tape cfg₁.headPos) step.result htr hq26
         have hf₁ : cfg₁.state ∈ a2p_fmtSet := by
           rw [hq1']
-          native_decide
+          decide
         have hge := a2p_sel_ge_n2 inst hm ht gS hprev hno101₀ hf₁ cfg₁.headPos hsel
         have hT56 := ih hno101₀ (Or.inl hq1')
         rw [symStepConfig]
@@ -1265,7 +1265,7 @@ lemma a2p_s38_head (inst : SubsetSumInstance)
           intro hc
           have hf₁ : cfg₁.state ∈ a2p_fmtSet := by
             rw [h38e]
-            native_decide
+            decide
           have hkind := a2p_fmt_kind_stable inst gS hprev hf₁ cfg₁.headPos
           rw [hc] at hkind
           have htr : step.result ∈ VerifierSym.transition (38, cfg₁.tape cfg₁.headPos) := by
@@ -1340,7 +1340,7 @@ lemma a2p_s28_head (inst : SubsetSumInstance)
           intro hc
           have hf₁ : cfg₁.state ∈ a2p_fmtSet := by
             rw [h28e]
-            native_decide
+            decide
           have hkind := a2p_fmt_kind_stable inst gS hprev hf₁ cfg₁.headPos
           rw [hc] at hkind
           have htr : step.result ∈ VerifierSym.transition (28, cfg₁.tape cfg₁.headPos) := by

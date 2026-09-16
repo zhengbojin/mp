@@ -1024,7 +1024,7 @@ lemma trans1_keep (s : Sym) (hs : s.1 = SymKind.data0 ∨ s.1 = SymKind.data1) :
     { nextState := 1, writeSym := s, moveDir := Dir.R } ∈ VerifierSym.transition (1, s) := by
   rcases s with ⟨k, m⟩
   have hs' : k = SymKind.data0 ∨ k = SymKind.data1 := by simpa using hs
-  rcases hs' with hk | hk <;> subst k <;> cases m <;> native_decide
+  rcases hs' with hk | hk <;> subst k <;> cases m <;> decide
 
 /-- 状态 2 读 α(无标记)/data 符号：α 写 sel，其余写回自身，右移
     （β 与带标记 α 已非元素标记，读到即陷阱）。 -/
@@ -1039,9 +1039,9 @@ lemma trans2_sel (s : Sym)
   · rcases hk with ⟨hkα, hm⟩
     subst k
     subst m
-    native_decide
-  · subst k; cases m <;> native_decide
-  · subst k; cases m <;> native_decide
+    decide
+  · subst k; cases m <;> decide
+  · subst k; cases m <;> decide
 
 /-- 状态 1 右扫 n 格 data 符号（写回自身）到 #₀，转状态 2，带头 #₀ 右侧。 -/
 lemma scanRight1 (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
@@ -1061,7 +1061,7 @@ lemma scanRight1 (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
         rw [hbound']
       · change step.result ∈ VerifierSym.transition (1, tape p)
         rw [hbound']
-        native_decide
+        decide
       · simp [symStepConfig, SymConfig.mk, step, r, Dir.toInt]
       · simp [symStepConfig, SymConfig.mk, step, r]
         funext i
@@ -1133,7 +1133,7 @@ lemma scanRight2_sel (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
           rw [hbound']
         · change step.result ∈ VerifierSym.transition (2, tape p)
           rw [hbound']
-          native_decide
+          decide
       · simp [symStepConfig, SymConfig.mk, step, r, Dir.toInt]
       · intro i hlt
         simp [symStepConfig, SymConfig.mk, step, r, hbound']
@@ -1347,7 +1347,7 @@ lemma trans24_data0 (s : Sym) (hk : s.1 = SymKind.data0) (hm : s.2 = false) :
   have hk' : k = SymKind.data0 := by simpa using hk
   have hm' : m = false := by simpa using hm
   subst m; subst k
-  native_decide
+  decide
 
 /-- 状态 24 读 data1（m=0）：首位即 1：v>0 ✓，转 29 扫完数据。 -/
 lemma trans24_data1 (s : Sym) (hk : s.1 = SymKind.data1) (hm : s.2 = false) :
@@ -1356,7 +1356,7 @@ lemma trans24_data1 (s : Sym) (hk : s.1 = SymKind.data1) (hm : s.2 = false) :
   have hk' : k = SymKind.data1 := by simpa using hk
   have hm' : m = false := by simpa using hm
   subst m; subst k
-  native_decide
+  decide
 
 /-- 状态 24 读 data（m=0）：d0 → 101（最高位 0：拒绝）、d1 → 29（v>0）。 -/
 lemma trans24_data (s : Sym) (hk : s.1 = SymKind.data0 ∨ s.1 = SymKind.data1) (hm : s.2 = false) :
@@ -1369,10 +1369,10 @@ lemma trans24_data (s : Sym) (hk : s.1 = SymKind.data0 ∨ s.1 = SymKind.data1) 
   rcases hk' with hk' | hk'
   · subst k
     left
-    native_decide
+    decide
   · subst k
     right
-    native_decide
+    decide
 
 /-- 状态 29 读 data（m=0）：v>0 已证，扫完数据保持 29。 -/
 lemma trans29_data (s : Sym) (hk : s.1 = SymKind.data0 ∨ s.1 = SymKind.data1) (hm : s.2 = false) :
@@ -1381,7 +1381,7 @@ lemma trans29_data (s : Sym) (hk : s.1 = SymKind.data0 ∨ s.1 = SymKind.data1) 
   have hk' : k = SymKind.data0 ∨ k = SymKind.data1 := by simpa using hk
   have hm' : m = false := by simpa using hm
   subst m
-  rcases hk' with hk' | hk' <;> subst k <;> native_decide
+  rcases hk' with hk' | hk' <;> subst k <;> decide
 
 /-- 状态 29 读选择符（m=0）：配对 → 26。 -/
 lemma trans29_sel (s : Sym) (hk : s.1 = SymKind.sel ∨ s.1 = SymKind.nosel) (hm : s.2 = false) :
@@ -1390,7 +1390,7 @@ lemma trans29_sel (s : Sym) (hk : s.1 = SymKind.sel ∨ s.1 = SymKind.nosel) (hm
   have hk' : k = SymKind.sel ∨ k = SymKind.nosel := by simpa using hk
   have hm' : m = false := by simpa using hm
   subst m
-  rcases hk' with hk' | hk' <;> subst k <;> native_decide
+  rcases hk' with hk' | hk' <;> subst k <;> decide
 
 /-- 状态 26 读 data0（m=0）：下一对最高位 0：拒绝。 -/
 lemma trans26_data0 (s : Sym) (hk : s.1 = SymKind.data0) (hm : s.2 = false) :
@@ -1400,7 +1400,7 @@ lemma trans26_data0 (s : Sym) (hk : s.1 = SymKind.data0) (hm : s.2 = false) :
   have hm' : m = false := by simpa using hm
   subst m
   subst k
-  native_decide
+  decide
 
 /-- 状态 26 读 data1（m=0）：转 29 左移（最右位 1，29 扫完剩余）。 -/
 lemma trans26_data1 (s : Sym) (hk : s.1 = SymKind.data1) (hm : s.2 = false) :
@@ -1410,12 +1410,12 @@ lemma trans26_data1 (s : Sym) (hk : s.1 = SymKind.data1) (hm : s.2 = false) :
   have hm' : m = false := by simpa using hm
   subst m
   subst k
-  native_decide
+  decide
 
 /-- 状态 26 读 #₀（m=0）：转 27 左移。 -/
 lemma trans26_hash : { nextState := 27, writeSym := Sym.boundary, moveDir := Dir.L } ∈
     VerifierSym.transition (26, Sym.boundary) := by
-  native_decide
+  decide
 
 /-- 状态 27 读 data1（m=0）：target 最高位 1（target>0）：转 38 左移。 -/
 lemma trans27_data1 (s : Sym) (hk : s.1 = SymKind.data1) (hm : s.2 = false) :
@@ -1425,7 +1425,7 @@ lemma trans27_data1 (s : Sym) (hk : s.1 = SymKind.data1) (hm : s.2 = false) :
   have hm' : m = false := by simpa using hm
   subst m
   subst k
-  native_decide
+  decide
 
 /-- 状态 27 读 data0（m=0）：target 最高位 0（target=0 或前导 0）：拒绝。 -/
 lemma trans27_data0 (s : Sym) (hk : s.1 = SymKind.data0) (hm : s.2 = false) :
@@ -1435,7 +1435,7 @@ lemma trans27_data0 (s : Sym) (hk : s.1 = SymKind.data0) (hm : s.2 = false) :
   have hm' : m = false := by simpa using hm
   subst m
   subst k
-  native_decide
+  decide
 
 /-- 状态 38 读 data（m=0）：写回自身左移。 -/
 lemma trans38_data (s : Sym) (hk : s.1 = SymKind.data0 ∨ s.1 = SymKind.data1) (hm : s.2 = false) :
@@ -1444,24 +1444,24 @@ lemma trans38_data (s : Sym) (hk : s.1 = SymKind.data0 ∨ s.1 = SymKind.data1) 
   have hk' : k = SymKind.data0 ∨ k = SymKind.data1 := by simpa using hk
   have hm' : m = false := by simpa using hm
   subst m
-  rcases hk' with hk' | hk' <;> subst k <;> native_decide
+  rcases hk' with hk' | hk' <;> subst k <;> decide
 
 /-- 状态 38 读 #ₗ（m=0）：转 28 右移。 -/
 lemma trans38_hash : { nextState := 28, writeSym := Sym.boundary, moveDir := Dir.R } ∈
     VerifierSym.transition (38, Sym.boundary) := by
-  native_decide
+  decide
 
 /-- 状态 28 读 data：写回自身右移。 -/
 lemma trans28_data (s : Sym) (hk : s.1 = SymKind.data0 ∨ s.1 = SymKind.data1) :
     { nextState := 28, writeSym := s, moveDir := Dir.R } ∈ VerifierSym.transition (28, s) := by
   rcases s with ⟨k, m⟩
   have hk' : k = SymKind.data0 ∨ k = SymKind.data1 := by simpa using hk
-  rcases hk' with hk' | hk' <;> subst k <;> cases m <;> native_decide
+  rcases hk' with hk' | hk' <;> subst k <;> cases m <;> decide
 
 /-- 状态 28 读 #₀：转 4 右移。 -/
 lemma trans28_hash : { nextState := 4, writeSym := Sym.boundary, moveDir := Dir.R } ∈
     VerifierSym.transition (28, Sym.boundary) := by
-  native_decide
+  decide
 
 /-- 通用右移引理：状态 q 右移 n 格（读符号满足 keep 条件，写回自身右移）。 -/
 lemma scanRightKeep (q : ℕ) (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
@@ -1664,13 +1664,13 @@ lemma trans76_keep (s : Sym)
   rcases hs with hk | hk | hk
   · have hk' : k = SymKind.consumed := by simpa using hk
     subst hk'
-    cases m <;> native_decide
+    cases m <;> decide
   · have hk' : k = SymKind.data0 := by simpa using hk
     subst hk'
-    cases m <;> native_decide
+    cases m <;> decide
   · have hk' : k = SymKind.data1 := by simpa using hk
     subst hk'
-    cases m <;> native_decide
+    cases m <;> decide
 
 /-- 状态 77 读 data0/data1：写回自身左移。 -/
 lemma trans77_keep (s : Sym)
@@ -1680,10 +1680,10 @@ lemma trans77_keep (s : Sym)
   rcases hs with hk | hk
   · have hk' : k = SymKind.data0 := by simpa using hk
     subst hk'
-    cases m <;> native_decide
+    cases m <;> decide
   · have hk' : k = SymKind.data1 := by simpa using hk
     subst hk'
-    cases m <;> native_decide
+    cases m <;> decide
 
 /-- 状态 8 读 consumed/data0/data1：写回自身左移。 -/
 lemma trans8_keep (s : Sym)
@@ -1693,13 +1693,13 @@ lemma trans8_keep (s : Sym)
   rcases hs with hk | hk | hk
   · have hk' : k = SymKind.consumed := by simpa using hk
     subst hk'
-    cases m <;> native_decide
+    cases m <;> decide
   · have hk' : k = SymKind.data0 := by simpa using hk
     subst hk'
-    cases m <;> native_decide
+    cases m <;> decide
   · have hk' : k = SymKind.data1 := by simpa using hk
     subst hk'
-    cases m <;> native_decide
+    cases m <;> decide
 
 /-- 状态 9 读 data0/data1：写回自身左移。 -/
 lemma trans9_keep (s : Sym)
@@ -1709,10 +1709,10 @@ lemma trans9_keep (s : Sym)
   rcases hs with hk | hk
   · have hk' : k = SymKind.data0 := by simpa using hk
     subst hk'
-    cases m <;> native_decide
+    cases m <;> decide
   · have hk' : k = SymKind.data1 := by simpa using hk
     subst hk'
-    cases m <;> native_decide
+    cases m <;> decide
 
 /-- 通用左移引理：状态 q 左移 n 格非 boundary（写回自身），读 boundary 转 q'（写 w，方向 d）。 -/
 lemma scanLeftKeep (q q' : ℕ) (w : Sym) (d : Dir) (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
@@ -1971,13 +1971,13 @@ lemma trans10_marked (s : Sym) (hs : s.2 = true) (hk : s.1 = SymKind.data0 ∨ s
   have hm : m = true := by simpa using hs
   have hk' : k = SymKind.data0 ∨ k = SymKind.data1 := by simpa using hk
   subst m
-  cases hk' <;> subst k <;> native_decide
+  cases hk' <;> subst k <;> decide
 
 /-- 状态 14 读 (data0, m)：借位传播（0 写 1，右移）。 -/
 lemma trans14_borrow (m : Bool) :
     { nextState := 14, writeSym := Sym.data1 m, moveDir := Dir.R } ∈
       VerifierSym.transition (14, (SymKind.data0, m)) := by
-  cases m <;> native_decide
+  cases m <;> decide
 
 /-- 状态 13 读 consumed：写 Sym.consumed 右移。 -/
 lemma trans13_cons (s : Sym) (hs : s.1 = SymKind.consumed) :
@@ -1985,7 +1985,7 @@ lemma trans13_cons (s : Sym) (hs : s.1 = SymKind.consumed) :
   rcases s with ⟨k, m⟩
   have hk : k = SymKind.consumed := by simpa using hs
   subst k
-  cases m <;> native_decide
+  cases m <;> decide
 
 /-- 状态 13 右移 n 格 consumed 到 v_{j+1}（data0/data1），转状态 5。 -/
 lemma subOne_some_of_ge_one (bits : List Bool) (h : 1 ≤ bitsValue bits) :
@@ -2769,7 +2769,7 @@ lemma clear_element_correct (ebits : List Bool) (p_e : ℤ) (tape : ℤ → Sym)
       rw [hsel]
     · change step1.result ∈ VerifierSym.transition (4, tape p_e)
       rw [hsel]
-      native_decide
+      decide
   let tape1 : ℤ → Sym := fun i => if i = p_e then Sym.data0 else tape i
   have hcfg1 : symStepConfig (SymConfig.mk 4 tape p_e) step1.result =
       SymConfig.mk 20 tape1 (p_e - 1) := by
@@ -2789,7 +2789,7 @@ lemma clear_element_correct (ebits : List Bool) (p_e : ℤ) (tape : ℤ → Sym)
       have hne : p_e - 1 ≠ p_e := by omega
       simp [tape1, hne]
       rw [hbound₀]
-      native_decide
+      decide
   let tape2 : ℤ → Sym := fun i => if i = p_e - 1 then Sym.data0 else tape1 i
   have hcfg2 : symStepConfig (SymConfig.mk 20 tape1 (p_e - 1)) step2.result =
       SymConfig.mk 21 tape2 p_e := by

@@ -153,7 +153,7 @@ lemma pi1_fmt_split (input : List Sym) (π₁ : List SymStep) (cfg₄ : SymConfi
             · rcases h2 with ⟨_, _, hst2, _, _, _⟩
               exact Or.inr (Or.inr hst2)
           have hqmem : cfg₀.state ∈ ({0, 1, 2} : Finset ℕ) := by
-            rcases hstate3 with h | h | h <;> rw [h] <;> native_decide
+            rcases hstate3 with h | h | h <;> rw [h] <;> decide
           have htr0 : step.result ∈ VerifierSym.transition (cfg₀.state, step.readSym) := by
             rw [← h_read] at h_trans
             exact h_trans
@@ -369,7 +369,7 @@ lemma pi1_fmt_split (input : List Sym) (π₁ : List SymStep) (cfg₄ : SymConfi
           · left
             dsimp [symStepConfig]
             rw [hnext24]
-            native_decide
+            decide
         · -- fmt 段:当前步的 fromState ∈ fmtStates 或 4
           rcases hC with ⟨π₀₂, πfmt₀, step₂₃, step₃₂₄, cfg₂, cfg₃, hπeq, hSym, hst2, hexp,
             hf23, hn23, hr23, ht23, hbr, hcfg₃, hf324, hn324, hr324, ht324, hSymf, hfm₀, hstfin⟩
@@ -565,7 +565,7 @@ lemma elem_cell_sel_implies_input_alpha (input : List Sym) (π₁ : List SymStep
                      r.writeSym = Sym.mk SymKind.boundary true)) := by
                   intro q hq
                   rcases hq with hq | hq | hq | hq | hq | hq | hq | hq | hq | hq <;> subst q <;>
-                    native_decide
+                    decide
                 have hwr := hdecW cfg₁.state hS₁ (cfg₁.tape cfg₁.headPos).1
                   (cfg₁.tape cfg₁.headPos).2 step.result htr hno101step
                 rcases hwr with hwb | hselw | h3w

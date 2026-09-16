@@ -40,7 +40,7 @@ namespace Mp
 - ① Q∧R 联合归纳一次证——Q（带外格值 ∈ 封闭集 {data0, data1, consumed}）与
   R（51 态带头 ≤ |w|−1）互相依赖（Q 的写步排除 51 写 boundary 需 R；R 的入边
   21 读 sel/nosel 的读位带内需 Q），两个独立定理循环引用被 Lean 拒绝，必须单归纳证 Q ∧ R；
-- ② 带外封闭集迭代——native_decide 判定为假 = 真实表行反例（12 读 blank 写 data0 true、
+- ② 带外封闭集迭代——decide 判定为假 = 真实表行反例（12 读 blank 写 data0 true、
   5 读 data 写 consumed），集从 {blank, data1} 扩为三类；51 写 boundary 由 R 排除；
 - ③ 状态-位置链只需两个锚点（21→51 L、22→23 L），不需 33 态逐态界。
 -/
@@ -49,7 +49,7 @@ namespace Mp
 theorem q12_state23_boundary_R :
     SymTransResult.mk 100 (Sym.mk SymKind.boundary false) Dir.R ∈
       VerifierSym.transition (23, Sym.mk SymKind.boundary false) := by
-  native_decide
+  decide
 
 /-- 探针 2（表级）：100 是吸收自环。 -/
 theorem q12_state100_absorb (k : SymKind) (m : Bool) (r : SymTransResult)
@@ -76,12 +76,12 @@ theorem q12_reads_outside_counterexample :
       · rfl
       · rfl
       · have h : SymTransResult.mk 1 Sym.boundary Dir.R ∈ VerifierSym.transition (0, Sym.boundary) := by
-          native_decide
+          decide
         simpa [input, symInitialConfig] using h
     · rfl
     · rfl
     · have h : SymTransResult.mk 1 Sym.blank Dir.R ∈ VerifierSym.transition (1, Sym.blank) := by
-        native_decide
+        decide
       simpa [input, symInitialConfig, symStepConfig, step0, step1, cfg1, Dir.toInt] using h
   · norm_num [symInitialConfig, symStepConfig, input, step0, step1, cfg1, Dir.toInt]
 
@@ -238,38 +238,38 @@ theorem q12_outside_closed_and_51_bound (input : List Sym) (π : List SymStep) (
                 rw [← hsel']
                 rw [hread]
                 exact hd0
-              have hne : SymKind.sel ≠ SymKind.data0 := by native_decide
+              have hne : SymKind.sel ≠ SymKind.data0 := by decide
               exact hne hbad
             · have hbad : SymKind.sel = SymKind.data1 := by
                 rw [← hsel']
                 rw [hread]
                 exact hd1
-              have hne : SymKind.sel ≠ SymKind.data1 := by native_decide
+              have hne : SymKind.sel ≠ SymKind.data1 := by decide
               exact hne hbad
             · have hbad : SymKind.sel = SymKind.consumed := by
                 rw [← hsel']
                 rw [hread]
                 exact hc0
-              have hne : SymKind.sel ≠ SymKind.consumed := by native_decide
+              have hne : SymKind.sel ≠ SymKind.consumed := by decide
               exact hne hbad
           · rcases hcell with hd0 | hd1 | hc0
             · have hbad : SymKind.nosel = SymKind.data0 := by
                 rw [← hnosel']
                 rw [hread]
                 exact hd0
-              have hne : SymKind.nosel ≠ SymKind.data0 := by native_decide
+              have hne : SymKind.nosel ≠ SymKind.data0 := by decide
               exact hne hbad
             · have hbad : SymKind.nosel = SymKind.data1 := by
                 rw [← hnosel']
                 rw [hread]
                 exact hd1
-              have hne : SymKind.nosel ≠ SymKind.data1 := by native_decide
+              have hne : SymKind.nosel ≠ SymKind.data1 := by decide
               exact hne hbad
             · have hbad : SymKind.nosel = SymKind.consumed := by
                 rw [← hnosel']
                 rw [hread]
                 exact hc0
-              have hne : SymKind.nosel ≠ SymKind.consumed := by native_decide
+              have hne : SymKind.nosel ≠ SymKind.consumed := by decide
               exact hne hbad
         -- 51 带头 = 21 带头 - 1 ≤ |w| - 2 ≤ |w| - 1
         change cfg'.headPos + step.result.moveDir.toInt ≤ (input.length : ℤ) - 1
@@ -647,16 +647,16 @@ lemma enc_elements_no_boundary {elems : List ℕ} {s : Sym} (hs : s ∈ encodeEl
       rcases hs with hsα | hsrest
       · rw [hsα]
         intro h
-        exact (by native_decide : SymKind.alpha ≠ SymKind.boundary) h
+        exact (by decide : SymKind.alpha ≠ SymKind.boundary) h
       · rw [List.mem_append] at hsrest
         rcases hsrest with hbits | hrest
         · rcases mem_encodeBitsSymNative_data v hbits with h0 | h1
           · rw [h0]
             intro h
-            exact (by native_decide : SymKind.data0 ≠ SymKind.boundary) h
+            exact (by decide : SymKind.data0 ≠ SymKind.boundary) h
           · rw [h1]
             intro h
-            exact (by native_decide : SymKind.data1 ≠ SymKind.boundary) h
+            exact (by decide : SymKind.data1 ≠ SymKind.boundary) h
         · exact ih hrest
 
 /-- 结构：bits 区（1 ≤ j ≤ |A|）的格是 data 类。 -/
@@ -758,9 +758,9 @@ lemma enc_prefix_unique {inst inst' : SubsetSumInstance} {g g' : List Sym}
         exact encodeBitsSym_data inst'.target (encodeBitsSym inst.target).length hlt
       rcases hdata with hd0 | hd1
       · have : Sym.boundary.1 = SymKind.data0 := by rwa [hcong]
-        exact (by native_decide : SymKind.boundary ≠ SymKind.data0) this
+        exact (by decide : SymKind.boundary ≠ SymKind.data0) this
       · have : Sym.boundary.1 = SymKind.data1 := by rwa [hcong]
-        exact (by native_decide : SymKind.boundary ≠ SymKind.data1) this
+        exact (by decide : SymKind.boundary ≠ SymKind.data1) this
     · have hlt' : (encodeBitsSym inst'.target).length < (encodeBitsSym inst.target).length := by omega
       have hcong := congrArg (fun l : List Sym => l.getD (1 + (encodeBitsSym inst'.target).length) Sym.blank) h.symm
       have hmid : (encodeInstanceSym inst' ++ g').getD (1 + (encodeBitsSym inst'.target).length) Sym.blank
@@ -802,9 +802,9 @@ lemma enc_prefix_unique {inst inst' : SubsetSumInstance} {g g' : List Sym}
         exact encodeBitsSym_data inst.target (encodeBitsSym inst'.target).length hlt'
       rcases hdata with hd0 | hd1
       · have : Sym.boundary.1 = SymKind.data0 := by rwa [hcong]
-        exact (by native_decide : SymKind.boundary ≠ SymKind.data0) this
+        exact (by decide : SymKind.boundary ≠ SymKind.data0) this
       · have : Sym.boundary.1 = SymKind.data1 := by rwa [hcong]
-        exact (by native_decide : SymKind.boundary ≠ SymKind.data1) this
+        exact (by decide : SymKind.boundary ≠ SymKind.data1) this
   -- 2. A = A'
   have hA : encodeBitsSym inst.target = encodeBitsSym inst'.target := by
     have hall : ∀ j : ℕ, j < (encodeBitsSym inst.target).length →
@@ -984,7 +984,7 @@ lemma enc_alpha_count_eq_elems (elems : List ℕ) :
         cases rest <;> simp [encodeElementsSym]]
       rw [List.filter_append, List.filter_append]
       rw [show ([Sym.alpha] : List Sym).filter Sym.isBranch = [Sym.alpha] from by
-        native_decide]
+        decide]
       rw [filter_branch_encodeBitsSymNative v]
       simp [ih]
 
@@ -1013,7 +1013,7 @@ lemma encodeBitsSymNative_no_beta (n : ℕ) : ∀ s ∈ encodeBitsSymNative n, s
   · rw [if_pos h]
     native_decide
   · rw [if_neg h]
-    native_decide
+    decide
 
 /-- 元素区编码符号非 β（α/数据位均非 β）。 -/
 lemma encodeElementsSym_no_beta (elems : List ℕ) : ∀ s ∈ encodeElementsSym elems, s.1 ≠ SymKind.beta := by
@@ -1030,7 +1030,7 @@ lemma encodeElementsSym_no_beta (elems : List ℕ) : ∀ s ∈ encodeElementsSym
         rcases hs with hs | hs
         · rw [List.mem_singleton] at hs
           rw [hs]
-          native_decide
+          decide
         · exact encodeBitsSymNative_no_beta v s hs
       · exact ih s hs
 
@@ -1048,16 +1048,16 @@ lemma enc_no_beta (inst : SubsetSumInstance) : ∀ s ∈ encodeInstanceSym inst,
         rcases hs with hs | hs
         · rw [List.mem_singleton] at hs
           rw [hs]
-          native_decide
-        · rcases encodeBitsSym_nonboundary inst.target s hs with h | h <;> rw [h] <;> native_decide
+          decide
+        · rcases encodeBitsSym_nonboundary inst.target s hs with h | h <;> rw [h] <;> decide
       · rw [List.mem_singleton] at hs
         rw [hs]
-        native_decide
+        decide
     · have hno := encodeElementsSym_no_beta inst.elements s hs
       exact hno
   · rw [List.mem_singleton] at hs
     rw [hs]
-    native_decide
+    decide
 
 -- ============================================================================
 -- §1 表级分类引理的应用形态（q ∈ legalStates 版本）
@@ -1129,7 +1129,7 @@ lemma no_beta_invariant (inst : SubsetSumInstance) (π : List SymStep) (cfg : Sy
           List.get_mem (encodeInstanceSym inst) ⟨p.toNat, h.2⟩
         exact enc_no_beta inst _ hmem
       · rw [dif_neg h]
-        native_decide
+        decide
   | cons π₀ step cfg₁ hprev hfrom hread htrans ih =>
       intro p
       dsimp [symStepConfig, SymConfig.mk]
@@ -1262,7 +1262,7 @@ lemma encodeElementsSymWithSel_no_branch (elems : List ℕ) (sel : List Bool) :
             rcases hs with hs | hs
             · rw [List.mem_singleton] at hs
               rw [hs]
-              cases b <;> native_decide
+              cases b <;> decide
             · exact encodeBitsSymNative_no_branch v s hs
           · exact ih bs s hs
 
@@ -1300,7 +1300,7 @@ lemma enc_filter_branch_eq_elems (inst : SubsetSumInstance) :
     ((encodeInstanceSym inst).filter Sym.isBranch).length = inst.elements.length := by
   unfold encodeInstanceSym
   rw [List.filter_append, List.filter_append, List.filter_append, List.filter_append]
-  rw [show ([Sym.boundary] : List Sym).filter Sym.isBranch = [] by native_decide,
+  rw [show ([Sym.boundary] : List Sym).filter Sym.isBranch = [] by decide,
       encodeBitsSym_filter_nil inst.target]
   simp [enc_alpha_count_eq_elems inst.elements]
 
@@ -1544,7 +1544,7 @@ theorem sym_accept_fork_eq_elems (inst : SubsetSumInstance) (hne : inst.elements
         · by_cases h3 : (i : ℤ) = 1 + (encodeBitsSym inst.target).length
           · rw [h3]
             rw [hb1]
-            native_decide
+            decide
           · by_cases h4 : (i : ℤ) < 2 + (encodeBitsSym inst.target).length +
                 (encodeElementsSymWithSel inst.elements sel).length
             · have hge : (2 : ℤ) + (encodeBitsSym inst.target).length ≤ (i : ℤ) := by omega
@@ -1580,7 +1580,7 @@ theorem sym_accept_fork_eq_elems (inst : SubsetSumInstance) (hne : inst.elements
                 omega
               rw [h5]
               rw [hhash]
-              native_decide
+              decide
     have hflt : (List.range (encodeInstanceSym inst).length).filter
         (fun i : ℕ => Sym.isBranch (cfg₄.tape (i : ℤ))) = [] := by
       apply List.eq_nil_iff_forall_not_mem.mpr

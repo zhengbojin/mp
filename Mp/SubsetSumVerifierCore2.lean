@@ -78,7 +78,7 @@ lemma scanLeft3_check (p : ℤ) (tape : ℤ → Sym)
       rw [hbound]
     · change step.result ∈ VerifierSym.transition (3, tape p)
       rw [hbound]
-      native_decide
+      decide
   · simp [symStepConfig, SymConfig.mk, step, r]
   · simp [symStepConfig, SymConfig.mk, step, r, Dir.toInt]
     omega
@@ -133,7 +133,7 @@ lemma expand_place_correct_ext (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
       rw [hbound]
     · change step.result ∈ VerifierSym.transition (20, tape p)
       rw [hbound]
-      native_decide
+      decide
   let tape1 : ℤ → Sym := fun i => if i = p then Sym.data0 else tape i
   have hcfg : symStepConfig (SymConfig.mk 20 tape p) step.result = SymConfig.mk 21 tape1 (p + 1) := by
     simp [symStepConfig, SymConfig.mk, step, r, tape1, Dir.toInt]
@@ -184,7 +184,7 @@ lemma expand_place_correct_ext (n : ℕ) (p : ℤ) (tape : ℤ → Sym)
       rw [h, hrep]
     have htrans4 : step4.result ∈ VerifierSym.transition (51, cfg'.tape cfg'.headPos) := by
       rw [hread4]
-      native_decide
+      decide
     have hstep4 : SymSteps VerifierSym.transition cfg' [step4] (symStepConfig cfg' step4.result) := by
       refine SymSteps.cons [] step4 cfg' SymSteps.nil ?_ ?_ ?_
       · simpa [step4] using hs51.symm
@@ -577,11 +577,11 @@ lemma subtract_loop_last (tbits ebits : List Bool) (j : ℕ) (p_t p_e : ℤ) (ta
                 · unfold step84 r84
                   rw [hs]
                   simp [SymConfig.mk]
-                  native_decide
+                  decide
                 · unfold step84 r84
                   rw [hs]
                   simp [SymConfig.mk]
-                  native_decide
+                  decide
                 · unfold step84 r84
                   have hdec : ∀ s : Sym, s.1 = SymKind.boundary →
                       { nextState := 84, writeSym := s, moveDir := Dir.L } ∈ VerifierSym.transition (13, s) := by
@@ -589,7 +589,7 @@ lemma subtract_loop_last (tbits ebits : List Bool) (j : ℕ) (p_t p_e : ℤ) (ta
                     rcases s with ⟨k, m⟩
                     have hk' : k = SymKind.boundary := by simpa using hs
                     subst k
-                    cases m <;> native_decide
+                    cases m <;> decide
                   exact hdec (cfg₁.tape (p_e + 1 + ((j + 1 : ℕ) : ℤ))) hs
               have hstep84 : SymSteps VerifierSym.transition cfg₁ [step84] (symStepConfig cfg₁ step84.result) := by
                 refine SymSteps.cons [] step84 cfg₁ SymSteps.nil ?_ ?_ ?_
@@ -668,11 +668,11 @@ lemma subtract_loop_last (tbits ebits : List Bool) (j : ℕ) (p_t p_e : ℤ) (ta
                 · unfold step5b r5b
                   rw [show cfg₁.tape (p_e + 1 + ((j + 1 : ℕ) : ℤ)) = Sym.data1 from by simpa [if_pos hb2] using hd]
                   simp [SymConfig.mk]
-                  native_decide
+                  decide
                 · unfold step5b r5b
                   rw [show cfg₁.tape (p_e + 1 + ((j + 1 : ℕ) : ℤ)) = Sym.data0 from by simpa [if_neg hb2] using hd]
                   simp [SymConfig.mk]
-                  native_decide
+                  decide
               have hstep5b : SymSteps VerifierSym.transition cfg₁ [step5b] (symStepConfig cfg₁ step5b.result) := by
                 refine SymSteps.cons [] step5b cfg₁ SymSteps.nil ?_ ?_ ?_
                 · simpa [step5b] using hstate₁.symm
@@ -842,7 +842,7 @@ lemma subtract_element_last_correct (tbits ebits : List Bool) (p_t p_e : ℤ) (t
       rw [hsel]
     · change step.result ∈ VerifierSym.transition (4, tape p_e)
       rw [hsel]
-      native_decide
+      decide
   have hcfg : symStepConfig (SymConfig.mk 4 tape p_e) step.result =
       SymConfig.mk 5 tape1 (p_e + 1) := by
     simp [symStepConfig, SymConfig.mk, step, r, tape1, Dir.toInt]
@@ -1665,7 +1665,7 @@ lemma main_loop_correct (elems : List ℕ) (sel : List Bool) (tbits : List Bool)
                     rw [hcl51.2]
                     exact hdata51.symm
                   · rw [hcl51.1, hcl51.2, hdata51]
-                    native_decide
+                    decide
                 -- 递归（tbits 不变）
                 have hle_total' : selectedSum (w :: rest') sel' ≤ bitsValue tbits := by
                   have h := selected_rest_le_of_not v (w :: rest') sel' tbits (by simpa [hb] using hle_total)
@@ -1949,14 +1949,14 @@ lemma check_accept_left (headPos : ℤ) (tape : ℤ → Sym)
       rw [hbound]
     · change step.result ∈ VerifierSym.transition (22, tape headPos)
       rw [hbound]
-      native_decide
+      decide
   · rfl
 
 /-- 单值转移：q 在流程状态集中时 transition (q, s) 是单例。 -/
 lemma transition_singleton_ge4 (q : ℕ) (s : Sym)
     (hq : q ∈ ({4, 5, 8, 9, 10, 11, 12, 13, 14, 20, 21, 22, 76, 77, 81, 84, 85, 86, 87, 38, 51, 23} : Finset ℕ)) :
     (VerifierSym.transition (q, s)).card = 1 := by
-  fin_cases hq <;> rcases s with ⟨k, mk⟩ <;> cases k <;> cases mk <;> native_decide
+  fin_cases hq <;> rcases s with ⟨k, mk⟩ <;> cases k <;> cases mk <;> decide
 
 /-- 单值转移的成员唯一性。 -/
 lemma transition_unique_ge4 (q : ℕ) (s : Sym)
@@ -1998,14 +1998,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 4 data0 true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data0 true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data0 true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 4 data1 false → 101 s S
@@ -2014,14 +2014,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 4 data1 true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data1 true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data1 true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 4 consumed false → 101 s S
@@ -2030,14 +2030,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 4 consumed true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 4 alpha false → 101 s S
@@ -2046,14 +2046,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 4 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 4 sel false → 5 (Sym.data0) R
@@ -2062,14 +2062,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 4 sel true → 5 (Sym.data0) R
           have hr' : r ∈ ({SymTransResult.mk 5 (Sym.data0) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 5 (Sym.data0) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 4 nosel false → 20 (Sym.data0) L
@@ -2078,14 +2078,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 4 nosel true → 20 (Sym.data0) L
           have hr' : r ∈ ({SymTransResult.mk 20 (Sym.data0) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 20 (Sym.data0) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 4 beta false → 101 s S
@@ -2094,14 +2094,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 4 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 4 boundary false → 101 s S
@@ -2110,14 +2110,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 4 boundary true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 5
       subst q
@@ -2131,14 +2131,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 5 data0 true → 8 (Sym.consumed) L
           have hr' : r ∈ ({SymTransResult.mk 8 (Sym.consumed) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 8 (Sym.consumed) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 5 data1 false → 76 (Sym.consumed) L
@@ -2147,14 +2147,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 5 data1 true → 76 (Sym.consumed) L
           have hr' : r ∈ ({SymTransResult.mk 76 (Sym.consumed) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 76 (Sym.consumed) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 5 consumed false → 101 s S
@@ -2163,14 +2163,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 5 consumed true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 5 alpha false → 101 s S
@@ -2179,14 +2179,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 5 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 5 sel false → 101 s S
@@ -2195,14 +2195,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 5 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 5 nosel false → 101 s S
@@ -2211,14 +2211,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 5 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 5 beta false → 101 s S
@@ -2227,14 +2227,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 5 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 5 boundary false → 101 s L
@@ -2243,14 +2243,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 5 boundary true → 101 s L
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 8
       subst q
@@ -2264,14 +2264,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 8 data0 true → 8 s L
           have hr' : r ∈ ({SymTransResult.mk 8 (Sym.mk SymKind.data0 true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 8 (Sym.mk SymKind.data0 true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 8 data1 false → 8 s L
@@ -2280,14 +2280,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 8 data1 true → 8 s L
           have hr' : r ∈ ({SymTransResult.mk 8 (Sym.mk SymKind.data1 true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 8 (Sym.mk SymKind.data1 true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 8 consumed false → 8 s L
@@ -2296,14 +2296,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 8 consumed true → 8 s L
           have hr' : r ∈ ({SymTransResult.mk 8 (Sym.mk SymKind.consumed true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 8 (Sym.mk SymKind.consumed true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 8 alpha false → 101 s S
@@ -2312,14 +2312,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 8 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 8 sel false → 101 s S
@@ -2328,14 +2328,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 8 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 8 nosel false → 101 s S
@@ -2344,14 +2344,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 8 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 8 beta false → 101 s S
@@ -2360,14 +2360,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 8 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 8 boundary false → 9 s L
@@ -2376,14 +2376,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 8 boundary true → 9 s L
           have hr' : r ∈ ({SymTransResult.mk 9 (Sym.mk SymKind.boundary true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 9 (Sym.mk SymKind.boundary true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 9
       subst q
@@ -2397,14 +2397,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 9 data0 true → 9 s L
           have hr' : r ∈ ({SymTransResult.mk 9 (Sym.mk SymKind.data0 true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 9 (Sym.mk SymKind.data0 true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 9 data1 false → 9 s L
@@ -2413,14 +2413,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 9 data1 true → 9 s L
           have hr' : r ∈ ({SymTransResult.mk 9 (Sym.mk SymKind.data1 true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 9 (Sym.mk SymKind.data1 true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 9 consumed false → 101 s S
@@ -2429,14 +2429,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 9 consumed true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 9 alpha false → 101 s S
@@ -2445,14 +2445,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 9 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 9 sel false → 101 s S
@@ -2461,14 +2461,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 9 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 9 nosel false → 101 s S
@@ -2477,14 +2477,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 9 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 9 beta false → 101 s S
@@ -2493,14 +2493,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 9 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 9 boundary false → 12 s R
@@ -2509,14 +2509,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 9 boundary true → 12 s R
           have hr' : r ∈ ({SymTransResult.mk 12 (Sym.mk SymKind.boundary true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 12 (Sym.mk SymKind.boundary true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 10
       subst q
@@ -2530,14 +2530,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 10 data0 true → 10 (Sym.data0 true) R
           have hr' : r ∈ ({SymTransResult.mk 10 (Sym.data0 true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 10 (Sym.data0 true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 10 data1 false → 11 (Sym.data1 true) S
@@ -2546,14 +2546,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 10 data1 true → 10 (Sym.data1 true) R
           have hr' : r ∈ ({SymTransResult.mk 10 (Sym.data1 true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 10 (Sym.data1 true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 10 consumed false → 101 s S
@@ -2562,14 +2562,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 10 consumed true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 10 alpha false → 101 s S
@@ -2578,14 +2578,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 10 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 10 sel false → 101 s S
@@ -2594,14 +2594,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 10 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 10 nosel false → 101 s S
@@ -2610,14 +2610,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 10 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 10 beta false → 101 s S
@@ -2626,14 +2626,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 10 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 10 boundary false → 101 s L
@@ -2642,14 +2642,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 10 boundary true → 101 s L
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 11
       subst q
@@ -2663,14 +2663,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 11 data0 true → 14 (Sym.data1 m) R
           have hr' : r ∈ ({SymTransResult.mk 14 (Sym.data1 true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 14 (Sym.data1 true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 11 data1 false → 81 (Sym.data0 m) R
@@ -2679,14 +2679,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 11 data1 true → 81 (Sym.data0 m) R
           have hr' : r ∈ ({SymTransResult.mk 81 (Sym.data0 true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 81 (Sym.data0 true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 11 consumed false → 101 s S
@@ -2695,14 +2695,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 11 consumed true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 11 alpha false → 101 s S
@@ -2711,14 +2711,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 11 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 11 sel false → 101 s S
@@ -2727,14 +2727,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 11 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 11 nosel false → 101 s S
@@ -2743,14 +2743,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 11 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 11 beta false → 101 s S
@@ -2759,14 +2759,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 11 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 11 boundary false → 101 s R
@@ -2775,14 +2775,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 11 boundary true → 101 s R
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 12
       subst q
@@ -2796,14 +2796,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 12 data0 true → 12 (Sym.data0 true) R
           have hr' : r ∈ ({SymTransResult.mk 12 (Sym.data0 true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 12 (Sym.data0 true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 12 data1 false → 81 (Sym.data1 true) R
@@ -2812,14 +2812,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 12 data1 true → 12 (Sym.data1 true) R
           have hr' : r ∈ ({SymTransResult.mk 12 (Sym.data1 true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 12 (Sym.data1 true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 12 consumed false → 101 s S
@@ -2828,14 +2828,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 12 consumed true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 12 alpha false → 101 s S
@@ -2844,14 +2844,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 12 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 12 sel false → 101 s S
@@ -2860,14 +2860,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 12 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 12 nosel false → 101 s S
@@ -2876,14 +2876,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 12 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 12 beta false → 101 s S
@@ -2892,14 +2892,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 12 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 12 boundary false → 101 s R
@@ -2908,14 +2908,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 12 boundary true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 13
       subst q
@@ -2929,14 +2929,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 13 data0 true → 5 s S
           have hr' : r ∈ ({SymTransResult.mk 5 (Sym.mk SymKind.data0 true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 5 (Sym.mk SymKind.data0 true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 13 data1 false → 5 s S
@@ -2945,14 +2945,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 13 data1 true → 5 s S
           have hr' : r ∈ ({SymTransResult.mk 5 (Sym.mk SymKind.data1 true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 5 (Sym.mk SymKind.data1 true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 13 consumed false → 13 (Sym.consumed) R
@@ -2961,14 +2961,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 13 consumed true → 13 (Sym.consumed) R
           have hr' : r ∈ ({SymTransResult.mk 13 (Sym.consumed) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 13 (Sym.consumed) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 13 alpha false → 101 s S
@@ -2977,14 +2977,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 13 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 13 sel false → 84 s L
@@ -2993,14 +2993,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 13 sel true → 84 s L
           have hr' : r ∈ ({SymTransResult.mk 84 (Sym.mk SymKind.sel true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 84 (Sym.mk SymKind.sel true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 13 nosel false → 84 s L
@@ -3009,14 +3009,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 13 nosel true → 84 s L
           have hr' : r ∈ ({SymTransResult.mk 84 (Sym.mk SymKind.nosel true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 84 (Sym.mk SymKind.nosel true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 13 beta false → 101 s S
@@ -3025,14 +3025,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 13 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 13 boundary false → 84 s L
@@ -3041,14 +3041,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 13 boundary true → 84 s L
           have hr' : r ∈ ({SymTransResult.mk 84 (Sym.mk SymKind.boundary true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 84 (Sym.mk SymKind.boundary true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 14
       subst q
@@ -3062,14 +3062,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 14 data0 true → 14 (Sym.data1 m) R
           have hr' : r ∈ ({SymTransResult.mk 14 (Sym.data1 true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 14 (Sym.data1 true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 14 data1 false → 81 (Sym.data0 m) R
@@ -3078,14 +3078,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 14 data1 true → 81 (Sym.data0 m) R
           have hr' : r ∈ ({SymTransResult.mk 81 (Sym.data0 true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 81 (Sym.data0 true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 14 consumed false → 101 s S
@@ -3094,14 +3094,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 14 consumed true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 14 alpha false → 101 s S
@@ -3110,14 +3110,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 14 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 14 sel false → 101 s S
@@ -3126,14 +3126,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 14 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 14 nosel false → 101 s S
@@ -3142,14 +3142,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 14 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 14 beta false → 101 s S
@@ -3158,14 +3158,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 14 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 14 boundary false → 101 s R
@@ -3174,14 +3174,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 14 boundary true → 101 s R
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 20
       subst q
@@ -3195,14 +3195,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 20 data0 true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data0 true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data0 true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 20 data1 false → 101 s S
@@ -3211,14 +3211,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 20 data1 true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data1 true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data1 true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 20 consumed false → 101 s S
@@ -3227,14 +3227,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 20 consumed true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 20 alpha false → 101 s S
@@ -3243,14 +3243,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 20 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 20 sel false → 101 s S
@@ -3259,14 +3259,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 20 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 20 nosel false → 101 s S
@@ -3275,14 +3275,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 20 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 20 beta false → 101 s S
@@ -3291,14 +3291,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 20 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 20 boundary false → 21 (Sym.data0) R
@@ -3307,14 +3307,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 20 boundary true → 21 (Sym.data0) R
           have hr' : r ∈ ({SymTransResult.mk 21 (Sym.data0) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 21 (Sym.data0) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 21
       subst q
@@ -3328,14 +3328,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 21 data0 true → 21 (Sym.data0) R
           have hr' : r ∈ ({SymTransResult.mk 21 (Sym.data0) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 21 (Sym.data0) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 21 data1 false → 21 (Sym.data0) R
@@ -3344,14 +3344,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 21 data1 true → 21 (Sym.data0) R
           have hr' : r ∈ ({SymTransResult.mk 21 (Sym.data0) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 21 (Sym.data0) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 21 consumed false → 21 (Sym.data0) R
@@ -3360,14 +3360,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 21 consumed true → 21 (Sym.data0) R
           have hr' : r ∈ ({SymTransResult.mk 21 (Sym.data0) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 21 (Sym.data0) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 21 alpha false → 101 s S
@@ -3376,14 +3376,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 21 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 21 sel false → 51 s L
@@ -3392,14 +3392,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 21 sel true → 51 s L
           have hr' : r ∈ ({SymTransResult.mk 51 (Sym.mk SymKind.sel true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 51 (Sym.mk SymKind.sel true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 21 nosel false → 51 s L
@@ -3408,14 +3408,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 21 nosel true → 51 s L
           have hr' : r ∈ ({SymTransResult.mk 51 (Sym.mk SymKind.nosel true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 51 (Sym.mk SymKind.nosel true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 21 beta false → 101 s S
@@ -3424,14 +3424,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 21 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 21 boundary false → 22 s S
@@ -3440,14 +3440,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 21 boundary true → 22 s S
           have hr' : r ∈ ({SymTransResult.mk 22 (Sym.mk SymKind.boundary true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 22 (Sym.mk SymKind.boundary true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 22
       subst q
@@ -3461,14 +3461,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 22 data0 true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data0 true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data0 true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 22 data1 false → 101 s S
@@ -3477,14 +3477,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 22 data1 true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data1 true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data1 true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 22 consumed false → 101 s S
@@ -3493,14 +3493,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 22 consumed true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 22 alpha false → 101 s S
@@ -3509,14 +3509,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 22 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 22 sel false → 101 s S
@@ -3525,14 +3525,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 22 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 22 nosel false → 101 s S
@@ -3541,14 +3541,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 22 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 22 beta false → 101 s S
@@ -3557,14 +3557,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 22 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 22 boundary false → 101 s S
@@ -3573,14 +3573,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 22 boundary true → 23 s L
           have hr' : r ∈ ({SymTransResult.mk 23 (Sym.mk SymKind.boundary true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 23 (Sym.mk SymKind.boundary true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 76
       subst q
@@ -3594,14 +3594,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 76 data0 true → 76 s L
           have hr' : r ∈ ({SymTransResult.mk 76 (Sym.mk SymKind.data0 true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 76 (Sym.mk SymKind.data0 true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 76 data1 false → 76 s L
@@ -3610,14 +3610,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 76 data1 true → 76 s L
           have hr' : r ∈ ({SymTransResult.mk 76 (Sym.mk SymKind.data1 true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 76 (Sym.mk SymKind.data1 true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 76 consumed false → 76 s L
@@ -3626,14 +3626,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 76 consumed true → 76 s L
           have hr' : r ∈ ({SymTransResult.mk 76 (Sym.mk SymKind.consumed true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 76 (Sym.mk SymKind.consumed true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 76 alpha false → 101 s S
@@ -3642,14 +3642,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 76 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 76 sel false → 101 s S
@@ -3658,14 +3658,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 76 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 76 nosel false → 101 s S
@@ -3674,14 +3674,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 76 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 76 beta false → 101 s S
@@ -3690,14 +3690,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 76 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 76 boundary false → 77 s L
@@ -3706,14 +3706,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 76 boundary true → 77 s L
           have hr' : r ∈ ({SymTransResult.mk 77 (Sym.mk SymKind.boundary true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 77 (Sym.mk SymKind.boundary true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 77
       subst q
@@ -3727,14 +3727,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 77 data0 true → 77 s L
           have hr' : r ∈ ({SymTransResult.mk 77 (Sym.mk SymKind.data0 true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 77 (Sym.mk SymKind.data0 true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 77 data1 false → 77 s L
@@ -3743,14 +3743,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 77 data1 true → 77 s L
           have hr' : r ∈ ({SymTransResult.mk 77 (Sym.mk SymKind.data1 true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 77 (Sym.mk SymKind.data1 true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 77 consumed false → 101 s S
@@ -3759,14 +3759,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 77 consumed true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 77 alpha false → 101 s S
@@ -3775,14 +3775,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 77 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 77 sel false → 101 s S
@@ -3791,14 +3791,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 77 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 77 nosel false → 101 s S
@@ -3807,14 +3807,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 77 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 77 beta false → 101 s S
@@ -3823,14 +3823,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 77 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 77 boundary false → 10 s R
@@ -3839,14 +3839,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 77 boundary true → 10 s R
           have hr' : r ∈ ({SymTransResult.mk 10 (Sym.mk SymKind.boundary true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 10 (Sym.mk SymKind.boundary true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 81
       subst q
@@ -3860,14 +3860,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 81 data0 true → 81 s R
           have hr' : r ∈ ({SymTransResult.mk 81 (Sym.mk SymKind.data0 true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 81 (Sym.mk SymKind.data0 true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 81 data1 false → 81 s R
@@ -3876,14 +3876,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 81 data1 true → 81 s R
           have hr' : r ∈ ({SymTransResult.mk 81 (Sym.mk SymKind.data1 true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 81 (Sym.mk SymKind.data1 true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 81 consumed false → 13 (Sym.consumed) R
@@ -3892,14 +3892,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 81 consumed true → 13 (Sym.consumed) R
           have hr' : r ∈ ({SymTransResult.mk 13 (Sym.consumed) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 13 (Sym.consumed) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 81 alpha false → 101 s S
@@ -3908,14 +3908,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 81 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 81 sel false → 101 s S
@@ -3924,14 +3924,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 81 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 81 nosel false → 101 s S
@@ -3940,14 +3940,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 81 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 81 beta false → 101 s S
@@ -3956,14 +3956,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 81 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 81 boundary false → 81 s R
@@ -3972,14 +3972,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 81 boundary true → 81 s R
           have hr' : r ∈ ({SymTransResult.mk 81 (Sym.mk SymKind.boundary true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 81 (Sym.mk SymKind.boundary true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 84
       subst q
@@ -3993,14 +3993,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 84 data0 true → 84 s L
           have hr' : r ∈ ({SymTransResult.mk 84 (Sym.mk SymKind.data0 true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 84 (Sym.mk SymKind.data0 true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 84 data1 false → 84 s L
@@ -4009,14 +4009,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 84 data1 true → 84 s L
           have hr' : r ∈ ({SymTransResult.mk 84 (Sym.mk SymKind.data1 true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 84 (Sym.mk SymKind.data1 true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 84 consumed false → 84 s L
@@ -4025,14 +4025,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 84 consumed true → 84 s L
           have hr' : r ∈ ({SymTransResult.mk 84 (Sym.mk SymKind.consumed true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 84 (Sym.mk SymKind.consumed true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 84 alpha false → 101 s S
@@ -4041,14 +4041,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 84 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 84 sel false → 101 s S
@@ -4057,14 +4057,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 84 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 84 nosel false → 101 s S
@@ -4073,14 +4073,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 84 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 84 beta false → 101 s S
@@ -4089,14 +4089,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 84 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 84 boundary false → 85 s L
@@ -4105,14 +4105,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 84 boundary true → 85 s L
           have hr' : r ∈ ({SymTransResult.mk 85 (Sym.mk SymKind.boundary true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 85 (Sym.mk SymKind.boundary true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 85
       subst q
@@ -4126,14 +4126,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 85 data0 true → 85 s L
           have hr' : r ∈ ({SymTransResult.mk 85 (Sym.mk SymKind.data0 true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 85 (Sym.mk SymKind.data0 true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 85 data1 false → 85 s L
@@ -4142,14 +4142,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 85 data1 true → 85 s L
           have hr' : r ∈ ({SymTransResult.mk 85 (Sym.mk SymKind.data1 true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 85 (Sym.mk SymKind.data1 true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 85 consumed false → 101 s S
@@ -4158,14 +4158,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 85 consumed true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 85 alpha false → 101 s S
@@ -4174,14 +4174,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 85 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 85 sel false → 101 s S
@@ -4190,14 +4190,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 85 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 85 nosel false → 101 s S
@@ -4206,14 +4206,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 85 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 85 beta false → 101 s S
@@ -4222,14 +4222,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 85 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 85 boundary false → 86 s R
@@ -4238,14 +4238,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 85 boundary true → 86 s R
           have hr' : r ∈ ({SymTransResult.mk 86 (Sym.mk SymKind.boundary true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 86 (Sym.mk SymKind.boundary true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 86
       subst q
@@ -4259,14 +4259,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 86 data0 true → 86 (Sym.mk SymKind.data0 false) R
           have hr' : r ∈ ({SymTransResult.mk 86 (Sym.mk SymKind.data0 false) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 86 (Sym.mk SymKind.data0 false) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 86 data1 false → 87 s S
@@ -4275,14 +4275,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 86 data1 true → 86 (Sym.mk SymKind.data1 false) R
           have hr' : r ∈ ({SymTransResult.mk 86 (Sym.mk SymKind.data1 false) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 86 (Sym.mk SymKind.data1 false) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 86 consumed false → 101 s S
@@ -4291,14 +4291,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 86 consumed true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 86 alpha false → 101 s S
@@ -4307,14 +4307,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 86 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 86 sel false → 101 s S
@@ -4323,14 +4323,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 86 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 86 nosel false → 101 s S
@@ -4339,14 +4339,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 86 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 86 beta false → 101 s S
@@ -4355,14 +4355,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 86 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 86 boundary false → 87 s S
@@ -4371,14 +4371,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 86 boundary true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 87
       subst q
@@ -4392,14 +4392,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 87 data0 true → 87 s R
           have hr' : r ∈ ({SymTransResult.mk 87 (Sym.mk SymKind.data0 true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 87 (Sym.mk SymKind.data0 true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 87 data1 false → 87 s R
@@ -4408,14 +4408,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 87 data1 true → 87 s R
           have hr' : r ∈ ({SymTransResult.mk 87 (Sym.mk SymKind.data1 true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 87 (Sym.mk SymKind.data1 true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 87 consumed false → 101 s S
@@ -4424,14 +4424,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 87 consumed true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 87 alpha false → 101 s S
@@ -4440,14 +4440,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 87 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 87 sel false → 101 s S
@@ -4456,14 +4456,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 87 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 87 nosel false → 101 s S
@@ -4472,14 +4472,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 87 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 87 beta false → 101 s S
@@ -4488,14 +4488,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 87 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 87 boundary false → 20 s S
@@ -4504,14 +4504,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 87 boundary true → 20 s S
           have hr' : r ∈ ({SymTransResult.mk 20 (Sym.mk SymKind.boundary true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 20 (Sym.mk SymKind.boundary true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 38
       subst q
@@ -4525,14 +4525,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 38 data0 true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data0 true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data0 true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 38 data1 false → 38 s L
@@ -4541,14 +4541,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 38 data1 true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data1 true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data1 true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 38 consumed false → 101 s S
@@ -4557,14 +4557,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 38 consumed true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 38 alpha false → 101 s S
@@ -4573,14 +4573,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 38 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 38 sel false → 101 s S
@@ -4589,14 +4589,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 38 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 38 nosel false → 101 s S
@@ -4605,14 +4605,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 38 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 38 beta false → 101 s S
@@ -4621,14 +4621,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 38 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 38 boundary false → 28 s R
@@ -4637,14 +4637,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 38 boundary true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 51
       subst q
@@ -4658,14 +4658,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 51 data0 true → 4 (Sym.boundary) R
           have hr' : r ∈ ({SymTransResult.mk 4 (Sym.boundary) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 4 (Sym.boundary) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 51 data1 false → 101 s S
@@ -4674,14 +4674,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 51 data1 true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data1 true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data1 true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 51 consumed false → 101 s S
@@ -4690,14 +4690,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 51 consumed true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 51 alpha false → 101 s S
@@ -4706,14 +4706,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 51 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 51 sel false → 101 s S
@@ -4722,14 +4722,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 51 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 51 nosel false → 101 s S
@@ -4738,14 +4738,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 51 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 51 beta false → 101 s S
@@ -4754,14 +4754,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 51 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 51 boundary false → 101 s S
@@ -4770,14 +4770,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 51 boundary true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.boundary true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
 
     · -- q = 23
       subst q
@@ -4791,14 +4791,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 23 data0 true → 23 s L
           have hr' : r ∈ ({SymTransResult.mk 23 (Sym.mk SymKind.data0 true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 23 (Sym.mk SymKind.data0 true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- data1
         cases b
         · -- 23 data1 false → 101 s L
@@ -4807,14 +4807,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 23 data1 true → 101 s L
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data1 true) Dir.L} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.data1 true) Dir.L} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- consumed
         cases b
         · -- 23 consumed false → 101 s S
@@ -4823,14 +4823,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 23 consumed true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.consumed true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- alpha
         cases b
         · -- 23 alpha false → 101 s S
@@ -4839,14 +4839,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 23 alpha true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.alpha true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- sel
         cases b
         · -- 23 sel false → 101 s S
@@ -4855,14 +4855,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 23 sel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.sel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- nosel
         cases b
         · -- 23 nosel false → 101 s S
@@ -4871,14 +4871,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 23 nosel true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.nosel true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- beta
         cases b
         · -- 23 beta false → 101 s S
@@ -4887,14 +4887,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 23 beta true → 101 s S
           have hr' : r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 101 (Sym.mk SymKind.beta true) Dir.S} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
       · -- boundary
         cases b
         · -- 23 boundary false → 100 s R
@@ -4903,14 +4903,14 @@ lemma transition_nextState_in_det (q : ℕ) (s : Sym) (r : SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
         · -- 23 boundary true → 100 s R
           have hr' : r ∈ ({SymTransResult.mk 100 (Sym.mk SymKind.boundary true) Dir.R} : Finset SymTransResult) := by
             change r ∈ ({SymTransResult.mk 100 (Sym.mk SymKind.boundary true) Dir.R} : Finset SymTransResult)
             exact hr
           simp at hr'
           subst r
-          native_decide
+          decide
   · exfalso
     have hq_legal' : q ∈ VerifierSym.legalStates := by
       fin_cases hq <;> simp [VerifierSym.legalStates]

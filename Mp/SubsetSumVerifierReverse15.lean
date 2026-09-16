@@ -1383,7 +1383,7 @@ theorem fold_entry_of_accept {inst : SubsetSumInstance} {π : List SymStep} {cfg
           Sym.mk SymKind.boundary true ∧
       selectedSum inst.elements sel ≤ bitsValue (bitsOf inst.target) := by
   have _ := htarget
-  rcases backchain_to_first4 hπ (by rw [h100]; native_decide) with
+  rcases backchain_to_first4 hπ (by rw [h100]; decide) with
     ⟨π₁, π₂, cfg₄, hsplit, hπ₁, hs4, hno4₁, hrest⟩
   rcases branch_phase_inv inst π₁ cfg₄ hπ₁ hno4₁ hs4 with
     ⟨sel, hsel_len, hhead₄, htarget₄, hb0₄, hb1₄, helems₄, hend₄⟩

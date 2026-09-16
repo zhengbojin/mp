@@ -220,13 +220,13 @@ lemma trans23_data0 (s : Sym) (hk : s.1 = SymKind.data0) :
   rcases s with ⟨k, m⟩
   have hk' : k = SymKind.data0 := by simpa using hk
   subst k
-  cases m <;> native_decide
+  cases m <;> decide
 
 /-- 状态 23 读 #ₗ（boundary）：右移到接受态 100。 -/
 lemma trans23_hash :
     { nextState := 100, writeSym := Sym.boundary, moveDir := Dir.R } ∈
       VerifierSym.transition (23, Sym.boundary) := by
-  native_decide
+  decide
 
 /-- 同一磁带同一位置的两个等长一致列表相等。 -/
 lemma tapeAgrees_inj {tape : ℤ → Sym} {p : ℤ} {l₁ l₂ : List Sym}
@@ -418,7 +418,7 @@ theorem sym_accept_of_holds (inst : SubsetSumInstance) (hne : inst.elements ≠ 
     · rw [hsB]
       change stepC.result ∈ VerifierSym.transition (22, cfgB.tape cfgB.headPos)
       rw [hmarked]
-      native_decide
+      decide
   let cfgC' : SymConfig := symStepConfig cfgB stepC.result
   have hcfgC' : cfgC' = SymConfig.mk 23 cfgB.tape (cfgB.headPos - 1) := by
     dsimp [cfgC', stepC]

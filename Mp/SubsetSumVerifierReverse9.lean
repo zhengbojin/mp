@@ -38,7 +38,7 @@ A1 条款 3(q10 = 证 `NTM2.Canonical subsetSumNTM2`)的 Sym 层素材,
 3. 单元格式(cell0/hash/marker/target/elem 的符号值);
 4. 初始带事实(init_cell 系列 + 带外空白);
 5. 表级闭包(读 boundary 的 R/L 转移、吸收态、写值分类、
-   phase/fmt/SE/SUB 状态集闭包)——全部 native_decide 机械验证。
+   phase/fmt/SE/SUB 状态集闭包)——全部 decide 机械验证。
 -/
 
 open Mp
@@ -310,10 +310,10 @@ lemma q10h_init_data1_ge_nt3 (inst : SubsetSumInstance) : ∀ p : ℕ,
   subst p
   by_cases hel : inst.elements = []
   · have hb := q10h_cell_marker0_boundary inst hel
-    have hne : SymKind.boundary ≠ SymKind.data1 := by native_decide
+    have hne : SymKind.boundary ≠ SymKind.data1 := by decide
     exact hne (by rw [hb] at hd; exact hd)
   · have ha := q10h_cell_marker0_alpha inst hel
-    have hne : SymKind.alpha ≠ SymKind.data1 := by native_decide
+    have hne : SymKind.alpha ≠ SymKind.data1 := by decide
     exact hne (by rw [ha] at hd; exact hd)
 
 -- ============================================================================
@@ -470,19 +470,19 @@ lemma q10h_init_interior (inst : SubsetSumInstance) (g : List Sym) :
     have hp2' : p ≤ ((Enc inst).length : ℤ) - 2 := by omega
     have hk := q10h_init_cell_elem inst g p hp1' hp2'
     rcases hk with ha | hd0 | hd1
-    · have hne : SymKind.alpha ≠ SymKind.boundary := by native_decide
+    · have hne : SymKind.alpha ≠ SymKind.boundary := by decide
       have hbad : SymKind.alpha = SymKind.boundary := by
         rw [← ha]
         rw [hpB]
         rfl
       exact (hne hbad).elim
-    · have hne : SymKind.data0 ≠ SymKind.boundary := by native_decide
+    · have hne : SymKind.data0 ≠ SymKind.boundary := by decide
       have hbad : SymKind.data0 = SymKind.boundary := by
         rw [← hd0]
         rw [hpB]
         rfl
       exact (hne hbad).elim
-    · have hne : SymKind.data1 ≠ SymKind.boundary := by native_decide
+    · have hne : SymKind.data1 ≠ SymKind.boundary := by decide
       have hbad : SymKind.data1 = SymKind.boundary := by
         rw [← hd1]
         rw [hpB]
@@ -493,7 +493,7 @@ lemma q10h_init_interior (inst : SubsetSumInstance) (g : List Sym) :
     exact_mod_cast heq
 
 -- ============================================================================
--- 表级分类（native_decide）
+-- 表级分类（decide）
 -- ============================================================================
 
 /-- q10a ①：读 (boundary, false) 且 R 的转移分类。 -/

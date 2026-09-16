@@ -127,7 +127,7 @@ def f4ofBuf (n : ℕ) : F4 × F4 × F4 :=
 @[simp] lemma f4ofBuf_bufOf3 (a b c : F4) : f4ofBuf (bufOf3 a b c) = (a, b, c) := by
   rcases a with ⟨ra, ia⟩ <;> rcases b with ⟨rb, ib⟩ <;> rcases c with ⟨rc, ic⟩ <;>
     cases ra <;> cases ia <;> cases rb <;> cases ib <;> cases rc <;> cases ic <;>
-    native_decide
+    decide
 /-- SymKind 的 sk 编码（0..8）。 -/
 def skOf (k : SymKind) : ℕ := match k with
   | SymKind.data0 => 0 | SymKind.data1 => 1 | SymKind.alpha => 2
@@ -164,14 +164,14 @@ lemma transition_card_two_of_branch (s : Sym) (hα : s.1 = SymKind.alpha) (hm : 
   have hmk : mk = false := by simpa using hm
   subst mk
   rw [VerifierSym.transition, if_pos (by decide : 2 ∈ VerifierSym.legalStates)]
-  native_decide
+  decide
 /-- q ∈ [4,22] 非分支读：转移结果单元素（card = 1）。 -/
 lemma transition_singleton_ge4 (q : ℕ) (s : Sym)
     (hq : 4 ≤ q ∧ q ≤ 22) (hnb : ¬ Sym.isBranch s) :
     (VerifierSym.transition (q, s)).card = 1 := by
   have hq2 := hq.2
   interval_cases q <;> rcases s with ⟨k, mk⟩ <;> cases k <;> cases mk
-  all_goals (first | native_decide | (simp [Sym.isBranch, SymKind.isBranch] at hnb))
+  all_goals (first | decide | (simp [Sym.isBranch, SymKind.isBranch] at hnb))
 
 lemma transition_card_one_of_notBranch_bounded (q : ℕ) (s : Sym) (hq : q ≤ 101)
     (hnb : ¬ Sym.isBranch s) :
@@ -181,10 +181,10 @@ lemma transition_card_one_of_notBranch_bounded (q : ℕ) (s : Sym) (hq : q ≤ 1
     · exact transition_singleton_ge4 q s ⟨h4, h22⟩ hnb
     · have h23 : 23 ≤ q := by omega
       interval_cases q <;> rcases s with ⟨k, mk⟩ <;> cases k <;> cases mk
-      all_goals native_decide
+      all_goals decide
   · have hlt4 : q < 4 := by omega
     interval_cases q <;> rcases s with ⟨k, mk⟩ <;> cases k <;> cases mk
-    all_goals (first | native_decide | (simp [Sym.isBranch, SymKind.isBranch] at hnb))
+    all_goals (first | decide | (simp [Sym.isBranch, SymKind.isBranch] at hnb))
 set_option maxHeartbeats 8000000 in
 /-- 转移表中任何结果行的 nextState ≤ 101（q ≤ 101）。 -/
 theorem transition_nextState_le101 (q : ℕ) (s : Sym) (hq : q ≤ 101) (r : SymTransResult)
@@ -298,7 +298,7 @@ lemma transition4_card_branch (st : ℕ) (s : F4) (him : F4.im s) :
       · simp [trap_card]
       · by_cases hq2 : min (st / (stepsPerSym * regBound)) 101 = 2 ∧ (f4ofBuf (st % regBound)).1 = F4.zero ∧ F4.re s = false
         · simp [hq2]
-          native_decide
+          decide
         · simp [hq2, trap_card]
     · by_cases hph8 : (st / regBound) % stepsPerSym < 8
       · simp [hph, hph3, hph8, him, trap_card]
@@ -783,7 +783,7 @@ lemma transition2_branch_eq (s : Sym) (hα : s.1 = SymKind.alpha) (hm : s.2 = fa
   subst k
   have hmk : mk = false := by simpa using hm
   subst mk
-  native_decide
+  decide
 
 /-- symTo4F4/symOf4F4 往返（标记只出现在 data0/data1）。 -/
 lemma symOf4F4_symTo4F4_valid (s : Sym)

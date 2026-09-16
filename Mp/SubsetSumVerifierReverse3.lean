@@ -3466,7 +3466,7 @@ lemma prefix_states_lt4 {input : List Sym} {π : List SymStep} {cfg : SymConfig}
 
           (by
 
-            have hdec : ∀ q ∈ VerifierSym.legalStates, q ≤ 101 := by native_decide
+            have hdec : ∀ q ∈ VerifierSym.legalStates, q ≤ 101 := by decide
 
             exact hdec cfg₁.state hrange)
 
@@ -3689,7 +3689,7 @@ lemma scan23_to_100 (p : ℤ) (tape : ℤ → Sym) (hp : 0 ≤ p)
       · refine SymSteps.cons [] step (SymConfig.mk 23 tape 0) SymSteps.nil rfl ?_ ?_
         · simp [SymConfig.mk, step, hbound]
         · simp [SymConfig.mk, step, hbound]
-          native_decide
+          decide
       · rfl
   | succ n ih =>
       intro hpn
@@ -3703,7 +3703,7 @@ lemma scan23_to_100 (p : ℤ) (tape : ℤ → Sym) (hp : 0 ≤ p)
         refine SymSteps.cons [] step (SymConfig.mk 23 tape p) SymSteps.nil rfl ?_ ?_
         · simp [SymConfig.mk, step, hd]
         · simp [SymConfig.mk, step, hd]
-          native_decide
+          decide
       have hcfg : symStepConfig (SymConfig.mk 23 tape p) step.result = SymConfig.mk 23 tape (p - 1) := by
         dsimp [symStepConfig]
         simp [SymConfig.mk, step, r, Dir.toInt, hd]
@@ -4032,13 +4032,13 @@ lemma backchain_to_first4 {input : List Sym} {π : List SymStep} {cfg : SymConfi
       have h0 : (symInitialConfig input).state = 0 := by simp [symInitialConfig]
       rw [h0] at hs
       exfalso
-      exact (by native_decide : (0 : ℕ) ∉ ({4, 5, 8, 9, 10, 11, 12, 13, 14, 20, 21, 22, 23, 51, 76, 77, 81, 84, 85, 86, 87, 100} : Finset ℕ)) hs
+      exact (by decide : (0 : ℕ) ∉ ({4, 5, 8, 9, 10, 11, 12, 13, 14, 20, 21, 22, 23, 51, 76, 77, 81, 84, 85, 86, 87, 100} : Finset ℕ)) hs
   | cons π₀ step cfg₀ h_ind h_from h_read h_trans ih =>
       by_cases h4 : cfg₀.state = 4
       · -- cfg 的紧前驱已是 4：π₀ 内的第一个 4 由归纳假设给出
         have hstate₄ : cfg₀.state ∈ ({4, 5, 8, 9, 10, 11, 12, 13, 14, 20, 21, 22, 23, 51, 76, 77, 81, 84, 85, 86, 87, 100} : Finset ℕ) := by
           rw [h4]
-          native_decide
+          decide
         rcases ih hstate₄ with ⟨π₁, π₂, cfg₄, hsplit, hπ₁, h4f, hno4, hrest⟩
         refine ⟨π₁, π₂ ++ [step], cfg₄, ?_, hπ₁, h4f, hno4, ?_⟩
         · change π₀ ++ [step] = π₁ ++ (π₂ ++ [step])
@@ -4071,14 +4071,14 @@ lemma backchain_to_first4 {input : List Sym} {π : List SymStep} {cfg : SymConfi
                     simp [List.length_append]
                   omega
                 · exact ⟨bs, h3⟩
-              exact prefix_states_ne4_of_chain h_ind (by rw [h28]; native_decide) h' hpre₀ hlt
+              exact prefix_states_ne4_of_chain h_ind (by rw [h28]; decide) h' hpre₀ hlt
             · -- |π'| = |π₀|：π' = π₀ → cfg' = cfg₀ → 28 ≠ 4
               have heq : π'.length = π₀.length := by omega
               have hπ₀eq' : π₀ = π' := List.append_inj_left hρ heq.symm
               rw [← hπ₀eq'] at h'
               have hcfg' : cfg' = cfg₀ := SymSteps_cfg_eq h' h_ind
               rw [hcfg', h28]
-              native_decide
+              decide
           refine ⟨π₀ ++ [step], [], symStepConfig cfg₀ step.result, ?_, ?_, hcfg4, hno4', SymSteps.nil⟩
           · simp
           · exact SymSteps.cons π₀ step cfg₀ h_ind h_from h_read h_trans
@@ -4088,7 +4088,7 @@ lemma backchain_to_first4 {input : List Sym} {π : List SymStep} {cfg : SymConfi
             have hsS : step.result.nextState ∈ ({4, 5, 8, 9, 10, 11, 12, 13, 14, 20, 21, 22, 23, 51, 76, 77, 81, 84, 85, 86, 87, 100} : Finset ℕ) := by
               simpa [symStepConfig] using hs
             have hqbig : step.result.nextState ∈ ({0, 1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 20, 21, 22, 23, 24, 26, 27, 28, 29, 38, 51, 76, 77, 81, 84, 85, 86, 87, 100} : Finset ℕ) := by
-              exact (by native_decide : ({4, 5, 8, 9, 10, 11, 12, 13, 14, 20, 21, 22, 23, 51, 76, 77, 81, 84, 85, 86, 87, 100} : Finset ℕ) ⊆ ({0, 1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 20, 21, 22, 23, 24, 26, 27, 28, 29, 38, 51, 76, 77, 81, 84, 85, 86, 87, 100} : Finset ℕ)) hsS
+              exact (by decide : ({4, 5, 8, 9, 10, 11, 12, 13, 14, 20, 21, 22, 23, 51, 76, 77, 81, 84, 85, 86, 87, 100} : Finset ℕ) ⊆ ({0, 1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 20, 21, 22, 23, 24, 26, 27, 28, 29, 38, 51, 76, 77, 81, 84, 85, 86, 87, 100} : Finset ℕ)) hsS
             have hbig₀ : cfg₀.state ∈ ({0, 1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 20, 21, 22, 23, 24, 26, 27, 28, 29, 38, 51, 76, 77, 81, 84, 85, 86, 87, 100} : Finset ℕ) :=
               flow_prev step.result.nextState cfg₀.state (cfg₀.tape cfg₀.headPos) step.result h_trans hnext hqbig
             have hnotF : cfg₀.state ∉ ({0, 1, 2, 3, 24, 26, 27, 29, 38} : Finset ℕ) := by
@@ -4126,7 +4126,7 @@ lemma process_one_bit_overflow (j : ℕ) (tbits : List Bool) (p_t p_e : ℤ) (ta
   let step5 : SymStep := { fromState := 5, readSym := Sym.data1, result := r5 }
   have htrans5 : step5.result ∈ VerifierSym.transition (5, tape (p_e + 1 + (j : ℤ))) := by
     rw [hvj]
-    native_decide
+    decide
   let tape1 : ℤ → Sym := fun i => if i = p_e + 1 + (j : ℤ) then Sym.consumed else tape i
   have hstep5 : SymSteps VerifierSym.transition (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) [step5]
       (symStepConfig (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) step5.result) := by
@@ -4136,7 +4136,7 @@ lemma process_one_bit_overflow (j : ℕ) (tbits : List Bool) (p_t p_e : ℤ) (ta
       rw [hvj]
     · change step5.result ∈ VerifierSym.transition (5, tape (p_e + 1 + (j : ℤ)))
       rw [hvj]
-      native_decide
+      decide
   have hcfg5 : symStepConfig (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) step5.result =
       SymConfig.mk 76 tape1 (p_e + (j : ℤ)) := by
     simp [symStepConfig, SymConfig.mk, step5, r5, tape1, Dir.toInt]
@@ -4178,7 +4178,7 @@ lemma process_one_bit_overflow (j : ℕ) (tbits : List Bool) (p_t p_e : ℤ) (ta
     rw [hpos]
     rw [show tape1 (p_e - 1) = tape (p_e - 1) from by simp [tape1]; intro h; omega]
     exact hbound
-  have hend6 : { nextState := 77, writeSym := Sym.boundary, moveDir := Dir.L } ∈ VerifierSym.transition (76, Sym.boundary) := by native_decide
+  have hend6 : { nextState := 77, writeSym := Sym.boundary, moveDir := Dir.L } ∈ VerifierSym.transition (76, Sym.boundary) := by decide
   have hkeep6 : ∀ s : Sym, s.1 = SymKind.consumed ∨ s.1 = SymKind.data0 ∨ s.1 = SymKind.data1 →
       { nextState := 76, writeSym := s, moveDir := Dir.L } ∈ VerifierSym.transition (76, s) := trans76_keep
   rcases scanLeftKeepP 76 77 Sym.boundary Dir.L (j + 1) (p_e + (j : ℤ)) tape1
@@ -4220,7 +4220,7 @@ lemma process_one_bit_overflow (j : ℕ) (tbits : List Bool) (p_t p_e : ℤ) (ta
     rw [hpos]
     rw [show tape1 (p_t - 1) = tape (p_t - 1) from by simp [tape1]; intro h; omega]
     exact hhashL
-  have hend7 : { nextState := 10, writeSym := Sym.boundary, moveDir := Dir.R } ∈ VerifierSym.transition (77, Sym.boundary) := by native_decide
+  have hend7 : { nextState := 10, writeSym := Sym.boundary, moveDir := Dir.R } ∈ VerifierSym.transition (77, Sym.boundary) := by decide
   have hkeep7 : ∀ s : Sym, s.1 = SymKind.data0 ∨ s.1 = SymKind.data1 →
       { nextState := 77, writeSym := s, moveDir := Dir.L } ∈ VerifierSym.transition (77, s) := trans77_keep
   rcases scanLeftKeepP 77 10 Sym.boundary Dir.R n7 (p_e - 2) tape1
@@ -4278,7 +4278,7 @@ lemma process_one_bit_overflow (j : ℕ) (tbits : List Bool) (p_t p_e : ℤ) (ta
   have htrans10tj : step10tj.result ∈ VerifierSym.transition (10, tape1 (p_t + (j : ℤ))) := by
     rw [htape_tj]
     simp [step10tj, r10tj]
-    native_decide
+    decide
   have hstep10tj : SymSteps VerifierSym.transition (SymConfig.mk 10 tape1 (p_t + (j : ℤ))) [step10tj]
       (symStepConfig (SymConfig.mk 10 tape1 (p_t + (j : ℤ))) step10tj.result) := by
     refine SymSteps.cons [] step10tj (SymConfig.mk 10 tape1 (p_t + (j : ℤ))) SymSteps.nil ?_ ?_ ?_
@@ -4296,7 +4296,7 @@ lemma process_one_bit_overflow (j : ℕ) (tbits : List Bool) (p_t p_e : ℤ) (ta
   let step11 : SymStep := { fromState := 11, readSym := Sym.data0 true, result := r11 }
   have htrans11 : step11.result ∈ VerifierSym.transition (11, Sym.data0 true) := by
     simp [step11, r11]
-    native_decide
+    decide
   have hstep11 : SymSteps VerifierSym.transition (SymConfig.mk 11 tape2 (p_t + (j : ℤ))) [step11]
       (symStepConfig (SymConfig.mk 11 tape2 (p_t + (j : ℤ))) step11.result) := by
     refine SymSteps.cons [] step11 (SymConfig.mk 11 tape2 (p_t + (j : ℤ))) SymSteps.nil ?_ ?_ ?_
@@ -4586,11 +4586,11 @@ lemma subtract_loop_overflow (tbits ebits : List Bool) (j : ℕ) (p_t p_e : ℤ)
                 · unfold step5b r5b
                   rw [show cfg₁.tape (p_e + 1 + ((j + 1 : ℕ) : ℤ)) = Sym.data1 from by simpa [if_pos hb2] using hd]
                   simp [SymConfig.mk]
-                  native_decide
+                  decide
                 · unfold step5b r5b
                   rw [show cfg₁.tape (p_e + 1 + ((j + 1 : ℕ) : ℤ)) = Sym.data0 from by simpa [if_neg hb2] using hd]
                   simp [SymConfig.mk]
-                  native_decide
+                  decide
               have hstep5b : SymSteps VerifierSym.transition cfg₁ [step5b] (symStepConfig cfg₁ step5b.result) := by
                 refine SymSteps.cons [] step5b cfg₁ SymSteps.nil ?_ ?_ ?_
                 · simpa [step5b] using hstate₁.symm
@@ -4685,7 +4685,7 @@ lemma subtract_overflow_to_101 (tbits ebits : List Bool) (p_t p_e : ℤ) (tape :
       rw [hsel]
     · change step.result ∈ VerifierSym.transition (4, tape p_e)
       rw [hsel]
-      native_decide
+      decide
   have hcfg : symStepConfig (SymConfig.mk 4 tape p_e) step.result =
       SymConfig.mk 5 tape1 (p_e + 1) := by
     simp [symStepConfig, SymConfig.mk, step, r, tape1, Dir.toInt]
@@ -4786,7 +4786,7 @@ lemma process_one_bit_region (j : ℕ) (v_j : Bool) (tbits ebits : List Bool)
     let step5 : SymStep := { fromState := 5, readSym := Sym.data1, result := r5 }
     have htrans5 : step5.result ∈ VerifierSym.transition (5, tape (p_e + 1 + (j : ℤ))) := by
       rw [hvj']
-      native_decide
+      decide
     let tape1 : ℤ → Sym := fun i => if i = p_e + 1 + (j : ℤ) then Sym.consumed else tape i
     have hstep5 : SymSteps VerifierSym.transition (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) [step5]
         (symStepConfig (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) step5.result) := by
@@ -4796,7 +4796,7 @@ lemma process_one_bit_region (j : ℕ) (v_j : Bool) (tbits ebits : List Bool)
         rw [hvj']
       · change step5.result ∈ VerifierSym.transition (5, tape (p_e + 1 + (j : ℤ)))
         rw [hvj']
-        native_decide
+        decide
     have hcfg5 : symStepConfig (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) step5.result =
         SymConfig.mk 76 tape1 (p_e + (j : ℤ)) := by
       simp [symStepConfig, SymConfig.mk, step5, r5, tape1, Dir.toInt]
@@ -4838,7 +4838,7 @@ lemma process_one_bit_region (j : ℕ) (v_j : Bool) (tbits ebits : List Bool)
       rw [hpos]
       rw [show tape1 (p_e - 1) = tape (p_e - 1) from by simp [tape1]; intro h; omega]
       exact hbound
-    have hend6 : { nextState := 77, writeSym := Sym.boundary, moveDir := Dir.L } ∈ VerifierSym.transition (76, Sym.boundary) := by native_decide
+    have hend6 : { nextState := 77, writeSym := Sym.boundary, moveDir := Dir.L } ∈ VerifierSym.transition (76, Sym.boundary) := by decide
     have hkeep6 : ∀ s : Sym, s.1 = SymKind.consumed ∨ s.1 = SymKind.data0 ∨ s.1 = SymKind.data1 →
         { nextState := 76, writeSym := s, moveDir := Dir.L } ∈ VerifierSym.transition (76, s) := trans76_keep
     rcases scanLeftKeepP 76 77 Sym.boundary Dir.L (j + 1) (p_e + (j : ℤ)) tape1
@@ -4882,7 +4882,7 @@ lemma process_one_bit_region (j : ℕ) (v_j : Bool) (tbits ebits : List Bool)
       rw [hpos]
       rw [show tape1 (p_t - 1) = tape (p_t - 1) from by simp [tape1]; intro h; omega]
       exact hhashL
-    have hend7 : { nextState := 10, writeSym := Sym.boundary, moveDir := Dir.R } ∈ VerifierSym.transition (77, Sym.boundary) := by native_decide
+    have hend7 : { nextState := 10, writeSym := Sym.boundary, moveDir := Dir.R } ∈ VerifierSym.transition (77, Sym.boundary) := by decide
     have hkeep7 : ∀ s : Sym, s.1 = SymKind.data0 ∨ s.1 = SymKind.data1 →
         { nextState := 77, writeSym := s, moveDir := Dir.L } ∈ VerifierSym.transition (77, s) := trans77_keep
     rcases scanLeftKeepP 77 10 Sym.boundary Dir.R n7 (p_e - 2) tape1
@@ -5249,7 +5249,7 @@ lemma process_one_bit_region (j : ℕ) (v_j : Bool) (tbits ebits : List Bool)
       have htrans10tj : step10tj.result ∈ VerifierSym.transition (10, tape1 (p_t + (j : ℤ))) := by
         rw [htape_tj]
         simp [step10tj, r10tj]
-        native_decide
+        decide
       have hstep10tj : SymSteps VerifierSym.transition (SymConfig.mk 10 tape1 (p_t + (j : ℤ))) [step10tj]
           (symStepConfig (SymConfig.mk 10 tape1 (p_t + (j : ℤ))) step10tj.result) := by
         refine SymSteps.cons [] step10tj (SymConfig.mk 10 tape1 (p_t + (j : ℤ))) SymSteps.nil ?_ ?_ ?_
@@ -5267,7 +5267,7 @@ lemma process_one_bit_region (j : ℕ) (v_j : Bool) (tbits ebits : List Bool)
       let step11 : SymStep := { fromState := 11, readSym := Sym.data0 true, result := r11 }
       have htrans11 : step11.result ∈ VerifierSym.transition (11, Sym.data0 true) := by
         simp [step11, r11]
-        native_decide
+        decide
       have hstep11 : SymSteps VerifierSym.transition (SymConfig.mk 11 tape2 (p_t + (j : ℤ))) [step11]
           (symStepConfig (SymConfig.mk 11 tape2 (p_t + (j : ℤ))) step11.result) := by
         refine SymSteps.cons [] step11 (SymConfig.mk 11 tape2 (p_t + (j : ℤ))) SymSteps.nil ?_ ?_ ?_
@@ -5459,7 +5459,7 @@ lemma process_one_bit_region (j : ℕ) (v_j : Bool) (tbits ebits : List Bool)
     let step5 : SymStep := { fromState := 5, readSym := Sym.data0, result := r5 }
     have htrans5 : step5.result ∈ VerifierSym.transition (5, tape (p_e + 1 + (j : ℤ))) := by
       rw [hvj']
-      native_decide
+      decide
     let tape1 : ℤ → Sym := fun i => if i = p_e + 1 + (j : ℤ) then Sym.consumed else tape i
     have hstep5 : SymSteps VerifierSym.transition (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) [step5]
         (symStepConfig (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) step5.result) := by
@@ -5469,7 +5469,7 @@ lemma process_one_bit_region (j : ℕ) (v_j : Bool) (tbits ebits : List Bool)
         rw [hvj']
       · change step5.result ∈ VerifierSym.transition (5, tape (p_e + 1 + (j : ℤ)))
         rw [hvj']
-        native_decide
+        decide
     have hcfg5 : symStepConfig (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) step5.result =
         SymConfig.mk 8 tape1 (p_e + (j : ℤ)) := by
       simp [symStepConfig, SymConfig.mk, step5, r5, tape1, Dir.toInt]
@@ -5511,7 +5511,7 @@ lemma process_one_bit_region (j : ℕ) (v_j : Bool) (tbits ebits : List Bool)
       rw [hpos]
       rw [show tape1 (p_e - 1) = tape (p_e - 1) from by simp [tape1]; intro h; omega]
       exact hbound
-    have hend8 : { nextState := 9, writeSym := Sym.boundary, moveDir := Dir.L } ∈ VerifierSym.transition (8, Sym.boundary) := by native_decide
+    have hend8 : { nextState := 9, writeSym := Sym.boundary, moveDir := Dir.L } ∈ VerifierSym.transition (8, Sym.boundary) := by decide
     have hkeep8 : ∀ s : Sym, s.1 = SymKind.consumed ∨ s.1 = SymKind.data0 ∨ s.1 = SymKind.data1 →
         { nextState := 8, writeSym := s, moveDir := Dir.L } ∈ VerifierSym.transition (8, s) := trans8_keep
     rcases scanLeftKeepP 8 9 Sym.boundary Dir.L (j + 1) (p_e + (j : ℤ)) tape1
@@ -5555,7 +5555,7 @@ lemma process_one_bit_region (j : ℕ) (v_j : Bool) (tbits ebits : List Bool)
       rw [hpos]
       rw [show tape1 (p_t - 1) = tape (p_t - 1) from by simp [tape1]; intro h; omega]
       exact hhashL
-    have hend9 : { nextState := 12, writeSym := Sym.boundary, moveDir := Dir.R } ∈ VerifierSym.transition (9, Sym.boundary) := by native_decide
+    have hend9 : { nextState := 12, writeSym := Sym.boundary, moveDir := Dir.R } ∈ VerifierSym.transition (9, Sym.boundary) := by decide
     have hkeep9 : ∀ s : Sym, s.1 = SymKind.data0 ∨ s.1 = SymKind.data1 →
         { nextState := 9, writeSym := s, moveDir := Dir.L } ∈ VerifierSym.transition (9, s) := trans9_keep
     rcases scanLeftKeepP 9 12 Sym.boundary Dir.R n9 (p_e - 2) tape1
@@ -5609,9 +5609,9 @@ lemma process_one_bit_region (j : ℕ) (v_j : Bool) (tbits ebits : List Bool)
     have htrans_tj : step_tj.result ∈ VerifierSym.transition (12, (if tbits[j] then Sym.data1 else Sym.data0)) := by
       by_cases hb : tbits[j]
       · simp [step_tj, r_tj, hb]
-        native_decide
+        decide
       · simp [step_tj, r_tj, hb]
-        native_decide
+        decide
     have hstep_tj : SymSteps VerifierSym.transition (SymConfig.mk 12 tape1 (p_t + (j : ℤ))) [step_tj]
         (symStepConfig (SymConfig.mk 12 tape1 (p_t + (j : ℤ))) step_tj.result) := by
       refine SymSteps.cons [] step_tj (SymConfig.mk 12 tape1 (p_t + (j : ℤ))) SymSteps.nil ?_ ?_ ?_
@@ -5954,7 +5954,7 @@ lemma process_one_bit_boundary (j : ℕ) (v_j : Bool) (tbits : List Bool) (p_t p
     let step5 : SymStep := { fromState := 5, readSym := Sym.data1, result := r5 }
     have htrans5 : step5.result ∈ VerifierSym.transition (5, tape (p_e + 1 + (j : ℤ))) := by
       rw [hvj']
-      native_decide
+      decide
     let tape1 : ℤ → Sym := fun i => if i = p_e + 1 + (j : ℤ) then Sym.consumed else tape i
     have hstep5 : SymSteps VerifierSym.transition (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) [step5]
         (symStepConfig (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) step5.result) := by
@@ -5964,7 +5964,7 @@ lemma process_one_bit_boundary (j : ℕ) (v_j : Bool) (tbits : List Bool) (p_t p
         rw [hvj']
       · change step5.result ∈ VerifierSym.transition (5, tape (p_e + 1 + (j : ℤ)))
         rw [hvj']
-        native_decide
+        decide
     have hcfg5 : symStepConfig (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) step5.result =
         SymConfig.mk 76 tape1 (p_e + (j : ℤ)) := by
       simp [symStepConfig, SymConfig.mk, step5, r5, tape1, Dir.toInt]
@@ -5988,7 +5988,7 @@ lemma process_one_bit_boundary (j : ℕ) (v_j : Bool) (tbits : List Bool) (p_t p
       rw [hpos]
       rw [show tape1 (p_e - 1) = tape (p_e - 1) from by simp [tape1]; intro h; omega]
       exact hbound
-    have hend6 : { nextState := 77, writeSym := Sym.boundary, moveDir := Dir.L } ∈ VerifierSym.transition (76, Sym.boundary) := by native_decide
+    have hend6 : { nextState := 77, writeSym := Sym.boundary, moveDir := Dir.L } ∈ VerifierSym.transition (76, Sym.boundary) := by decide
     have hkeep6 : ∀ s : Sym, s.1 = SymKind.consumed ∨ s.1 = SymKind.data0 ∨ s.1 = SymKind.data1 →
         { nextState := 76, writeSym := s, moveDir := Dir.L } ∈ VerifierSym.transition (76, s) := trans76_keep
     rcases scanLeftKeepP 76 77 Sym.boundary Dir.L (j + 1) (p_e + (j : ℤ)) tape1
@@ -6013,7 +6013,7 @@ lemma process_one_bit_boundary (j : ℕ) (v_j : Bool) (tbits : List Bool) (p_t p
       rw [hpos]
       rw [show tape1 (p_t - 1) = tape (p_t - 1) from by simp [tape1]; intro h; omega]
       exact hhashL
-    have hend7 : { nextState := 10, writeSym := Sym.boundary, moveDir := Dir.R } ∈ VerifierSym.transition (77, Sym.boundary) := by native_decide
+    have hend7 : { nextState := 10, writeSym := Sym.boundary, moveDir := Dir.R } ∈ VerifierSym.transition (77, Sym.boundary) := by decide
     have hkeep7 : ∀ s : Sym, s.1 = SymKind.data0 ∨ s.1 = SymKind.data1 →
         { nextState := 77, writeSym := s, moveDir := Dir.L } ∈ VerifierSym.transition (77, s) := trans77_keep
     rcases scanLeftKeepP 77 10 Sym.boundary Dir.R n7 (p_e - 2) tape1
@@ -6033,7 +6033,7 @@ lemma process_one_bit_boundary (j : ℕ) (v_j : Bool) (tbits : List Bool) (p_t p
     let stepfin : SymStep := { fromState := 10, readSym := Sym.boundary, result := rfin }
     have htransfin : stepfin.result ∈ VerifierSym.transition (10, tape1 (p_t + (j : ℤ))) := by
       rw [htj_bound]
-      native_decide
+      decide
     have hstepfin : SymSteps VerifierSym.transition (SymConfig.mk 10 tape1 (p_t + (j : ℤ))) [stepfin]
         (symStepConfig (SymConfig.mk 10 tape1 (p_t + (j : ℤ))) stepfin.result) := by
       refine SymSteps.cons [] stepfin (SymConfig.mk 10 tape1 (p_t + (j : ℤ))) SymSteps.nil ?_ ?_ ?_
@@ -6092,7 +6092,7 @@ lemma process_one_bit_boundary (j : ℕ) (v_j : Bool) (tbits : List Bool) (p_t p
     let step5 : SymStep := { fromState := 5, readSym := Sym.data0, result := r5 }
     have htrans5 : step5.result ∈ VerifierSym.transition (5, tape (p_e + 1 + (j : ℤ))) := by
       rw [hvj']
-      native_decide
+      decide
     let tape1 : ℤ → Sym := fun i => if i = p_e + 1 + (j : ℤ) then Sym.consumed else tape i
     have hstep5 : SymSteps VerifierSym.transition (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) [step5]
         (symStepConfig (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) step5.result) := by
@@ -6102,7 +6102,7 @@ lemma process_one_bit_boundary (j : ℕ) (v_j : Bool) (tbits : List Bool) (p_t p
         rw [hvj']
       · change step5.result ∈ VerifierSym.transition (5, tape (p_e + 1 + (j : ℤ)))
         rw [hvj']
-        native_decide
+        decide
     have hcfg5 : symStepConfig (SymConfig.mk 5 tape (p_e + 1 + (j : ℤ))) step5.result =
         SymConfig.mk 8 tape1 (p_e + (j : ℤ)) := by
       simp [symStepConfig, SymConfig.mk, step5, r5, tape1, Dir.toInt]
@@ -6126,7 +6126,7 @@ lemma process_one_bit_boundary (j : ℕ) (v_j : Bool) (tbits : List Bool) (p_t p
       rw [hpos]
       rw [show tape1 (p_e - 1) = tape (p_e - 1) from by simp [tape1]; intro h; omega]
       exact hbound
-    have hend8 : { nextState := 9, writeSym := Sym.boundary, moveDir := Dir.L } ∈ VerifierSym.transition (8, Sym.boundary) := by native_decide
+    have hend8 : { nextState := 9, writeSym := Sym.boundary, moveDir := Dir.L } ∈ VerifierSym.transition (8, Sym.boundary) := by decide
     have hkeep8 : ∀ s : Sym, s.1 = SymKind.consumed ∨ s.1 = SymKind.data0 ∨ s.1 = SymKind.data1 →
         { nextState := 8, writeSym := s, moveDir := Dir.L } ∈ VerifierSym.transition (8, s) := trans8_keep
     rcases scanLeftKeepP 8 9 Sym.boundary Dir.L (j + 1) (p_e + (j : ℤ)) tape1
@@ -6151,7 +6151,7 @@ lemma process_one_bit_boundary (j : ℕ) (v_j : Bool) (tbits : List Bool) (p_t p
       rw [hpos]
       rw [show tape1 (p_t - 1) = tape (p_t - 1) from by simp [tape1]; intro h; omega]
       exact hhashL
-    have hend9 : { nextState := 12, writeSym := Sym.boundary, moveDir := Dir.R } ∈ VerifierSym.transition (9, Sym.boundary) := by native_decide
+    have hend9 : { nextState := 12, writeSym := Sym.boundary, moveDir := Dir.R } ∈ VerifierSym.transition (9, Sym.boundary) := by decide
     have hkeep9 : ∀ s : Sym, s.1 = SymKind.data0 ∨ s.1 = SymKind.data1 →
         { nextState := 9, writeSym := s, moveDir := Dir.L } ∈ VerifierSym.transition (9, s) := trans9_keep
     rcases scanLeftKeepP 9 12 Sym.boundary Dir.R n9 (p_e - 2) tape1
@@ -6171,7 +6171,7 @@ lemma process_one_bit_boundary (j : ℕ) (v_j : Bool) (tbits : List Bool) (p_t p
     let stepfin : SymStep := { fromState := 12, readSym := Sym.boundary, result := rfin }
     have htransfin : stepfin.result ∈ VerifierSym.transition (12, tape1 (p_t + (j : ℤ))) := by
       rw [htj_bound]
-      native_decide
+      decide
     have hstepfin : SymSteps VerifierSym.transition (SymConfig.mk 12 tape1 (p_t + (j : ℤ))) [stepfin]
         (symStepConfig (SymConfig.mk 12 tape1 (p_t + (j : ℤ))) stepfin.result) := by
       refine SymSteps.cons [] stepfin (SymConfig.mk 12 tape1 (p_t + (j : ℤ))) SymSteps.nil ?_ ?_ ?_
@@ -6384,11 +6384,11 @@ lemma subtract_loop_overflow_gen (tbits ebits : List Bool) (j : ℕ) (p_t p_e : 
                   · unfold step5b r5b
                     rw [show cfg₁.tape (p_e + 1 + ((j + 1 : ℕ) : ℤ)) = Sym.data1 from by simpa [if_pos hb2] using hd]
                     simp [SymConfig.mk]
-                    native_decide
+                    decide
                   · unfold step5b r5b
                     rw [show cfg₁.tape (p_e + 1 + ((j + 1 : ℕ) : ℤ)) = Sym.data0 from by simpa [if_neg hb2] using hd]
                     simp [SymConfig.mk]
-                    native_decide
+                    decide
                 have hstep5b : SymSteps VerifierSym.transition cfg₁ [step5b] (symStepConfig cfg₁ step5b.result) := by
                   refine SymSteps.cons [] step5b cfg₁ SymSteps.nil ?_ ?_ ?_
                   · simpa [step5b] using hstate₁.symm
@@ -6549,7 +6549,7 @@ lemma subtract_overflow_from_4 (v : ℕ) (tbits : List Bool) (p_t p : ℤ) (tape
       rw [hmark_sel]
     · change step4.result ∈ VerifierSym.transition (4, tape (p + 1))
       rw [hmark_sel]
-      native_decide
+      decide
   have hcfg4 : symStepConfig (SymConfig.mk 4 tape (p + 1)) step4.result =
       SymConfig.mk 5 tape1 (p + 1 + 1) := by
     simp [symStepConfig, SymConfig.mk, step4, r4, tape1, Dir.toInt]
@@ -6987,7 +6987,7 @@ lemma main_loop_reject (elems : List ℕ) (sel : List Bool) (tbits : List Bool)
                     rw [hcl51.2]
                     exact hdata51.symm
                   · rw [hcl51.1, hcl51.2, hdata51]
-                    native_decide
+                    decide
                 have hgt' : bitsValue tbits < selectedSum (w :: rest') sel' := by
                   have hsum : selectedSum (v :: w :: rest') (b :: sel') = selectedSum (w :: rest') sel' := by
                     simpa [hb] using (selectedSum_cons v (w :: rest') b sel')
@@ -7252,7 +7252,7 @@ theorem symVerifier_correct (inst : SubsetSumInstance) (hne : inst.elements ≠ 
       have hcell : (encodeInstanceSym inst)[0] = Sym.boundary := by
         dsimp [encodeInstanceSym]
       simpa [hcell] using (hta 0 h0)
-    rcases backchain_to_first4 hπ (by rw [hs100]; native_decide) with
+    rcases backchain_to_first4 hπ (by rw [hs100]; decide) with
       ⟨π₁, π₂, cfg₄, hsplit, hπ₁, hs4, hno4₁, hrest⟩
     rcases split_at_state4 π₁ cfg₄ hstart hπ₁ hs4 with
       ⟨π₀₃, step₃, cfg₃, π₂', hsplit₃, hπ₀₃, h28h51, hcfg₄, hrest₃⟩
@@ -7610,7 +7610,7 @@ theorem symVerifier_correct (inst : SubsetSumInstance) (hne : inst.elements ≠ 
       · rw [hbound22]
       · rw [hbound22]
         rw [hs22]
-        native_decide
+        decide
     have hcfg23 : symStepConfig cfgl stepc.result = SymConfig.mk 23 cfgl.tape (cfgl.headPos - 1) := by
       dsimp [symStepConfig]
       rw [show stepc.result = SymTransResult.mk 23 (Sym.mk SymKind.boundary true) Dir.L from by

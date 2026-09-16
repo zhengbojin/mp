@@ -330,7 +330,7 @@ theorem expand_sym_step (q : ℕ) (sym : Sym) (r : SymTransResult)
             rcases sym with ⟨k, mk⟩
             have hk : k = SymKind.beta := by simpa using hβ
             subst k
-            cases mk <;> rw [VerifierSym.transition, if_pos (by decide : 2 ∈ VerifierSym.legalStates)] <;> native_decide
+            cases mk <;> rw [VerifierSym.transition, if_pos (by decide : 2 ∈ VerifierSym.legalStates)] <;> decide
           have hr' : r = SymTransResult.mk 101 sym Dir.S := by
             simpa [htb', Finset.mem_singleton] using hr
           have hns : r.nextState = 101 := by

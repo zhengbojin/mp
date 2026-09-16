@@ -1552,7 +1552,7 @@ lemma sym_neg_head_blank (inst : SubsetSumInstance) {π : List SymStep} {cfg : S
       · rename_i hc
         exfalso
         omega
-      · native_decide
+      · decide
   | cons π₀ step cfg' hprev hfrom hread htrans ih =>
       intro j hj
       dsimp [symStepConfig]
