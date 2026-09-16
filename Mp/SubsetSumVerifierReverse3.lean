@@ -3324,9 +3324,10 @@ lemma branch_phase_inv (inst : SubsetSumInstance) (π : List SymStep) (cfg : Sym
             right; right; right; right; right; right
 
             refine (by
-              have hdec : ∀ s : Sym, ∀ r : SymTransResult,
-                  r ∈ VerifierSym.transition (101, s) → r.nextState = 101 := by
-                native_decide
+              have hdec : ∀ s : Sym, ∀ r ∈ VerifierSym.transition (101, s),
+                  r.nextState = 101 := by
+                intro s
+                rcases s with ⟨ks, ms⟩ <;> cases ks <;> cases ms <;> decide
               dsimp [symStepConfig]
               exact hdec (cfg₀.tape cfg₀.headPos) step.result (by
                 simpa [hs101] using h_trans))
@@ -3728,16 +3729,18 @@ lemma symSteps_23_closed {p : ℤ} {tape : ℤ → Sym} {π cfg}
       simp [SymConfig.mk]
   | cons π₀ step cfg₀ h_ind h_from h_read h_trans ih =>
       rcases ih with h23 | h100 | h101
-      · have hdec : ∀ s : Sym, ∀ r : SymTransResult,
-            r ∈ VerifierSym.transition (23, s) → r.nextState = 23 ∨ r.nextState = 100 ∨ r.nextState = 101 := by
-          native_decide
+      · have hdec : ∀ s : Sym, ∀ r ∈ VerifierSym.transition (23, s),
+            r.nextState = 23 ∨ r.nextState = 100 ∨ r.nextState = 101 := by
+          intro s
+          rcases s with ⟨ks, ms⟩ <;> cases ks <;> cases ms <;> decide
         change (symStepConfig cfg₀ step.result).state = 23 ∨
           (symStepConfig cfg₀ step.result).state = 100 ∨ (symStepConfig cfg₀ step.result).state = 101
         dsimp [symStepConfig]
         exact hdec (cfg₀.tape cfg₀.headPos) step.result (by simpa [h23] using h_trans)
-      · have hdec : ∀ s : Sym, ∀ r : SymTransResult,
-            r ∈ VerifierSym.transition (100, s) → r.nextState = 100 ∨ r.nextState = 101 := by
-          native_decide
+      · have hdec : ∀ s : Sym, ∀ r ∈ VerifierSym.transition (100, s),
+            r.nextState = 100 ∨ r.nextState = 101 := by
+          intro s
+          rcases s with ⟨ks, ms⟩ <;> cases ks <;> cases ms <;> decide
         have hd := hdec (cfg₀.tape cfg₀.headPos) step.result (by simpa [h100] using h_trans)
         rcases hd with h100' | h101'
         · change (symStepConfig cfg₀ step.result).state = 23 ∨
@@ -3748,9 +3751,10 @@ lemma symSteps_23_closed {p : ℤ} {tape : ℤ → Sym} {π cfg}
             (symStepConfig cfg₀ step.result).state = 100 ∨ (symStepConfig cfg₀ step.result).state = 101
           dsimp [symStepConfig]
           exact Or.inr (Or.inr h101')
-      · have hdec : ∀ s : Sym, ∀ r : SymTransResult,
-            r ∈ VerifierSym.transition (101, s) → r.nextState = 101 := by
-          native_decide
+      · have hdec : ∀ s : Sym, ∀ r ∈ VerifierSym.transition (101, s),
+            r.nextState = 101 := by
+          intro s
+          rcases s with ⟨ks, ms⟩ <;> cases ks <;> cases ms <;> decide
         change (symStepConfig cfg₀ step.result).state = 23 ∨
           (symStepConfig cfg₀ step.result).state = 100 ∨ (symStepConfig cfg₀ step.result).state = 101
         dsimp [symStepConfig]
@@ -3867,12 +3871,14 @@ lemma first_read_of_22_to_100 (tape : ℤ → Sym) (hp : ℤ) {ρ cfg}
     rw [SymSteps_nil_eq h] at hs
     simp [SymConfig.mk] at hs
     ) with ⟨step, ρ', hρeq, hfrom, hread, htrans, htail⟩
-  have hdec : ∀ s : Sym, ∀ r : SymTransResult,
-      r ∈ VerifierSym.transition (22, s) → r.nextState = 23 → s = Sym.mk SymKind.boundary true := by
-    native_decide
-  have hdec2 : ∀ s : Sym, ∀ r : SymTransResult,
-      r ∈ VerifierSym.transition (22, s) → r.nextState = 23 ∨ r.nextState = 101 := by
-    native_decide
+  have hdec : ∀ s : Sym, ∀ r ∈ VerifierSym.transition (22, s),
+      r.nextState = 23 → s = Sym.mk SymKind.boundary true := by
+    intro s
+    rcases s with ⟨ks, ms⟩ <;> cases ks <;> cases ms <;> decide
+  have hdec2 : ∀ s : Sym, ∀ r ∈ VerifierSym.transition (22, s),
+      r.nextState = 23 ∨ r.nextState = 101 := by
+    intro s
+    rcases s with ⟨ks, ms⟩ <;> cases ks <;> cases ms <;> decide
   rcases hdec2 step.readSym step.result (by simpa [hread, SymConfig.mk] using htrans) with h23 | h101
   · change (SymConfig.mk 22 tape hp).tape (SymConfig.mk 22 tape hp).headPos = Sym.mk SymKind.boundary true
     rw [← hread]
@@ -4050,9 +4056,10 @@ lemma backchain_to_first4 {input : List Sym} {π : List SymStep} {cfg : SymConfi
           have hcfg4 : (symStepConfig cfg₀ step.result).state = 4 := by
             have hsS : step.result.nextState ∈ ({4, 5, 8, 9, 10, 11, 12, 13, 14, 20, 21, 22, 23, 51, 76, 77, 81, 84, 85, 86, 87, 100} : Finset ℕ) := by
               simpa [symStepConfig] using hs
-            have hdec : ∀ s : Sym, ∀ r : SymTransResult,
-                r ∈ VerifierSym.transition (28, s) → r.nextState ∈ ({4, 5, 8, 9, 10, 11, 12, 13, 14, 20, 21, 22, 23, 51, 76, 77, 81, 84, 85, 86, 87, 100} : Finset ℕ) → r.nextState = 4 := by
-              native_decide
+            have hdec : ∀ s : Sym, ∀ r ∈ VerifierSym.transition (28, s),
+                r.nextState ∈ ({4, 5, 8, 9, 10, 11, 12, 13, 14, 20, 21, 22, 23, 51, 76, 77, 81, 84, 85, 86, 87, 100} : Finset ℕ) → r.nextState = 4 := by
+              intro s
+              rcases s with ⟨ks, ms⟩ <;> cases ks <;> cases ms <;> decide
             exact hdec (cfg₀.tape cfg₀.headPos) step.result (by simpa [h28] using h_trans) hsS
           have hno4' : ∀ {π' : List SymStep} {cfg' : SymConfig},
               SymSteps VerifierSym.transition (symInitialConfig input) π' cfg' →

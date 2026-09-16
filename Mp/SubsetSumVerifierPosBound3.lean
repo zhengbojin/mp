@@ -451,9 +451,10 @@ lemma a2p_28_read_kind (s : Sym) (r : SymTransResult)
 lemma a2p_38_to_28_read_boundary (s : Sym) (r : SymTransResult)
     (hr : r ∈ VerifierSym.transition (38, s)) (h28 : r.nextState = 28) :
     s.1 = SymKind.boundary := by
-  have hbb : ∀ s : Sym, ∀ r : SymTransResult,
-      r ∈ VerifierSym.transition (38, s) → r.nextState = 28 → s.1 = SymKind.boundary := by
-    native_decide
+  have hbb : ∀ s : Sym, ∀ r ∈ VerifierSym.transition (38, s),
+      r.nextState = 28 → s.1 = SymKind.boundary := by
+    intro s
+    rcases s with ⟨ks, ms⟩ <;> cases ks <;> cases ms <;> decide
   exact hbb s r hr h28
 
 /-- L 步类:24/29/26/27/38 读非 boundary(next 仍在该集)的 dir = L。 -/

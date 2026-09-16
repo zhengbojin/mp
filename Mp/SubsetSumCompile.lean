@@ -120,9 +120,10 @@ lemma symTransition_branch_q2 (q : ℕ) (s : Sym) (r : SymTransResult)
 /-- 陷阱态 101 吸收（Sym 层）：读任意符号的转移 nextState 恒 101。 -/
 lemma symTransition_trap101_absorb (s : Sym) (r : SymTransResult)
     (hr : r ∈ VerifierSym.transition (101, s)) : r.nextState = 101 := by
-  have hb : ∀ s : Sym, ∀ r : SymTransResult,
-      r ∈ VerifierSym.transition (101, s) → r.nextState = 101 := by
-    native_decide
+  have hb : ∀ s : Sym, ∀ r ∈ VerifierSym.transition (101, s),
+      r.nextState = 101 := by
+    intro s
+    rcases s with ⟨ks, ms⟩ <;> cases ks <;> cases ms <;> decide
   exact hb s r hr
 
 /-- Sym 路径不变量：终态与每步 fromState 都 ≤ 101。 -/
@@ -150,9 +151,10 @@ lemma symSteps_state_le101 {cfg₀ : SymConfig} {π : List SymStep} {cfg : SymCo
 /-- 100 态吸收：读任意符号 nextState 恒 100。 -/
 lemma symTransition_100_absorb (s : Sym) (r : SymTransResult)
     (hr : r ∈ VerifierSym.transition (100, s)) : r.nextState = 100 := by
-  have hb : ∀ s : Sym, ∀ r : SymTransResult,
-      r ∈ VerifierSym.transition (100, s) → r.nextState = 100 := by
-    native_decide
+  have hb : ∀ s : Sym, ∀ r ∈ VerifierSym.transition (100, s),
+      r.nextState = 100 := by
+    intro s
+    rcases s with ⟨ks, ms⟩ <;> cases ks <;> cases ms <;> decide
   exact hb s r hr
 
 /-- 路径二分：要么每步 nextState ≠ 100，要么终点状态 = 100。 -/
