@@ -904,8 +904,8 @@ lemma branch_phase_inv (inst : SubsetSumInstance) (π : List SymStep) (cfg : Sym
 
             have hres : step.result = SymTransResult.mk 1 Sym.boundary Dir.R := by
 
-              have hdec : ∀ r : SymTransResult, r ∈ VerifierSym.transition (0, Sym.boundary) → r = SymTransResult.mk 1 Sym.boundary Dir.R := by
-                native_decide
+              have hdec : ∀ r ∈ VerifierSym.transition (0, Sym.boundary), r = SymTransResult.mk 1 Sym.boundary Dir.R := by
+                decide
               have htrans' : step.result ∈ VerifierSym.transition (0, Sym.boundary) := by
                 have h0 : (symInitialConfig (encodeInstanceSym inst)).tape 0 = Sym.boundary := by
                   simpa [tape₀] using htape0
@@ -7347,24 +7347,24 @@ theorem symVerifier_correct (inst : SubsetSumInstance) (hne : inst.elements ≠ 
           rw [hreadc]
           exact hbound22
         have h23next : stepc.result.nextState = 23 := by
-          have hdec : ∀ r : SymTransResult, r ∈ VerifierSym.transition (22, Sym.mk SymKind.boundary true) → r.nextState = 23 := by
-            native_decide
+          have hdec : ∀ r ∈ VerifierSym.transition (22, Sym.mk SymKind.boundary true), r.nextState = 23 := by
+            decide
           exact hdec stepc.result (by simpa [hbound22] using htransc)
         have hcfg23 : symStepConfig cfgl stepc.result = SymConfig.mk 23 cfgl.tape (cfgl.headPos - 1) := by
           have hdec : ∀ r : SymTransResult, r ∈ VerifierSym.transition (22, Sym.mk SymKind.boundary true) →
               r = SymTransResult.mk 23 (Sym.mk SymKind.boundary true) Dir.L := by
             intro r hr
             have hnext : r.nextState = 23 := by
-              have hd : ∀ r : SymTransResult, r ∈ VerifierSym.transition (22, Sym.mk SymKind.boundary true) → r.nextState = 23 := by
-                native_decide
+              have hd : ∀ r ∈ VerifierSym.transition (22, Sym.mk SymKind.boundary true), r.nextState = 23 := by
+                decide
               exact hd r hr
             have hwrite : r.writeSym = Sym.mk SymKind.boundary true := by
-              have hd : ∀ r : SymTransResult, r ∈ VerifierSym.transition (22, Sym.mk SymKind.boundary true) → r.writeSym = Sym.mk SymKind.boundary true := by
-                native_decide
+              have hd : ∀ r ∈ VerifierSym.transition (22, Sym.mk SymKind.boundary true), r.writeSym = Sym.mk SymKind.boundary true := by
+                decide
               exact hd r hr
             have hmove : r.moveDir = Dir.L := by
-              have hd : ∀ r : SymTransResult, r ∈ VerifierSym.transition (22, Sym.mk SymKind.boundary true) → r.moveDir = Dir.L := by
-                native_decide
+              have hd : ∀ r ∈ VerifierSym.transition (22, Sym.mk SymKind.boundary true), r.moveDir = Dir.L := by
+                decide
               exact hd r hr
             rcases r with ⟨ns, ws, md⟩
             have hns : ns = 23 := hnext
@@ -7898,9 +7898,9 @@ lemma accept_path_first_cell_boundary {input : List Sym} {π : List SymStep} {cf
 lemma state101_absorb (s : Sym) (r : SymTransResult)
     (hr : r ∈ VerifierSym.transition (101, s)) :
     r.nextState = 101 := by
-  have hdec : ∀ k : SymKind, ∀ m : Bool, ∀ r : SymTransResult,
-      r ∈ VerifierSym.transition (101, Sym.mk k m) → r.nextState = 101 := by
-    native_decide
+  have hdec : ∀ k : SymKind, ∀ m : Bool, ∀ r ∈ VerifierSym.transition (101, Sym.mk k m),
+      r.nextState = 101 := by
+    decide
   rcases s with ⟨k, m⟩
   exact hdec k m r hr
 

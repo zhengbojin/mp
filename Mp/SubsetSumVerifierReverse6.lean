@@ -55,9 +55,9 @@ theorem q12_state23_boundary_R :
 theorem q12_state100_absorb (k : SymKind) (m : Bool) (r : SymTransResult)
     (hr : r ∈ VerifierSym.transition (100, Sym.mk k m)) :
     r.nextState = 100 ∧ r.moveDir = Dir.S := by
-  have hb : ∀ k : SymKind, ∀ m : Bool, ∀ r : SymTransResult,
-      r ∈ VerifierSym.transition (100, Sym.mk k m) → r.nextState = 100 ∧ r.moveDir = Dir.S := by
-    native_decide
+  have hb : ∀ k : SymKind, ∀ m : Bool, ∀ r ∈ VerifierSym.transition (100, Sym.mk k m),
+      r.nextState = 100 ∧ r.moveDir = Dir.S := by
+    decide
   exact hb k m r hr
 
 /-- 探针 3（反例）：blank 残留使带外读可构造——强版（任意路径不读 boundary 右侧）为假。 -/

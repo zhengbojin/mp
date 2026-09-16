@@ -85,24 +85,24 @@ lemma transition_nextState_ge1 (q : ℕ) (s : Sym) (r : SymTransResult)
   · by_cases hq4 : q < 4
     · -- q ∈ {0,1,2,3}：转移 nextState ∈ {1,2,3,24,101} ≥ 1
       interval_cases q
-      · have hdec0 : ∀ k : SymKind, ∀ m : Bool, ∀ r : SymTransResult,
-            r ∈ VerifierSym.transition (0, Sym.mk k m) → 1 ≤ r.nextState := by
-          native_decide
+      · have hdec0 : ∀ k : SymKind, ∀ m : Bool, ∀ r ∈ VerifierSym.transition (0, Sym.mk k m),
+            1 ≤ r.nextState := by
+          decide
         rcases s with ⟨k, m⟩
         exact hdec0 k m r hr
-      · have hdec1 : ∀ k : SymKind, ∀ m : Bool, ∀ r : SymTransResult,
-            r ∈ VerifierSym.transition (1, Sym.mk k m) → 1 ≤ r.nextState := by
-          native_decide
+      · have hdec1 : ∀ k : SymKind, ∀ m : Bool, ∀ r ∈ VerifierSym.transition (1, Sym.mk k m),
+            1 ≤ r.nextState := by
+          decide
         rcases s with ⟨k, m⟩
         exact hdec1 k m r hr
-      · have hdec2 : ∀ k : SymKind, ∀ m : Bool, ∀ r : SymTransResult,
-            r ∈ VerifierSym.transition (2, Sym.mk k m) → 1 ≤ r.nextState := by
-          native_decide
+      · have hdec2 : ∀ k : SymKind, ∀ m : Bool, ∀ r ∈ VerifierSym.transition (2, Sym.mk k m),
+            1 ≤ r.nextState := by
+          decide
         rcases s with ⟨k, m⟩
         exact hdec2 k m r hr
-      · have hdec3 : ∀ k : SymKind, ∀ m : Bool, ∀ r : SymTransResult,
-            r ∈ VerifierSym.transition (3, Sym.mk k m) → 1 ≤ r.nextState := by
-          native_decide
+      · have hdec3 : ∀ k : SymKind, ∀ m : Bool, ∀ r ∈ VerifierSym.transition (3, Sym.mk k m),
+            1 ≤ r.nextState := by
+          decide
         rcases s with ⟨k, m⟩
         exact hdec3 k m r hr
     · -- q ≥ 4：nextState ≥ 4 或 101（ge4 引理）
@@ -138,9 +138,9 @@ lemma transition_nextState_lt4_of_lt4 (q : ℕ) (s : Sym) (r : SymTransResult)
 /-- 状态 0 读 #ₗ → 1 R（唯一转移）。 -/
 lemma trans0_step (r : SymTransResult) (hr : r ∈ VerifierSym.transition (0, Sym.boundary)) :
     r = SymTransResult.mk 1 Sym.boundary Dir.R := by
-  have hdec : ∀ r : SymTransResult,
-      r ∈ VerifierSym.transition (0, Sym.boundary) → r = SymTransResult.mk 1 Sym.boundary Dir.R := by
-    native_decide
+  have hdec : ∀ r ∈ VerifierSym.transition (0, Sym.boundary),
+      r = SymTransResult.mk 1 Sym.boundary Dir.R := by
+    decide
   exact hdec r hr
 
 /-- 状态 2 的下一步 ∈ {2, 3, 101}。 -/
@@ -179,9 +179,9 @@ lemma trans2_branch (s : Sym) (r : SymTransResult) (hs : s.1 = SymKind.alpha ∧
 /-- 状态 2 读 #₁：写回、停留、转 3。 -/
 lemma trans2_boundary (r : SymTransResult) (hr : r ∈ VerifierSym.transition (2, Sym.boundary)) :
     r = SymTransResult.mk 3 Sym.boundary Dir.S := by
-  have hdec : ∀ r : SymTransResult,
-      r ∈ VerifierSym.transition (2, Sym.boundary) → r = SymTransResult.mk 3 Sym.boundary Dir.S := by
-    native_decide
+  have hdec : ∀ r ∈ VerifierSym.transition (2, Sym.boundary),
+      r = SymTransResult.mk 3 Sym.boundary Dir.S := by
+    decide
   exact hdec r hr
 
 /-- 状态 3 读未标 #₁：写 (boundary,true)、左移、转 24。 -/
@@ -198,9 +198,9 @@ lemma trans3_hash1 (r : SymTransResult)
 lemma trans3_hash1_marked (r : SymTransResult)
     (hr : r ∈ VerifierSym.transition (3, Sym.mk SymKind.boundary true)) :
     r.nextState = 101 := by
-  have hdec : ∀ r : SymTransResult,
-      r ∈ VerifierSym.transition (3, Sym.mk SymKind.boundary true) → r.nextState = 101 := by
-    native_decide
+  have hdec : ∀ r ∈ VerifierSym.transition (3, Sym.mk SymKind.boundary true),
+      r.nextState = 101 := by
+    decide
   exact hdec r hr
 
 /-- fmt 段（24/29/26/27/38/28）全部写回原符号。 -/
@@ -294,9 +294,9 @@ lemma trans28_step (s : Sym) (r : SymTransResult) (hr : r ∈ VerifierSym.transi
 /-- 状态 101 吸收：读任意符号、恒 101。 -/
 lemma trans101_step (s : Sym) (r : SymTransResult) (hr : r ∈ VerifierSym.transition (101, s)) :
     r.nextState = 101 := by
-  have hdec : ∀ k : SymKind, ∀ m : Bool, ∀ r : SymTransResult,
-      r ∈ VerifierSym.transition (101, Sym.mk k m) → r.nextState = 101 := by
-    native_decide
+  have hdec : ∀ k : SymKind, ∀ m : Bool, ∀ r ∈ VerifierSym.transition (101, Sym.mk k m),
+      r.nextState = 101 := by
+    decide
   rcases s with ⟨k, m⟩
   exact hdec k m r hr
 
