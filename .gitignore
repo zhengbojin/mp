@@ -1,0 +1,15 @@
+/.lake
+/archive
+/_ppt
+/_build.lock.d/
+.workbuddy-ai/
+
+*.log
+*.txt
+*.py
+*.sh
+_*.*
+*.ppt*
+*.xls*
+*.tex
+*.pdf
