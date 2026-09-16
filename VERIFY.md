@@ -68,17 +68,17 @@ lake env lean verify_check.lean > verify_out.txt
 grep -oE "'(propext|Classical\.choice|Quot\.sound)'" verify_out.txt | sort -u
 
 # ② native_decide 处数计数（登记口径 = 处数，可直接核验）
-#    预期合计 789 处（全库逐文件 `grep -c` 之和；2026-09-15 优化前为 1471 处）
+#    预期合计 774 处（全库逐文件 `grep -c` 之和；2026-09-15 优化前为 1471 处）
 grep -c "native_decide" Mp/*.lean | awk -F: '{s+=$2} END {print s}'
 ```
 
 **关于 `native_decide`（透明披露 · 2026-09-15 更新）**：本工程在有限状态表类证明中
 使用 `native_decide`（编译期求值验证；核验级依赖逐调用证书常数
 `Mp.<引理>._native.native_decide.ax_*`，属标准三件之外的机制信任）。
-本次优化把其中的**「单点查询」类 682 处**改为内核 `decide`（`of_decide_eq_true rfl`，
-**不引入额外信任**），全库处数 **1471 → 789（-46.4%）**（另有 22 处试替换后因内核
-求值超时/爆栈回退：`CBTM6` 1、`Reverse7L3` 19、`PosBound4` 1、注释 1）；保留的 789 处全部是
-**「全称 / 大表枚举」类**（形如 `∀ q : Fin 102, ∀ s : Sym, … := by native_decide`），
+本次优化累计把 **697 处**改为内核 `decide`（`of_decide_eq_true rfl`，**不引入额外信任**），
+全库处数 **1471 → 774（-47.4%）**（其中第一步「单点查询类」682 处；R3b「严格形态类」
+15 处——`∀r∈T` 全体改写 + 逐项内核判定，另有若干变体因超时/编译错误回退）；
+保留的 774 处全部是**「全称 / 大表枚举」类**（形如 `∀ q : Fin 102, ∀ s : Sym, … := by native_decide`），
 此类查询要求内核展开整张转移表——实测改用 `decide` 会触发
 `maximum recursion depth has been reached`（调大 `maxRecDepth` 只是把爆栈换成超时），
 故保留本机求值。
