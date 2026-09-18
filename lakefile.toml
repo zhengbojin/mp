@@ -1,0 +1,32 @@
+name = "mp"
+version = "0.1.0"
+keywords = ["math"]
+defaultTargets = ["Mp"]
+
+[leanOptions]
+maxErrors = 2000
+linter.style.nativeDecide = false
+pp.unicode.fun = true # pretty-prints `fun a ↦ b`
+relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+maxSynthPendingDepth = 3
+linter.flexible = false
+maxHeartbeats = 2000000
+# —— 风格类 linter 全局豁免（2026-09-15：警告修理·批 1；纯风格项，不影响正确性）——
+linter.style.longLine = false
+linter.style.header = false
+linter.style.show = false
+linter.style.emptyLine = false
+linter.style.setOption = false
+linter.style.maxHeartbeats = false
+linter.style.whitespace = false
+linter.style.openClassical = false
+linter.style.missingEnd = false
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.32.2"
+
+[[lean_lib]]
+name = "Mp"
