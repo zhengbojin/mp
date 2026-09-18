@@ -49,6 +49,7 @@ def projectSymbol (s : F4) : Bool := s.1 != s.2
 /-- 列表投影。 -/
 def projectList : List F4 → List Bool := List.map projectSymbol
 
+/-- **定位（2026-09-18）**：本定理实为**信息论事实**——投影 `projectList` 非单射（`F4.alpha` 与 `F4.one` 同像 `true`），故**任何函数**都不能从投影恢复 F4 串；`_D` 系历史签名、未被证明使用。它给出「虚部→实部拷贝不可能性」的任意函数级强形式。 -/
 theorem no_forget_recovery_dtm :
     ¬ (∃ (_D : ClassicDTM) (recover : List Bool → List F4),
       ∀ (x : List F4), recover (projectList x) = x) := by
