@@ -1,6 +1,6 @@
 # mp —— P ≠ NP 形式化验证工程（Lean 4）
 
-> **版本 v2.3**（交付包 `mp.ver2.3.zip`；版本谱系：v0.1.0 → v1.0 → v2.0 → v2.1 → v2.2 → v2.3）
+> **版本 v2.4**（交付包 `mp.ver2.4.zip`；版本谱系：v0.1.0 → v1.0 → v2.0 → v2.1 → v2.2 → v2.3 → v2.4）
 
 > **English.** This repository is a complete formalization, in Lean 4 (mathlib), of a proof of **P ≠ NP within the CBTM/IVM framework** (a custom machine model — the separation is framework-internal; see the honest-boundary note below): computational models (canonical non-deterministic Turing machine "NTM2", composite-tape machine "CBTM", essential dimension "IVM"), encodings, the worst-case step bound of the subset-sum verifier (O((|x|+1)²)), and the final separation theorems, including a barriers-refined variant. It additionally formalizes the **symbol-layer (ATM/NTM2) extension**: the classes `P_sym0` / `NP_sym0` with the **set-theoretic separation `P_sym0 ≠ NP_sym0`** (aligned domain; P carried by CBTM0 via the DTM≅CBTM0 isomorphism, NP by NTM2). Terminal state: **0 declared 公理, 0 `sorry`, 0 errors**; the whole library builds with `lake build`.
 
