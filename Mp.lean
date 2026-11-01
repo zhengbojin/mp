@@ -28,6 +28,16 @@ import Mp.ATMBasic
 import Mp.ATMBridge
 import Mp.ATMTransfer
 import Mp.ATMAssembly
+import Mp.ProjectionP
+import Mp.ClassicalProjection
+import Mp.SepAxiom
+import Mp.ParamUnify
+import Mp.NPDomain
+import Mp.KappaAdditive
+import Mp.TwinInstance
+import Mp.ATMDom
+import Mp.MachineIso
+import Mp.SecondLayer
 
 set_option linter.style.header false
 
@@ -46,6 +56,11 @@ set_option linter.style.header false
 9. FinalProof.lean              — P≠NP 的最终证明（反证法、障碍无关性综合、ZFC 可证性）
 10. ATMBasic/ATMBridge/ATMTransfer/ATMAssembly — 符号层（ATM/NTM2）类与分离结论
     （P_sym0 ≠ NP_sym0，集合论意义，对齐域；见 Spec §7.7、约定 29/31）
+11. ProjectionP — CBTM|0 ↔ DTM 机器级投影（F4 层，接受 + 同步数）
+12. ClassicalProjection — 经典 P/NP 的定义级刻画（P_atm := P_sym0）与 P_atm ≠ NP_atm
+13. SepAxiom — 公理「sep 的纸带像 = α」具名 + 分离引擎 no_correct_restricted_machine
+14. ParamUnify — 参数化统一（纸带 = 2F4，虚位是参数）：CBTM|0 = DTM（toPC_accepts_iff）
+15. NPDomain — NP 两版关系（NP_sym ⊆ NP_sym0）与域扩张（带 AlignGuardExtends 前提）
 
 开始做决策：使用四位编码表示子集和示例。
 

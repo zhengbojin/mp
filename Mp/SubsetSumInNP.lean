@@ -355,7 +355,9 @@ theorem toCBTM_polynomialTime (A : NTM2) (hcan : NTM2.Canonical A)
           rw [hdis] at hm
           simp at hm
       calc
-        π.length = π'.length := hlen
+        (π.filter (fun st => isMovingDir st.result.moveDir)).length ≤ π.length :=
+          List.length_filter_le _ _
+        _ = π'.length := hlen
         _ ≤ K * ((π'.filter (fun step => F4.im step.readSym = true)).length + 1) *
             (w.length + 1) * (w.length + 1) := hbnd
         _ ≤ K * (w.length + 2) * (w.length + 1) * (w.length + 1) := by

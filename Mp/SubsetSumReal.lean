@@ -22,6 +22,7 @@ Authors: Bojin Zheng, Jingwen Zheng
 
 import Mp.Basic
 import Mp.CBTM
+import Mp.ATMBasic
 import Mp.IVM
 import Mp.EssentialDimension
 import Mp.LowerBound
@@ -207,14 +208,17 @@ def IsSymbolAligned (w : List F4) : Prop :=
     验证器（witness）是 4 带机，输入符号在物理实现上映射为计算带 4F4 符号串
     （flat4F4 像）；非 flat4F4 像的 F4 串不是这台机器的输入（4 带机无半符号，
     缺项输入语义已失、不接受——数计一体，2026-09-09 用户裁决），机器性质不在
-    其上断言。界按输入格长（多项式对 4 倍缩放封闭，与按符号计数等价）。 -/
+    其上断言。界按输入格长（多项式对 4 倍缩放封闭，与按符号计数等价）。
+    **计量口径 = 移动数**（`filter isMovingDir`，S 步不计）——与 `ClassicDTM.isPolynomialTime`
+    及 `CBTM.isPolynomialTimeMoves` 统一（2026-11-01 用户裁决 A：口径不一致使
+    `P_cb ⊆ P_sym0` 无法搬运，移动数界推不出步数界）。 -/
 def CBTM.isPolynomialTimeAligned (M : CBTM) : Prop :=
   ∃ p : ℕ → ℕ, IsPolynomialBound p ∧
     ∀ (x : List F4), IsSymbolAligned x →
       ∀ (π : ComputationPath) (cfg : CBTMConfig M x),
         TapeReachablePath M x π cfg → cfg.state ∈ M.acceptStates →
         (∀ step ∈ π, step.fromState ∉ M.acceptStates) →
-        π.length ≤ p x.length
+        (π.filter (fun st => isMovingDir st.result.moveDir)).length ≤ p x.length
 
 /-- 两版多项式时间语义的关系（评审建议 2026-09-11）：全输入版 `isPolynomialTime`
     蕴含对齐版 `isPolynomialTimeAligned`（后者只在输入域 IsSymbolAligned 内断言，
@@ -222,7 +226,8 @@ def CBTM.isPolynomialTimeAligned (M : CBTM) : Prop :=
 theorem isPolynomialTimeAligned_of_isPolynomialTime (M : CBTM)
     (h : CBTM.isPolynomialTime M) : CBTM.isPolynomialTimeAligned M := by
   rcases h with ⟨p, hp, hbound⟩
-  exact ⟨p, hp, fun x _ π cfg hr ha hno => hbound x π cfg hr ha hno⟩
+  exact ⟨p, hp, fun x _ π cfg hr ha hno =>
+    le_trans (List.length_filter_le _ _) (hbound x π cfg hr ha hno)⟩
 
 /-- 翻转第 i 格（0-based）的实部为 true。 -/
 def flipReAt (w : List F4) (i : ℕ) : List F4 :=

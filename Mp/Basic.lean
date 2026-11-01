@@ -192,15 +192,15 @@ structure ClassicDTM where
   startState : ℕ
   acceptStates : Finset ℕ
   rejectStates : Finset ℕ
-  alphabet : Finset F4 := [F4.zero, F4.one, F4.alpha, F4.beta].toFinset
+  alphabet : Finset F4 := [F4.zero, F4.one].toFinset
   transition : ℕ × F4 → ClassicDTMTransitionResult
-  blankSym : F4 := F4.alpha
+  blankSym : F4 := F4.zero
   h_start_in_states : startState ∈ states
   h_accept_subset : acceptStates ⊆ states
   h_reject_subset : rejectStates ⊆ states
   h_accept_reject_disjoint : acceptStates ∩ rejectStates = ∅
   isValid : ∀ q s, (transition (q, s)).nextState ∈ states
-  h_alphabet_all : alphabet = {F4.zero, F4.one, F4.alpha, F4.beta}
+  h_alphabet_all : alphabet = {F4.zero, F4.one}
 
 
 -- ===========================================================================

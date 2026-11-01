@@ -273,7 +273,7 @@ noncomputable def CBTM.toClassicDTM (N : CBTM) (h : CBTM.IsCBTM0 N) : ClassicDTM
     startState := N.startState
     acceptStates := N.acceptStates
     rejectStates := N.rejectStates
-    alphabet := {F4.zero, F4.one, F4.alpha, F4.beta}
+    alphabet := {F4.zero, F4.one}
     transition := N.toClassicDTMTrans h
     blankSym := N.blankSym
     h_start_in_states := N.h_start_in_states

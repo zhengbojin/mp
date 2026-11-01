@@ -12,7 +12,7 @@
 - 把证明的全部推理链（从基本定义、编码、转移表，到主定理）写成 Lean 的 `def`/`lemma`/`theorem`；
 - **已达成终态**：**0 声明公理 / 0 缺口 / 0 error**，`lake build` 全链通过（8708 jobs）；
 - 主链：`subsetSum_in_NP_F`（`Mp/SubsetSumInNP.lean`）与分离结论 `P_F_neq_NP_F` / `P_cb_neq_NP_cb` / `P_neq_NP_with_barriers`（`Mp/FinalProof.lean`）均已组装；`subsetSumNTM2_canonical_clauseC` 已定理化（`Mp/SubsetSumVerifierQ10.lean`）。
-- **符号层（ATM/NTM2）分离结论 `P_sym0 ≠ NP_sym0`（集合论意义，对齐域）已组装**（`Mp/ATMAssembly.lean`；完整解释见 §7.7、约定 31）。
+- **符号层（ATM/NTM2）分离结论 `P_sym0 ≠ NP_sym0`（集合论意义，对齐域）已组装**（`Mp/ATMAssembly.lean`；完整解释见 §7.7、约定 31）；当在语言中使用{0，1，sep}作为字母表，则`P_sym0 ≠ NP_sym0` 的结论等价于经典的`P ≠ NP`。
 
 **当前状态快照**：
 
@@ -134,7 +134,7 @@
 14. **编译、验证与提交口径**：单文件 `lake env lean Mp/<file>.lean`；全链 `lake build`；LF 换行；**绿灯标准 = EXIT=0 / 0 error / 0 缺口**（warning 现存项登记后统一处理，暂不即修）；**单件绿才提交，提交留回滚点**；`git add <明确文件>`（**禁** `add -A`；**禁** `checkout`/`restore`/`stash`/`clean`）；写 `.lake` 的构建先经 `_build.lock.d` 锁协议（BUSY 则等待）；不编造证明。
 15. **文件归属与并行**：用户明令「不要修改 X 文件」或并发改同一文件时，只列方案（根因 + 修法 + 风险表）等授权，不动手防冲突；文件纪律见 §4.5。
 16. **大型引理分离**：大引理移入独立文件，减少编译时间。
-20. **符号图灵机原则与 F4 分配**：P 与 NP 定义在符号图灵机（DTM）与符号非确定图灵机（NTM）之上，字母表 |Σ| ≥ 4 = 2 数据（data0/data1）+ 1 分隔（sep）+ 1 结束（boundary）——分隔与结束内建为符号本身（数计一体），4 为最小完备数。F4 = Bool×Bool：虚部位 = 结构标记（0 数据 / 1 结构）、实部位 = 数据值或结构类；位对分配（字母表 1-1 查表）：(0,0)=data0、(1,0)=data1、(0,1)=sep（分隔符/元素标记）、(1,1)=boundary（边界符/输入结束）。**m（mark）是独立维度**（Sym 第二分量，计数器标记，运行时写入 #₁ 等）——输入编码 m 恒 0，输入格 (0,1)→(alpha,m=0)、(1,1)→(boundary,m=0)。Sym→F4 的组编译 `[(r₁,0),(r₂,0),(r₃,0),(m,i₁)]`（m 落第 4 格实部）是内部实现细节，与字母表解读分属两层。**编译清除语义（信息论）**：符号被强制编译为 bit 序列时，分隔/边界/分支语义被清除——bit 串图灵机无法完成元素区分与边界识别（表示不足），故 P/NP 定义必须停留在符号层（|Σ| ≥ 4）。
+20. **符号图灵机原则与 F4 分配**：P 与 NP 定义在符号图灵机（DTM）与符号非确定图灵机（NTM）之上，字母表 |Σ| ≥ 4 = 2 数据（data0/data1）+ 1 分隔（sep）+ 1 结束（boundary）——分隔与结束内建为符号本身（数计一体），4 为最小完备数。**P/NP 的语言定义使用三字符 {0,1,sep}**（语言层三字符与机器层 |Σ| ≥ 4 分属两层）。F4 = Bool×Bool：虚部位 = 结构标记（0 数据 / 1 结构）、实部位 = 数据值或结构类；位对分配（字母表 1-1 查表）：(0,0)=data0、(1,0)=data1、(0,1)=sep（分隔符/元素标记）、(1,1)=boundary（边界符/输入结束）。**m（mark）是独立维度**（Sym 第二分量，计数器标记，运行时写入 #₁ 等）——输入编码 m 恒 0，输入格 (0,1)→(alpha,m=0)、(1,1)→(boundary,m=0)。Sym→F4 的组编译 `[(r₁,0),(r₂,0),(r₃,0),(m,i₁)]`（m 落第 4 格实部）是内部实现细节，与字母表解读分属两层。**编译清除语义（信息论）**：符号被强制编译为 bit 序列时，分隔/边界/分支语义被清除——bit 串图灵机无法完成元素区分与边界识别（表示不足），故 P/NP 定义必须停留在符号层（|Σ| ≥ 4）。(左右边界的识别是可行的， 左边界可由算法的初始态定义给出，右边界可由多项式时间复杂度计量的基准，即二进制串长，给出)。
 21. **最高位校验（MSB）**：为保证 target 与候选元素的最高位恒为 1（二进制编码无前导零、元素非 0），格式检查的最高位读步为：`24 读 data1 → 29`（v>0 ✓，反向扫）、`24 读 data0 → 101`（最高位 0 = 元素 0 或前导 0，拒绝）；`29` 读 data0/data1 继续左扫、读 sel/nosel → 26（配对选择符）。`qFmtData` 常量 = 29。最高位恒为 data1：24/26/27 读 data0 → 101。
 22. **NTM2 语法/语义悖论与 IVM 强制分离**：NTM2 的分叉形式上产生两条路径，但实质上（语义上）可能只是一条（转移结果语义重合）；NTM2 只有语法没有语义，无法区分真/假分叉——语义与语法冲突。IVM 强制语义分离：用相同的转移分支测试，IVM 将它转化为实部分支与虚部分支（不激活 T^Im=0 留 ℚ；激活 T^Im=1 进 ℚ(√p_i)；差 √p_i ∉ ℚ 不可公度）——相同的分支变成绝对不同的分支，悖论被显式化。无悖论条件：IVM 中分支路径必须必然不同（语义差异由 √p_i 的代数独立结构确定，非武断指定）。
 23. **ATM（算法 TM）：可变输入内建**：在 DTM 基础上定义算法 TM（ATM），把输入格式从外部约定转为内建语法：
@@ -195,6 +195,47 @@
     - **分离结论**：**`P_sym0 ≠ NP_sym0`**（集合论意义：两个语言类的集合不等）；见证语言 = 子集和（`subsetSumLanguageF4Real ∈ NP_sym0` 且 `∉ P_sym0`）。精确读法：**受限字母表机器类（多项式时间）≠ NTM2 类（多项式时间）**——P 侧证据为能力缺口（与时间界无关），且**弱于经典 P ≠ NP**（受限机类 ⊆ 一般确定性机类；**注：『一般确定性机』的『求解』不构成良定义对象**，见约定 29；信息论前提见约定 29）。**与 F 层 `P_F ≠ NP_F` 是同一定理的两种表述**（定义级相等；定位见约定 29、解释见 §7.7）。
     - **代码锚点**：`Mp/ATMAssembly.lean`（`IsP_sym0`/`IsNP_sym0`/`subsetSum_in_NP_sym0`/`subsetSum_not_in_P_sym0`/`P_sym0_neq_NP_sym0`）。
     - **完整解释、链条与诚实边界见 §7.7**。
+
+32. **sep 的纸带像 = α（公理，2026-10-31 用户裁决「按公理处理」）**：
+    - **公理**：参数边界符 `sep` 在纸带上的像是 α（`Im = 1`）——FULL CBTM 读 `sep` 即分支（`CBTM.h_branch_rule`：`Im = 1 ⇒ card = 2`）；CBTM|0 层**没有可承载 sep 的符号**（`F4` 中 `Im = false` 只有 `zero`/`one`；鸽笼事实 `plain_layer_two_symbols`）。
+    - **输入层 ≠ 纸带层**：输入符号是 2 bit（0/1/sep/# 四值），映射到纸带符号后 `sep ↦ α`；α/β 只活在纸带/代数层。故「确定性机读到 sep」在纸带层等于「读到 α」，必分支 ⇒ 确定性机读不到参数边界。
+    - **生命周期**：`sep` 位置在分叉前是 α（控制位 1，读到必激活一个生成元），分叉后被改写为 `sel`/`nosel`（控制位 0），故**每个参数位置最多激活一次**——κ 的「个数 = 维数」由结构保证，无需互异性约定。
+    - **子集和编码的计数口径**：输入共 **n+1 个数**（n 个元素 + 1 个目标值，目标独立成段，其前是虚部为 0 的区段边界符）；可触发分支的 α **恰 n 个**（元素区逐元素一个）⇒ **分支次数 = n**，对应机器核验的 `imTrueCount_encodeInstanceF4`（= `elements.length`）。故 κ 下界为 n（目标不计标记）。
+    - **后果**：`P_cb` 侧 `κ ≡ 0`（`kappa_zero_of_restricted`）；任何正确机 `κ ≥ n`（`subsetSum_kappa_lower_bound`，载荷 = `imTrueCount_encodeInstanceF4 = elements.length`）⇒ **不存在正确的受限机**（`no_correct_restricted_machine`）⇒ `P_cb ≠ NP_cb`。
+    - **经典 P/NP 的定义级刻画**：`IsP_atm := IsP_sym0`（CBTM|0 层）、`IsNP_atm := IsNP_sym0`（NTM2 层），`P_atm ≠ NP_atm`。「经典 P = CBTM|0 层」是**定义/判断**（用户裁定），不是定理；定理部分是机器核验的分离。
+    - **机器级投影（P 侧）**：`Mp/ProjectionP.lean` 的 `accepts_iff`（CBTM|0 与 DTM 在二进制域上接受一致）+ `path_forward`/`path_backward`（同步数）。类级等式 `P_cb = P_atm` **不**由投影给出（域/停机两处不匹配，见该文件头），只由上面的定义级刻画给出。
+    - **代码锚点**：`Mp/SepAxiom.lean`（`ParamSep`/`ParamSep_forces_branch`/`plain_layer_two_symbols`/`no_correct_restricted_machine`/`P_atm_neq_NP_atm_under_sep_axiom`）、`Mp/ClassicalProjection.lean`、`Mp/ProjectionP.lean`。
+
+33. **NP 两版（全输入域 / 对齐域）的关系（2026-10-31）**：
+    - **定义差**：`IsNP_sym`（`ATMBasic:175`）= `NTM2` 在**所有** `F4` 串上正确 + **全域**多项式界；`IsNP_sym0`（`ATMAssembly:313`）= 只在 `IsSymbolAligned`（`flat4F4` 像）上断言正确性与时间界。承载机同为 `NTM2`，时间衡量同为 `ntm2MoveCount ≤ p x.length`，差别只在两处「域」。
+    - **已证**：`NP_sym ⊆ NP_sym0`（`isNP_sym0_of_isNP_sym`）。反向（域扩张）需两条前提：`L` 在非对齐域为空 + 存在「对齐自检扩张机」`AlignGuardExtends A A'`；给定后 `isNP_sym_of_isNP_sym0` 成立，子集和实例化为 `subsetSumLanguage_empty_off_aligned` / `subsetSum_in_NP_sym_of_guard` / `exists_NP_sym_not_P_sym0`（`Mp/NPDomain.lean`）。
+    - **口径**：按约定 25（输入语义 = 计算纸带 4F4），非对齐 F4 串**不是这台机器的输入**（`subsetSumNTM2_hrel` 与 `rejects_nonencoding` 的断言域都是 `IsSymbolAligned`）。故 `IsNP_sym0` 是**设计一致**的口径，`IsNP_sym` 是更强（装得更少）的派生版本；分离结论一律用 `NP_sym0`。`AlignGuardExtends` 的存在性本工程**未构造**：`subsetSumNTM2` 是 `subsetSumCBTM` 的逐转移镜像、字母表 = `F4` 全集，非对齐串会被读进去跑（无「字母表外 ⇒ 空转移」挡板），故要么做「102 状态 × 12 相位」的全域轨道分析，要么做路径级复合构造（guard 相位 + 回扫 + 重放），两者均为大工程。
+    - **已把缺口收敛为单条事实**：自取 `A' = A`（`alignGuardExtends_self`）后，`isNP_sym_of_rejects_off_domain` 只需
+      `hrej : ∀ w, ¬ IsSymbolAligned w → ¬ NTM2.acceptsTape subsetSumNTM2 w`；
+      而 `NTM2.isPolynomialTime` 只约束**接受路径**，故非对齐串上只要无接受路径，全域时间界即**空成立**——即：域扩张剩余的全部工作 = 证 `hrej`。
+
+34. **经典 P 的域内停机刻画与第二层「包含 + 分离」（2026-11-01 用户裁决「取乙」）**：
+    - **裁决**：`P_A` 的停机条件取**域内**（仅在对齐域要求停机），不取全域 `IsAlgorithm`。理由：输入串与纸带都定义在符号上，非对齐的 `F4` 串不是这台机器的输入，故不应把「在乱码上停机」写进定义。
+    - **定义**（`Mp/ATMDom.lean`）：`CBTM.IsAlgorithmOn M S`、`ClassicDTM.IsAlgorithmOn M S`、`alignedDomain := { w | IsSymbolAligned w }`、`noMarkDomain`、`IsP_cb`、`IsP_A`（含「不写标记」「空白 = 0」「含标记输入上拒绝」三条件）。
+    - **定理**（0 sorry / 0 axiom，`Mp/SecondLayer.lean`）：
+      * `P_cb_subset_P_sym0 : P_cb ⊆ P_sym0`
+      * `subsetSum_not_in_P_cb : ¬ IsP_cb subsetSumLanguageF4Real`
+      * **`P_cb_neq_NP_sym0 : P_cb ≠ NP_sym0`**
+      * `P_A_subset_P_cb : P_A ⊆ P_cb`（接受性/停机/移动数+首达性/域四层搬运）
+      * **`P_A_neq_NP_sym0 : P_A ≠ NP_sym0`**（即 `P_A ≠ NP_A`）
+    - **口径**：分离只需**单向包含**——`P_A ⊆ P_cb` 且 `SubsetSum ∉ P_cb` 已足够；**不需要**类等式 `P_A = P_cb`（反方向需把识别器规范化为判定器，不做）。两侧都取对齐域（P 是判定类、NP 是识别类），**不**只把 NP 扩张到全域。
+    - **代码锚点**：`Mp/SecondLayer.lean`（五定理）、`Mp/ATMDom.lean`（定义）、`Mp/MachineIso.lean`（`isCBTM0_toCBTM` 与 `path_bwd` 的移动数/`fromState` 加强）。
+
+35. **P_cb 与 P_A 的定义与「等号」待办（2026-11-01 用户裁决）**：
+    - **P_cb 必须停机**：`P_cb` 是**判定类**，不是识别类。故 `IsP_cb` = `CBTM.IsCBTM0`（字母表 `{0,1}`、转移单值、**位置无关**）∧ 对齐域多项式（移动数）∧ `IsAlgorithmOn alignedDomain` ∧ 对齐域判定。**不能**用 `IsRestricted`：它不含位置无关性，允许转移依赖带头坐标，比 DTM 强。
+    - **P_A 不写标记**：`IsP_A` 含 `hwrite : ∀ q s, F4.im (M.transition (q, s)).writeSym = false`（DTM 不能写 α/β）。这是 `ClassicDTM.toCBTM` 的前提，也是模型事实。
+    - **P_A 含标记输入上拒绝**：`∀ w, IsSymbolAligned w → (∃ c ∈ w, F4.im c = true) → ¬ M.acceptsTape w`。理由：`M.toCBTM` 是 CBTM0（字母表 `{0,1}`），在 `im = true` 的格上转移为空；而 `ClassicDTM` 对任意 F4 都有转移、可能在含标记输入上接受。不加此条 `P_A ⊆ P_cb` 的接受性在含标记输入上不成立（`im = true` 的格超出 `ι₀` 像）。
+    - **已证**：`P_cb ⊆ P_sym0`、`SubsetSum ∈ NP_sym0 ∧ ∉ P_cb`、`P_cb ≠ NP_sym0`、`P_A ⊆ P_cb`、`P_A ≠ NP_sym0`；`CBTM.IsCBTM0.toIsRestricted`。
+    - **类等式 `P_A = P_cb` 不做**：分离只需单向包含（`P_A ⊆ P_cb` + `SubsetSum ∉ P_cb`）。反方向（`P_cb → P_A`）需把识别器规范化为判定器，且 `IsCBTM0 → IsCBTM0 (M.toCBTM hwrite)` 之类搬运已由 `isCBTM0_toCBTM` 覆盖，但类等式本身对分离无贡献。
+    - **κ 的适用层（2026-11-01 用户裁决）**：κ **只在 ATM 层**（符号输入，含 `sep`/标记）定义，**不用于 `P_cb`**（布尔层）。故 `Mp/ATMDom.lean` 不含任何 `kappa_M`；基于 κ 的分离留在 ATM 层，即 `P_sym0_neq_NP_sym0`（`Mp/ATMAssembly.lean`）。`P_cb` 与 `P_A` 只通过**机器同构**相连。
+    - **计时口径**：两侧统一为**移动数**（`cbtmMoveCount` / `dtmMoveCount`，`S` 步不计），与项目口径“成本 = 位移”一致。
+    - **工具链/环境缺陷（已定位，2026-11-01）**：此前记录的「`lake build` 报 `Lean exited with code 3221225477`（`0xC0000005`）」**不是** Lean C 后端或特定定理的问题，而是 **360 安全卫士（当日 08:56 安装）拦截 lean 写 olean**：同参数下 `-c`/`-i`/纯精化均正常，仅 `-o` 写较大 olean 崩；卸载 360 并重启后 `lake env lean Mp/Basic.lean -o` 正常（4m36s）。`isCBTM0_toCBTM` 已正常证明（`Mp/MachineIso.lean`）。**教训**：`lake clean` 会清掉依赖包的构建产物（mathlib 需全量重建）；本次 mathlib 从 `D:\lean4\pvsnp`（同 toolchain v4.32.2、同 mathlib rev）恢复。
+    - **模块状态**：`Mp/ATMDom.lean`（域内停机、`cbtmMoveCount`、`isPolynomialTimeMoves`、`noMarkDomain`、`IsP_cb`/`P_A`）、`Mp/MachineIso.lean`（配置对应、`path_fwd`/`path_bwd`、`accepts_iff_p`、停机搬运、`dtmMoveCount_map`、`isCBTM0_toCBTM`）、`Mp/SecondLayer.lean`（第二层五定理）均**编译通过、0 sorry**；三者已于 2026-11-01 加入 `Mp.lean` 桶。
 
 ---
 
