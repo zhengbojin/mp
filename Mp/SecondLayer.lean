@@ -119,4 +119,10 @@ theorem P_A_neq_NP_sym0 : P_A ≠ NP_sym0 := by
   have hPA : subsetSumLanguageF4Real ∈ P_A := by rw [h]; exact hNP
   exact subsetSum_not_in_P_cb (P_A_subset_P_cb hPA)
 
+/-- 论文的 `NP_A`：NTM2 承载的算法层 NP（= `NP_sym0`；与论文 `measure` 的命名对齐）。 -/
+abbrev NP_A : Set (Set (List F4)) := NP_sym0
+
+/-- **论文形式**：`P_A ≠ NP_A`（直接由 `P_A_neq_NP_sym0`）。 -/
+theorem P_A_neq_NP_A : P_A ≠ NP_A := P_A_neq_NP_sym0
+
 end Mp
