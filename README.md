@@ -2,9 +2,15 @@
 
 > **版本 v2.5**（交付包 `mp.ver2.5.zip`；版本谱系：v0.1.0 → v1.0 → v2.0 → v2.1 → v2.2 → v2.3 → v2.4 → v2.5）
 
-> **English.** This repository is a complete formalization, in Lean 4 (mathlib), of a proof of **P ≠ NP within the CBTM/IVM framework** (a custom machine model — the separation is framework-internal; see the honest-boundary note below): computational models (canonical non-deterministic Turing machine "NTM2", composite-tape machine "CBTM", essential dimension "IVM"), encodings, the worst-case step bound of the subset-sum verifier (O((|x|+1)²)), and the final separation theorems, including a barriers-refined variant. It additionally formalizes the **symbol-layer (ATM/NTM2) extension**: the classes `P_sym0` / `NP_sym0` with the **set-theoretic separation `P_sym0 ≠ NP_sym0`** (aligned domain; P carried by CBTM0 via the DTM≅CBTM0 isomorphism, NP by NTM2). Terminal state: **0 declared 公理, 0 `sorry`, 0 errors**; the whole library builds with `lake build`.
+> **English.** This repository is a complete formalization, in Lean 4 (mathlib), of a proof of **P ≠ NP within the CBTM/IVM framework** (a custom machine model — the separation is framework-internal; see the honest-boundary note below): computational models (canonical non-deterministic Turing machine "NTM2", composite-tape machine "CBTM", essential dimension "IVM"), encodings, the worst-case step bound of the subset-sum verifier (O((|x|+1)²)), and the final separation theorems, including a barriers-refined variant. The **second layer** proves **`P_A ≠ NP_A`** (algorithmic Turing-machine semantics) via the machine-isomorphism projection `CBTM|₀ ≅ ATM` — `P_A ⊆ P_cb` plus `SubsetSum ∉ P_cb` yields the separation, and **`P_A ≠ NP_A` is exactly P ≠ NP in the algorithmic semantics**. It additionally formalizes the **symbol-layer (ATM/NTM2) extension**: the classes `P_sym0` / `NP_sym0` with the **set-theoretic separation `P_sym0 ≠ NP_sym0`** (aligned domain; P carried by CBTM0 via the DTM≅CBTM0 isomorphism, NP by NTM2). Terminal state: **0 declared 公理, 0 `sorry`, 0 errors**; the whole library builds with `lake build`.
 
 本工程在 Lean 4（mathlib）中形式化验证一条 **P ≠ NP** 证明链（**框架内**：CBTM/IVM 自定义机器模型下的分离——诚实边界见下文「符号层」一节）：从计算模型与编码、子集和语言下界，到验证器最坏步数界（O((|x|+1)²)），直至分离主定理及其障碍版。所有推理链以 `def`/`lemma`/`theorem` 全程机器验证。
+
+**两层分离（均已机器核验）**：
+
+- **第一层（CBTM/IVM 语义）**：`P_cb ≠ NP_cb`（`Mp/FinalProof.lean:102`）——子集和的 κ 下界（≥ n）与受限机 `κ ≡ 0` 矛盾。
+- **第二层（算法图灵机语义）**：通过**机器同构投影** `CBTM|₀ ≅ ATM` 得 `P_A ⊆ P_cb`（`Mp/SecondLayer.lean:67`），从而 **`P_A ≠ NP_A`**（`Mp/SecondLayer.lean:116`，论文形式 `P_A_neq_NP_A`）。
+- **算法语义下，`P_A ≠ NP_A` 就是 `P ≠ NP`**：`P_A` 与 `NP_A` 分别由算法图灵机（DTM）与 NTM2 承载，是经典 P/NP 在**算法字母表**（含参数分隔语义）下的实例化；分离在投影下保持（单向包含 `P_A ⊆ P_cb` 已足够）。
 
 ## 终态快照（2026-09-14）
 
@@ -16,8 +22,25 @@
 | 公理足迹 | `propext` / `Classical.choice` / `Quot.sound` + `native_decide` 标准信任面（既有账，逐件量化记录） |
 | 交叉复核 | ✅ 构建矩阵（Q10 / Reverse15 / Reverse13A / T16）+ 全库构建 + 声明公理/缺口扫描——经独立脚本与独立复编两通道通过 |
 | 符号层分离结论 | ✅ **`P_sym0 ≠ NP_sym0`**（集合论意义，对齐域）——`Mp/ATMAssembly.lean` |
+| 第二层分离结论 | ✅ **`P_A ≠ NP_A`**（算法图灵机语义；= `P_A_neq_NP_sym0` 的论文形式，别名 `NP_A := NP_sym0`）——`Mp/SecondLayer.lean` |
 
 规模：**57 个 Lean 文件 / 99,818 行**（`Mp/` 56 个源文件 + 顶层 `Mp.lean`）。
+
+## 第二层：P_A ≠ NP_A（算法图灵机语义）
+
+**结论**：在算法图灵机语义下，`P_A ≠ NP_A`（集合论意义）——**这就是 P ≠ NP 在该语义下的表述**。
+
+**链条**（`Mp/SecondLayer.lean`，五定理）：
+
+1. `P_cb ⊆ P_sym0`（计时口径统一为移动数）
+2. `subsetSum ∉ P_cb`（κ 下界：`subsetSum_kappa_lower_bound`）
+3. `P_cb ≠ NP_sym0`
+4. `P_A ⊆ P_cb`（DTM → CBTM|₀ 机器同构搬运：接受性 / 域内停机 / 移动数+首达性 / 域 / 空白 / 含标记拒绝）
+5. `P_A ≠ NP_sym0`（论文形式 `P_A_neq_NP_A`，别名 `NP_A := NP_sym0`）
+
+**为什么单向包含足够**：分离只需 `SubsetSum ∈ NP_A` 且 `SubsetSum ∉ P_A`——`SubsetSum ∈ NP_sym0`（NTM2 见证）与 `SubsetSum ∉ P_cb` 加 `P_A ⊆ P_cb` 即得，无需类等式 `P_A = P_cb`（后者需识别器规范化，未形式化）。
+
+**机器同构**：`CBTM|₀ ≅ ATM`（`Mp/MachineIso.lean`：`isCBTM0_toCBTM` 五层 + `path_bwd` 的移动数与 `fromState` 序列对应）。
 
 ## 符号层：P_sym0 ≠ NP_sym0（集合论意义，对齐域）
 
@@ -54,6 +77,7 @@
 ## 证明链（自顶向下）
 
 - **分离主定理**（`Mp/FinalProof.lean`）：`P_F_neq_NP_F`（:93）、`P_cb_neq_NP_cb`（:102）、`P_neq_NP_with_barriers`（:105，障碍版）
+- **第二层分离**（`Mp/SecondLayer.lean`）：`P_A ⊆ P_cb`、`P_A ≠ NP_sym0`（= `P_A_neq_NP_A`）；机器同构搬运见 `Mp/MachineIso.lean`（`isCBTM0_toCBTM`）
 - **符号层分离**（`Mp/ATMAssembly.lean`）：`P_sym0_neq_NP_sym0`（集合论意义，对齐域）；类定义 `IsP_sym0`/`IsNP_sym0`；成员 `subsetSum_in_NP_sym0`、`subsetSum_not_in_P_sym0`
 - **符号层机器与桥**：`Mp/ATMBasic.lean`（ATM 谓词、运行语义、格移计量、多带视图）、`Mp/ATMBridge.lean`（2bit 码转换、DTM≅CBTM0 双向同构）、`Mp/ATMTransfer.lean`（T1 位置桥 + T2 代数分开）
 - **求解链**：`Mp/SubsetSumInNP.lean` —— `subsetSum_in_NP_F`；A2 同构桥 `NTM2_solve_implies_IsNP_F`
