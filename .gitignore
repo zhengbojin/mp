@@ -13,3 +13,6 @@ _*.*
 *.xls*
 *.tex
 *.pdf
+# 独立 repo（论文）与 scratch 目录
+STOC27Rev/
+_scratch_compile/
